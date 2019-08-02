@@ -172,7 +172,7 @@ PropertyPath:
   | InversePathElement
   | RepeatedPathElement
   | CountedPathElement
-  | FilteredPathElement
+  | FilteredPathElement !';'
   | IRITerm //!('*'|'+'|'?'|'/'|'|')
 ;
 
@@ -189,7 +189,7 @@ PropertyPathElement:
   | NegativePathElement
   | RepeatedPathElement
   | CountedPathElement
-  | FilteredPathElement
+  | FilteredPathElement !';'
   | IRITerm
 ;
 
