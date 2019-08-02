@@ -1,6 +1,6 @@
 # Property paths
 
-## A convenient shorthand
+## Not just a convenient shorthand
 
 ## Inverse predicates
 
@@ -9,3 +9,5 @@
 ## Repetition
 
 ## Negation
+
+## Filters

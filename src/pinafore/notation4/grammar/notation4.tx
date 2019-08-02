@@ -172,6 +172,7 @@ PropertyPath:
   | InversePathElement
   | RepeatedPathElement
   | CountedPathElement
+  | FilteredPathElement
   | IRITerm //!('*'|'+'|'?'|'/'|'|')
 ;
 
@@ -188,6 +189,7 @@ PropertyPathElement:
   | NegativePathElement
   | RepeatedPathElement
   | CountedPathElement
+  | FilteredPathElement
   | IRITerm
 ;
 
@@ -223,6 +225,11 @@ RangeCountPathElement:
 ExactCountPathElement:
     path=IRITerm '{' exactly=INT '}'
   | '(' path=PropertyPath ')' '{' exactly=INT '}'
+;
+
+FilteredPathElement[noskipws]:
+    path=IRITerm '[' /\s*/ (identifier=NodeName)? /\s*/ filters*=PredicateBlock[';'] /\s*/  (';')? /\s*/ ']'
+  | '(' path=PropertyPath ')' '[' /\s*/ (identifier=NodeName)? /\s*/ filters*=PredicateBlock[';'] /\s*/  (';')? /\s*/ ']'
 ;
 
 // Headed lists
