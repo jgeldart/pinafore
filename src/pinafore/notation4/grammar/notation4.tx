@@ -170,6 +170,7 @@ PropertyPath:
     AlternativesPath
   | SequencePath
   | InversePathElement
+  | PredictedPathElement
   | RepeatedPathElement
   | CountedPathElement
   | FilteredPathElement !';'
@@ -186,6 +187,7 @@ AlternativesPath:
 
 PropertyPathElement:
     InversePathElement
+  | PredictedPathElement
   | NegativePathElement
   | RepeatedPathElement
   | CountedPathElement
@@ -196,6 +198,11 @@ PropertyPathElement:
 InversePathElement[noskipws]:
     '^' path=IRITerm
   | '^' '(' path=PropertyPath ')'
+;
+
+PredictedPathElement[noskipws]:
+    '~' path=IRITerm
+  | '~' '(' path=PropertyPath ')'
 ;
 
 NegativePathElement:
