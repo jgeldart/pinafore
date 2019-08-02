@@ -1,0 +1,28 @@
+@prefix foaf: <foaf> 
+@base <foo> 
+
+{
+  :John a foaf:Person;
+    foaf:knows [ a foaf:Person ] .
+
+  ?y = math:avg(4 4) .
+} ==> {
+  ?foo a _:Baz .
+  ?foo a _:bar .
+} 
+
+<John> <type> <Person> 
+
+:John rdf:type foaf:Person;
+  ex:happy true;
+  foaf:age 24^^<int>;
+  ex:height 179.4;
+  ex:rating 4/5;
+  foaf:name "John Smith"@en-gb;
+  foaf:givenName 'John';
+  ex:friends @set(:Sarah :Mary :Sue);
+  ex:profile """
+    Hello,
+    My name is John!
+  """;
+  foaf:knows :Sarah, :Alice 

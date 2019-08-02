@@ -1,0 +1,78 @@
+@prefix om: <http://www.ontology-of-units-of-measure.org/resource/om-2/>.
+@prefix measure: <https://schemas.goodforgoodbusiness.org/general/measurement#>.
+@prefix iao: <http://purl.obolibrary.org/obo/iao.owl#>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+
+# Transform measures with prefixed units
+{
+  [
+    a om:Measure;
+    om:hasUnit ?otherUnit;
+    om:hasNumericalValue ?derivedValue;
+    iao:hasTimeStamp ?ts;
+    iao:isQualityMeasurementOf ?continuent
+  ] 
+} <- {
+  ?m a om:Measure;
+    om:hasUnit [
+      :- _:assertedUnit;
+      a om:PrefixedUnit;
+      om:hasPrefix [
+        :- _:assertedPrefix;
+        a ?prefixClass;
+        om:hasFactor ?assertedFactor
+      ];
+      om:hasUnit ?baseUnit
+    ];
+    om:hasNumericalValue ?assertedValue;
+    iao:hasTimeStamp ?ts;
+    iao:isQualityMeasurementOf ?continuent.
+
+  ?prefixClass rdfs:subClassOf om:Prefix.
+
+  ?otherUnit a om:PrefixedUnit;
+    om:hasPrefix [
+      :- _:otherPrefix;
+      a ?prefixClass;
+      om:hasFactor ?otherFactor
+    ];
+    om:hasUnit ?baseUnit.
+    
+  _:otherPrefix != _:assertedPrefix .
+
+  _:derivedValue = :conversion(?assertedValue ?assertedFactor ?otherFactor).
+}.
+
+# Handle conversions where the base of the units are the same
+{
+  [
+    a om:Measure;
+    om:hasUnit ?otherUnit;
+    om:hasNumericalValue ?derivedValue;
+    iao:hasTimeStamp ?ts;
+    iao:isQualityMeasurementOf ?continuent
+  ]
+} <- {
+  ?m a om:Measure;
+    om:hasUnit [
+      :- _:assertedUnit;
+      om:hasFactor ?assertedFactor;
+      om:hasUnit ?baseUnit
+    ];
+    om:hasNumericalValue ?assertedValue;
+    iao:hasTimeStamp ?ts;
+    iao:isQualityMeasurementOf ?continuent.
+
+  ?otherUnit a om:Unit;
+    om:hasUnit ?baseUnit;
+    om:hasFactor ?otherFactor.
+
+  ?otherUnit != _:assertedUnit.
+
+  _:derivedValue = :conversion(?assertedValue ?assertedFactor ?otherFactor).
+}.
+
+# Utility functions
+
+{ :conversion(?value ?valueFactor ?targetFactor) } 
+  := { (?valueFactor * ?value / ?targetFactor) }

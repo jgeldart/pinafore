@@ -1,0 +1,17 @@
+
+:John :birthdate 1994-05-03;
+  :age 25;
+  :name "John Smith";
+  :isMember true;
+  :clockInTime 12:37+01:00
+
+:doc1 :createdAt 2019-04-12T12:45:30Z
+
+:project1 :duration P4M;
+  :risk 4/5;
+  :cost 43.5
+
+not {
+  :John :likes this
+  24 in 36
+}

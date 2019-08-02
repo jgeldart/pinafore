@@ -1,0 +1,616 @@
+Document:                     // A Document has a prolog and a declaration section
+  prolog=Prolog? declaration=Declaration
+;
+
+// Prolog
+
+Prolog:                       // A Prolog contains a set of pragmas used to determine the interpretation of the rest of the document
+  pragmas+=Pragma
+;
+
+Pragma:
+    PrefixPragma '.'?
+  | BasePragma '.' ?
+  | ImportPragma '.'?
+  | KeywordPragma '.'?
+;
+
+PrefixPragma:
+  PREFIX_KW prefix=NS_PREFIXDECL iri=IRI
+;
+
+PREFIX_KW: '@prefix' | 'PREFIX' | 'prefix' ;
+
+BasePragma:
+  BASE_KW iri=IRI
+;
+
+BASE_KW: '@base' | 'BASE' | 'base' ;
+
+ImportPragma:
+  IMPORT_KW (prefix=NS_PREFIXDECL)? iri=IRI
+;
+
+IMPORT_KW:
+  '@import' | 'IMPORT' | 'import' ;
+
+KeywordPragma:
+  KEYWORD_KW shorthand=ID iri=IRITerm
+;
+
+KEYWORD_KW:
+  '@keyword' | 'KEYWORD' | 'keyword'
+;
+
+// Declarations
+
+Declaration:
+  statements*=Statement
+;
+
+Statement:
+    QuantifierStatement '.'?
+  | RuleStatement '.'?
+  | BNodeStatement '.'?
+  | HeadedListStatement '.'?
+  | InfixExpressionStatement '.'?
+  | SubjectStatement '.'?
+  | FormulaStatement '.'?
+;
+
+QuantifierStatement:
+    UniversalQuantifier
+  | ExistentialQuantifier
+;
+
+UniversalQuantifier:
+  UNIVERSAL_QUANTIFIER_KW variables+=IRITerm[','] (formula=BaseFormula)?
+;
+
+ExistentialQuantifier:
+  EXISTENTIAL_QUANTIFIER_KW variables+=IRITerm[','] (formula=BaseFormula)?
+;
+
+UNIVERSAL_QUANTIFIER_KW:
+  '@forAll' | '@forall' | '∀'
+;
+
+EXISTENTIAL_QUANTIFIER_KW:
+  '@forSome' | '@forsome' | '∃'
+;
+
+RuleStatement:
+    BackwardChainRule
+  | ForwardChainRule
+  | LinearImplicationRule
+  | DefinitionRule
+;
+
+BackwardChainRule:
+  consequent=Formula ('<--' | '<-') antecedent=Formula
+;
+
+ForwardChainRule:
+  antecedent=Formula ('==>' | '=>') consequent=Formula
+;
+
+LinearImplicationRule:
+  antecedent=Formula '>=>' consequent=Formula
+;
+
+DefinitionRule:
+  definand=Formula ':=' definition=Formula
+;
+
+// BNode statements
+
+BNodeStatement:
+  subject=BNode
+;
+
+// Headed list statement
+
+HeadedListStatement:
+  subject=HeadedList
+;
+
+// Infix expression statement
+
+InfixExpressionStatement:
+  subject=InfixExpression
+;
+
+// Subject statements
+
+SubjectStatement:
+  subject=Resource predicates+=PredicateBlock[';']
+;
+
+Resource:
+    Variable
+  | Literal
+  | Keyword
+  | HeadedList
+  | InfixExpression
+  | IRITerm
+  | Collection
+  | BNode
+  | Formula
+;
+
+PredicateBlock:
+  predicate=Predicate objects+=Resource[',']
+;
+
+Predicate:
+    Variable
+  | PropertyPath
+  | Operator
+  | Keyword
+  | HeadedList
+;
+
+// Keywords
+
+Keyword:
+  keyword=ID !':'
+;
+
+// Formula statement
+
+FormulaStatement:
+    formula=GroupFormula
+  | formula=NegatedFormula
+  | formula=MaybeFormula
+;
+
+// Property path expressions
+
+PropertyPath:
+    AlternativesPath
+  | SequencePath
+  | InversePathElement
+  | RepeatedPathElement
+  | CountedPathElement
+  | IRITerm //!('*'|'+'|'?'|'/'|'|')
+;
+
+SequencePath:
+  sequence=PropertyPathElement '/' sequence+=PropertyPathElement['/']
+;
+
+AlternativesPath:
+  alternatives=PropertyPathElement '|' alternatives+=PropertyPathElement['|']
+;
+
+PropertyPathElement:
+    InversePathElement
+  | NegativePathElement
+  | RepeatedPathElement
+  | CountedPathElement
+  | IRITerm
+;
+
+InversePathElement[noskipws]:
+    '^' path=IRITerm
+  | '^' '(' path=PropertyPath ')'
+;
+
+NegativePathElement:
+    '!' path=IRITerm
+  | '!' '(' path=PropertyPath ')'
+;
+
+RepeatedPathElement[noskipws]:
+    path=IRITerm repeat=RepeatTerm
+  | '(' path=PropertyPath ')' repeat=RepeatTerm
+;
+
+RepeatTerm:
+  '*' | '+' | '?' !ID
+;
+
+CountedPathElement:
+    RangeCountPathElement
+  | ExactCountPathElement
+;
+
+RangeCountPathElement:
+    path=IRITerm '{' lower=INT ',' upper=INT '}'
+  | '(' path=PropertyPath ')' '{' lower=INT ',' upper=INT '}'
+;
+
+ExactCountPathElement:
+    path=IRITerm '{' exactly=INT '}'
+  | '(' path=PropertyPath ')' '{' exactly=INT '}'
+;
+
+// Headed lists
+
+HeadedList:
+  head=Head '(' arguments*=Resource ')'
+;
+
+Head:
+  Variable | Operator | Keyword | IRITerm
+;
+
+// Expression
+
+InfixExpression:
+    '(' ArithmeticExpressionTerm ')'
+  | '(' CollectionExpression ')'
+;
+
+ExponentialExpressionTerm:
+    InfixResource !EXP_OP_KW
+  | ExponentialExpression
+;
+
+ExponentialExpression:
+    operands=InfixResource (operator=EXP_OP_KW operands=ExponentialExpressionTerm)?
+;
+
+MultiplicativeExpressionTerm:
+    ExponentialExpressionTerm !MULT_OP_KW
+  | MultiplicativeExpression
+;
+
+MultiplicativeExpression:
+    operands=ExponentialExpressionTerm (operator=MULT_OP_KW operands=MultiplicativeExpressionTerm)?
+;
+
+AdditiveExpressionTerm:
+    MultiplicativeExpressionTerm !ADD_OP_KW
+  | AdditiveExpression
+;
+
+AdditiveExpression:
+    operands=MultiplicativeExpressionTerm (operator=ADD_OP_KW operands=AdditiveExpressionTerm)?
+;
+
+ArithmeticExpressionTerm:
+    AdditiveExpressionTerm !MOD_OP_KW
+  | ArithmeticExpression
+;
+
+ArithmeticExpression:
+  operands=AdditiveExpressionTerm (operator=MOD_OP_KW operands=AdditiveExpressionTerm)?
+;
+
+CollectionExpression:
+  operands=InfixResource operator=COL_OP_KW operands=CollectionExpression
+;
+
+EXP_OP_KW:
+  '^'
+;
+
+MULT_OP_KW:
+  '*' | '/' | '%'
+;
+
+ADD_OP_KW:
+  '+' | '-'
+;
+
+MOD_OP_KW:
+  'mod'
+;
+
+COL_OP_KW:
+  '::'
+;
+
+InfixResource:
+    Variable
+  | HeadedList
+  | Keyword
+  | IRITerm
+  | Literal
+  | '(' InfixExpression ')'
+  | Collection
+;
+
+// Collections
+
+Collection:
+    SetCollection
+  | AltCollection
+  | BagCollection
+  | SeqCollection
+  | List
+;
+
+SetCollection:
+  '@set(' members*=Resource ')'
+;
+
+AltCollection:
+  '@alt(' members*=Resource ')'
+;
+
+BagCollection:
+  '@bag(' members*=Resource ')'
+;
+
+SeqCollection:
+  '@seq(' members*=Resource ')'
+;
+
+// Lists
+
+List:
+  '(' members*=Resource ')'
+;
+
+// BNodes
+
+BNode:
+  '[' (identifier=NodeName)? predicates*=PredicateBlock[';'] (';')? ']'
+;
+
+NodeName:
+  ':-' (Variable | IRITerm) ';'
+;
+
+// IRI terms
+
+IRITerm:
+    ExplicitIRI
+  | CURIE
+;
+
+ExplicitIRI:
+  iri=IRI
+;
+
+CURIE:
+  (namespace=NS)? qname=QNAME
+;
+
+
+// Formulas
+
+Formula:
+    DisjunctionFormula
+  | OptionalFormula
+  | BaseFormula
+;
+
+DisjunctionFormula:
+  disjuncts=BaseFormula '||' disjuncts+=BaseFormula['||']
+;
+
+GroupFormula:
+  GROUP_KW grouping_variables+=Variable[','] group=MaybeFormula
+;
+
+GROUP_KW:
+  '@groupBy' | '@groupby'
+;
+
+MaybeFormula:
+  OptionalFormula | BaseFormula
+;
+
+NegatedFormula:
+  NEGATION_KW negation=BaseFormula
+;
+
+NEGATION_KW:
+  '@not' | 'not'
+;
+
+OptionalFormula:
+  option=BaseFormula '?' !ID
+;
+
+BaseFormula:
+  '{' declaration=Declaration '}' (identifier=NodeName)?
+;
+
+// Operator
+
+Operator:
+  kind=OperatorKind
+;
+
+OperatorKind:
+    IsaOperator
+  | LogicalOperator
+  | MathematicalOperator
+;
+
+IsaOperator:
+  'a' | '@a'
+;
+
+LogicalOperator:
+    LogicalSameAsOperator
+  | LogicalDifferentFromOperator
+  | LogicalEqualToOperator
+  | LogicalNotEqualToOperator
+  | LogicalSemanticsOperator
+  | LogicalConclusionOperator
+  | LogicalInOperator
+;
+
+LogicalSameAsOperator: // owl:sameAs
+  '==='
+;
+
+LogicalDifferentFromOperator: // owl:differentFrom
+  '!=='
+;
+
+LogicalEqualToOperator: // log:EqualTo
+  '=='
+;
+
+LogicalNotEqualToOperator: // log:notEqualTo
+  '=/='
+;
+
+LogicalSemanticsOperator: // log:semantics
+  '|-'
+;
+
+LogicalConclusionOperator: // log:conclusion
+  '|='
+;
+
+LogicalInOperator: // list:in
+  'in'
+;
+
+MathematicalOperator:
+    MathEqualToOperator
+  | MathNotEqualToOperator
+  | MathGreaterThanEqualsOperator
+  | MathGreaterThanOperator
+  | MathLessThanEqualsOperator
+  | MathLessThanOperator
+;
+
+MathEqualToOperator:
+  '='
+;
+
+MathNotEqualToOperator:
+  '!='
+;
+
+MathGreaterThanOperator:
+  '>'
+;
+
+MathGreaterThanEqualsOperator:
+  '>='
+;
+
+MathLessThanOperator:
+  '<'
+;
+
+MathLessThanEqualsOperator:
+  '<='
+;
+
+// Variables
+
+Variable:
+    UniversalVariable
+  | ExistentialVariable
+;
+
+UniversalVariable:
+  '?' variableName=ID
+;
+
+ExistentialVariable:
+  '_:' variableName=ID
+;
+
+// Literals
+
+Literal:
+  literal=LiteralExpression dtlang=DTLang?
+;
+
+LiteralExpression:
+    DateTimeExpression
+  | TimeExpression
+  | DateExpression
+  | DurationExpression
+  | DecimalExpression
+  | RationalExpression
+  | IntegerExpression
+  | BooleanExpression
+  | StringExpression
+;
+
+// FIXME: These would be great, if we can find a single way to desugar them
+RangeExpression:
+    lower=DateTimeExpression '..' upper=DateTimeExpression
+  | lower=TimeExpression '..' upper=TimeExpression
+  | lower=DateExpression '..' upper=DateExpression
+  | lower=DecimalExpression '..' upper=DecimalExpression
+  | lower=RationalExpression '..' upper=RationalExpression
+  | lower=IntegerExpression '..' upper=IntegerExpression
+;
+
+
+DecimalExpression:
+  value=STRICTFLOAT
+;
+
+RationalExpression:
+  numerator=INT '/' denominator=INT
+;
+
+IntegerExpression:
+  value=INT
+;
+
+BooleanExpression:
+  value=BOOL
+;
+
+DateExpression:
+  value=/(-?(?:[1-9][0-9]*)?[0-9]{4})-(1[0-2]|0[1-9])-(3[01]|0[1-9]|[12][0-9])(Z|[+-](?:2[0-3]|[01][0-9]):[0-5][0-9])?/
+;
+
+TimeExpression:
+  value=/(2[0-3]|[01][0-9]):([0-5][0-9])(:([0-5][0-9])(\.[0-9]+)?)?(Z|[+-](?:2[0-3]|[01][0-9]):[0-5][0-9])?/
+;
+
+DateTimeExpression:
+  value=/(-?(?:[1-9][0-9]*)?[0-9]{4})-(1[0-2]|0[1-9])-(3[01]|0[1-9]|[12][0-9])T(2[0-3]|[01][0-9]):([0-5][0-9]):([0-5][0-9])(\.[0-9]+)?(Z|[+-](?:2[0-3]|[01][0-9]):[0-5][0-9])?/
+;
+
+DurationExpression:
+  value=/P(?!$)((\d+Y)|(\d+\.\d+Y$))?((\d+M)|(\d+\.\d+M$))?((\d+W)|(\d+\.\d+W$))?((\d+D)|(\d+\.\d+D$))?(T(?=\d)((\d+H)|(\d+\.\d+H$))?((\d+M)|(\d+\.\d+M$))?(\d+(\.\d+)?S)?)??/
+;
+
+StringExpression:
+    value=/(?ms)\"{3}(.*?)\"{3}/
+  | value=/(?ms)\'{3}(.*?)\'{3}/
+  | value=STRING
+  | value=/\'(.*?)\'/
+;
+
+DTLang:
+    '@' language=LANG
+  | '^^' dtype=IRITerm
+;
+
+// Lexical declarations
+
+IRI:            // An explicit IRI
+  /<([^>\s]*)>/
+;
+
+NS:             // A namespace prefix
+  /([^\W\d][\w\d_\-]*)/
+;
+
+NS_PREFIXDECL:  // A namespace prefix in a prefix declaration (FIXME)
+  /([^\W\d][\w\d_\-]*?)?:/
+;
+
+QNAME:          // A qualified name (which may have an optional prefix)
+  /:([\w\d_\-]+)/
+;
+
+LANG:           // A language code
+  /\w{2,3}(-\w{2,3}(-\w{2,3})?)?/
+;
+
+END_OF_SEQ:
+  '.'?
+;
+
+Comment:        // A comment
+  /#.*$/
+;

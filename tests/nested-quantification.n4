@@ -1,0 +1,5 @@
+@forSome :a {
+  @forAll :b {
+    { :a :loves :b } => { :b :loves :a } .
+  } .
+} .

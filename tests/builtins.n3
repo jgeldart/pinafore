@@ -1,0 +1,64 @@
+# $Id: builtins.n3,v 1.33 2005/09/22 11:50:36 amdus Exp $
+
+# PxButton | test  | java euler.EulerRunner builtins.n3
+# PxButton | test# | Euler builtins.n3
+
+@prefix log: <http://www.w3.org/2000/10/swap/log#>.
+@prefix math: <http://www.w3.org/2000/10/swap/math#>.
+@prefix str: <http://www.w3.org/2000/10/swap/string#>.
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix : <http://www.agfa.com/w3c/euler/builtins#>.
+
+("a" "b" "c") str:concatenation ?X.
+("a" "b" "c") str:concatenation "abc".
+"xyz" str:equalIgnoringCase "XYZ".
+"xyz" str:notEqualIgnoringCase "ABC".
+"xyz" str:greaterThan "abc".
+"abc" str:notGreaterThan "xyz".
+"abc" str:lessThan "xyz".
+"xyz" str:notLessThan "abc".
+"xyz" str:notLessThan "xyz".
+"abc" str:startsWith "ab".
+"abc" str:endsWith "bc".
+"abc" str:endsWith ?X.
+"abcXYZ" str:contains "cX".
+"abcXYZ" str:containsIgnoringCase "Cx".
+"abracadabra" str:matches "(a|b|r|c|d)+".
+"" str:notMatches ".*hello".
+
+(1.2 2.3 3.5) math:sum  ?Y.
+(?Y 1) math:difference ?Z.
+(1 2 3) math:product  ?U.
+(?U 3) math:quotient ?V.
+(7 3) math:quotient ?A.
+(7 3) math:integerQuotient ?B.
+(?Z ?V) math:remainder ?W.
+(7 3) math:remainder ?C.
+-5 math:negation ?I.
+-5.1 math:absoluteValue ?D.
+-5.7 math:rounded ?E.
+(2 10) math:exponentiation ?J.
+(1 2) math:atan2 ?T1.
+2 math:cos ?T2.
+?T3 math:cos 0.499999999999998 .
+2 math:degrees ?T4.
+2 math:sin ?T5.
+?T6 math:sin 0.5 .
+2 math:tan ?T7.
+?T8 math:tan 0.5 .
+("a" ("b" "c") "d") math:memberCount ?K.
+?U math:greaterThan ?V.
+?V math:notGreaterThan ?U.
+?V math:lessThan ?U.
+?U math:notLessThan ?V.
+?U math:equalTo ?U.
+?V math:notEqualTo ?U.
+
+:x log:equalTo :x.
+:x log:notEqualTo :y.
+{:a :b :c. :d :e :f. :g :h :i} log:includes {:d :e :f}.
+{:a :b :c. :d :e :f. :g :h :i} log:notIncludes {:d :x :f}.
+("2005-03-30T11:00:00" :tz) log:dtlit ?T.
+:q log:uri ?Q.
