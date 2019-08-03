@@ -3,11 +3,13 @@
     :distance[> 0] ?r;
     :angle ?theta
 
-  _:x == (?r * math:cos(?theta))
-  _:y == (?r * math:sin(?theta))
+  _:x = (?r * math:cos(?theta))
+  _:y = (?r * math:sin(?theta))
 
 } ==> {
   ?point
     :x-coordinate _:x;
     :y-coordinate _:y
 }
+
+ex:polar-to-cartesian(?r ?theta) <- ((?r * math:cos(?theta)) (?r * math:sin(?theta)))

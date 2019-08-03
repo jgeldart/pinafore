@@ -87,7 +87,8 @@ RuleStatement:
 ;
 
 BackwardChainRule:
-  consequent=Formula ('<--' | '<-') antecedent=Formula
+    consequent=Formula ('<--' | '<-') antecedent=Formula
+  | consequent=HeadedList ('<--' | '<-') antecedent=Resource
 ;
 
 ForwardChainRule:
@@ -432,8 +433,8 @@ Operator:
 
 OperatorKind:
     IsaOperator
-  | LogicalOperator
   | MathematicalOperator
+  | LogicalOperator
 ;
 
 IsaOperator:
@@ -458,12 +459,12 @@ LogicalDifferentFromOperator: // owl:differentFrom
   '!=='
 ;
 
-LogicalEqualToOperator: // log:EqualTo
-  '=='
+LogicalEqualToOperator: // log:equalTo
+  '='
 ;
 
 LogicalNotEqualToOperator: // log:notEqualTo
-  '=/='
+  '!='
 ;
 
 LogicalSemanticsOperator: // log:semantics
@@ -488,11 +489,11 @@ MathematicalOperator:
 ;
 
 MathEqualToOperator:
-  '='
+  '=='
 ;
 
 MathNotEqualToOperator:
-  '!='
+  '/='
 ;
 
 MathGreaterThanOperator:
