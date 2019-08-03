@@ -100,7 +100,8 @@ LinearImplicationRule:
 ;
 
 DefinitionRule:
-  definand=Formula ':=' definition=Formula
+    definand=Formula ':=' definition=Formula
+  | definand=HeadedList ':=' definition=Resource
 ;
 
 // BNode statements
