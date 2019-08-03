@@ -74,5 +74,5 @@
 
 # Utility functions
 
-{ :conversion(?value ?valueFactor ?targetFactor) } 
-  := { (?valueFactor * ?value / ?targetFactor) }
+:conversion(?value ?valueFactor ?targetFactor)
+  <- (?valueFactor * ?value / ?targetFactor)
