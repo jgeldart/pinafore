@@ -237,8 +237,8 @@ ExactCountPathElement:
 ;
 
 FilteredPathElement[noskipws]:
-    path=IRITerm '[' /\s*/ (identifier=NodeName)? /\s*/ filters*=PredicateBlock[';'] /\s*/  (';')? /\s*/ ']'
-  | '(' path=PropertyPath ')' '[' /\s*/ (identifier=NodeName)? /\s*/ filters*=PredicateBlock[';'] /\s*/  (';')? /\s*/ ']'
+    path=IRITerm '[' /\s*/ (identifier=NodeName)? /\s*/ filters*=PredicateBlock[';'] /\s*/  (';')? /\s*/ ']' !(';'|','|'.')
+  | '(' path=PropertyPath ')' '[' /\s*/ (identifier=NodeName)? /\s*/ filters*=PredicateBlock[';'] /\s*/  (';')? /\s*/ ']' !(';'|','|'.')
 ;
 
 // Headed lists
