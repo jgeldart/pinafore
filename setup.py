@@ -3,7 +3,7 @@
 import os
 import sys
 import codecs
-from setuptools import setup, find_namespace_packages
+from setuptools import setup, find_packages
 
 VERSIONFILE = "src/pinafore/__init__.py"
 VERSION = None
@@ -29,8 +29,7 @@ setup(
     url='https://github.com/jgeldart/pinafore',
     download_url='https://github.com/jgeldart/pinafore/archive/v%s.tar.gz'
         % VERSION,
-    package_dir={'': 'src'},
-    packages=find_namespace_packages(where='src'),
+    packages=find_packages(exclude=["*.tests", "*.tests.*", "tests.*", "tests"]),
     install_requires=["textX>=2.0.0"],
     tests_require=[
         'pytest',
