@@ -5,9 +5,9 @@ import sys
 import codecs
 from setuptools import setup, find_packages
 
-VERSIONFILE = "src/pinafore/__init__.py"
+VERSIONFILE = "pinafore/__init__.py"
 VERSION = None
-for line in open(VERSIONFILE, "r").readlines():
+for line in open(VERSIONFILE, 'r').readlines():
     if line.startswith('__version__'):
         VERSION = line.split('"')[1]
 
@@ -34,6 +34,11 @@ setup(
     tests_require=[
         'pytest',
     ],
+    entry_points={
+        'console_scripts': [
+            'pin4 = pinafore.commands.pin4:main'
+        ]
+    },
     keywords="parser notation4 rdf semantic-web",
     classifiers=[
         'Development Status :: 5 - Production/Stable',
