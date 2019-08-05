@@ -21,5 +21,9 @@ class Parser(object):
       self._model = NOTATION4_META.model_from_str(self._file_content)
       return self._model
 
+  @property
+  def document(self):
+    return self.raw_document
+
   def export(self, file):
     model_export_to_file(file, model=self.raw_document)

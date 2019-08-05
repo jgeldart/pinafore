@@ -30,7 +30,7 @@ setup(
     download_url='https://github.com/jgeldart/pinafore/archive/v%s.tar.gz'
         % VERSION,
     packages=find_packages(exclude=["*.tests", "*.tests.*", "tests.*", "tests"]),
-    install_requires=["textX>=2.0.0"],
+    install_requires=["textX>=2.0.0", "rdflib>=4.2.0"],
     tests_require=[
         'pytest',
     ],
