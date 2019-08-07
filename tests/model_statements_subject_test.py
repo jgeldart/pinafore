@@ -15,3 +15,13 @@ def test_multi_predicate_statement():
   n4_graph = n4_parse('examples/model_statements_subject/multi_predicate.n4')
   expected_graph = nt_parse('examples/model_statements_subject/multi_predicate.nt')
   assert n4_graph == expected_graph
+
+def test_multi_subject():
+  n4_graph = n4_parse('examples/model_statements_subject/multi_subject.n4')
+  expected_graph = nt_parse('examples/model_statements_subject/multi_subject.nt')
+  assert n4_graph == expected_graph
+
+def test_multi_subject_no_full_stop():
+  n4_graph = n4_parse('examples/model_statements_subject/multi_subject-no-full-stop.n4')
+  expected_graph = nt_parse('examples/model_statements_subject/multi_subject.nt')
+  assert n4_graph == expected_graph
