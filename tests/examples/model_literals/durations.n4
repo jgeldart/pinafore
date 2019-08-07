@@ -1,0 +1,4 @@
+#<http://example.com/John> <http://example.com/projects#employmentPeriod> P3Y6M4DT12H30M5S .
+<http://example.com/John> <http://example.com/projects#employmentPeriod> P3Y6M4D .
+<http://example.com/John> <http://example.com/projects#employmentPeriod> P3Y6M .
+<http://example.com/John> <http://example.com/projects#employmentPeriod> P3Y .

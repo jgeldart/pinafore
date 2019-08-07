@@ -1,0 +1,2 @@
+<http://example.com/John> <http://example.com/projects#employmentStarted> "2019-02-19Z"^^<http://www.w3.org/2001/XMLSchema#date>.
+<http://example.com/John> <http://example.com/projects#employmentEnded> "2019-05-19-02:00"^^<http://www.w3.org/2001/XMLSchema#date>.

@@ -1,0 +1,3 @@
+<http://example.com/John> <http://example.com/projects#employmentPeriod> "P3Y6M4D"^^<http://www.w3.org/2001/XMLSchema#duration>.
+<http://example.com/John> <http://example.com/projects#employmentPeriod> "P3Y6M"^^<http://www.w3.org/2001/XMLSchema#duration>.
+<http://example.com/John> <http://example.com/projects#employmentPeriod> "P3Y"^^<http://www.w3.org/2001/XMLSchema#duration>.
