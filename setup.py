@@ -31,6 +31,9 @@ setup(
         % VERSION,
     packages=find_packages(exclude=["*.tests", "*.tests.*", "tests.*", "tests"]),
     install_requires=["textX>=2.0.0", "rdflib>=4.2.0"],
+    setup_requires=[
+        'pytest-runner',
+    ],
     tests_require=[
         'pytest',
     ],
