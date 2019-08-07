@@ -4,7 +4,7 @@ from rdflib.compare import to_isomorphic
 
 from pinafore.parser import Parser
 
-def notation4_parse(rel_file):
+def n4_parse(rel_file):
   n4_file = Path('tests/{0}'.format(rel_file)).absolute()
   with open(n4_file, 'r') as f:
     parser = Parser(f)

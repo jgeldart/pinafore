@@ -1,11 +1,17 @@
 
-from tests.utils import notation4_parse, nt_parse
+from tests.utils import n4_parse, nt_parse
 
 def test_single_statement():
-  assert notation4_parse('examples/model_statements_subject/single_statement.n4') == nt_parse('examples/model_statements_subject/single_statement.nt')
+  n4_graph = n4_parse('examples/model_statements_subject/single_statement.n4')
+  expected_graph = nt_parse('examples/model_statements_subject/single_statement.nt')
+  assert n4_graph == expected_graph 
 
 def test_multi_object_statement():
-  assert notation4_parse('examples/model_statements_subject/multi_object.n4') == nt_parse('examples/model_statements_subject/multi_object.nt')
+  n4_graph = n4_parse('examples/model_statements_subject/multi_object.n4')
+  expected_graph = nt_parse('examples/model_statements_subject/multi_object.nt')
+  assert n4_graph == expected_graph
 
 def test_multi_predicate_statement():
-  assert notation4_parse('examples/model_statements_subject/multi_predicate.n4') == nt_parse('examples/model_statements_subject/multi_predicate.nt')
+  n4_graph = n4_parse('examples/model_statements_subject/multi_predicate.n4')
+  expected_graph = nt_parse('examples/model_statements_subject/multi_predicate.nt')
+  assert n4_graph == expected_graph
