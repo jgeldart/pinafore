@@ -1,0 +1,4 @@
+PREFIX foaf: <http://xmlns.com/0.1/foaf/>
+
+[] foaf:name "John Smith"^^<http://www.w3.org/2001/XMLSchema#string>;
+   foaf:mbox <mailto:john@example.com>.

@@ -21,6 +21,12 @@ def n4_parse(rel_file):
     return to_isomorphic(g)
 
 
+def rdf_parse(rel_file, fmt):
+  rdf_file = Path('tests/{0}'.format(rel_file)).absolute()
+  return to_isomorphic(Graph().parse(format=fmt, file=rdf_file.open('rb')))
+
 def nt_parse(rel_file):
-  nt_file = Path('tests/{0}'.format(rel_file)).absolute()
-  return to_isomorphic(Graph().parse(format='nt', file=nt_file.open('rb')))
+  return rdf_parse(rel_file, 'nt')
+
+def ttl_parse(rel_file):
+  return rdf_parse(rel_file, 'ttl')

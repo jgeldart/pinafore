@@ -51,10 +51,10 @@ Declaration:
 Statement:
     QuantifierStatement '.'?
   | RuleStatement '.'?
-  | BNodeStatement '.'?
   | HeadedListStatement '.'?
   | InfixExpressionStatement '.'?
   | SubjectStatement '.'?
+  | BNodeStatement '.'?
   | FormulaStatement '.'?
 ;
 

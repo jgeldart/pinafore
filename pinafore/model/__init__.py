@@ -7,6 +7,7 @@ import itertools
 import pinafore.model.document as document
 import pinafore.model.prolog as prolog
 import pinafore.model.statements as statements
+import pinafore.model.bnodes as bnodes
 import pinafore.model.identifiers as identifiers
 import pinafore.model.literals as literals
 
@@ -14,6 +15,7 @@ MODEL_CLASSES = list(itertools.chain(
   document.MODEL_CLASSES,
   prolog.MODEL_CLASSES,
   statements.MODEL_CLASSES,
+  bnodes.MODEL_CLASSES,
   identifiers.MODEL_CLASSES,
   literals.MODEL_CLASSES
   ))
