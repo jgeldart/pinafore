@@ -1,0 +1,4 @@
+@prefix foaf: <http://xmlns.com/0.1/foaf/>.
+@keyword knows foaf:knows.
+
+<http://example.com/John> knows <http://example.com/Sarah>.

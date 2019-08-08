@@ -1,0 +1,2 @@
+<http://example.com/John> <http://xmlns.com/0.1/foaf/knows> <http://example.com/Sarah>.
+<http://example.com/about> <http://www.w3.org/2002/07/owl#imports> <http://xmlns.com/0.1/foaf/>.

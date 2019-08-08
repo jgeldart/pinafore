@@ -1,0 +1,4 @@
+@base <http://example.com/about>.
+@import foaf: <http://xmlns.com/0.1/foaf/>.
+
+<http://example.com/John> foaf:knows <http://example.com/Sarah>.
