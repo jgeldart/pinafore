@@ -1,6 +1,6 @@
 from pathlib import Path
 from rdflib import Graph
-from rdflib.compare import to_isomorphic
+from rdflib.compare import to_isomorphic, to_canonical_graph
 
 from pinafore.parser import Parser
 

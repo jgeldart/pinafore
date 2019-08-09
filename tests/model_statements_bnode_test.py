@@ -11,7 +11,16 @@ def test_bnode_statement():
   assert n4_graph == expected_graph
 
 def test_bnode_with_identifier():
-  assert False
+  n4_graph = n4_parse('examples/model_statements_bnode/bnode_with_identifier.n4')
+  expected_graph = ttl_parse('examples/model_statements_bnode/bnode_with_identifier.ttl')
+  assert n4_graph == expected_graph
 
-def test_nested_bnode():
-  assert False
+def test_nested_bnode_object_position():
+  n4_graph = n4_parse('examples/model_statements_bnode/nested_bnodes_object_position.n4')
+  expected_graph = ttl_parse('examples/model_statements_bnode/nested_bnodes_object_position.ttl')
+  assert n4_graph == expected_graph
+
+def test_nested_bnode_subject_position():
+  n4_graph = n4_parse('examples/model_statements_bnode/nested_bnodes_subject_position.n4')
+  expected_graph = ttl_parse('examples/model_statements_bnode/nested_bnodes_subject_position.ttl')
+  assert n4_graph == expected_graph

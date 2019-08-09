@@ -1,0 +1,10 @@
+@prefix foaf: <http://xmlns.com/0.1/foaf/>.
+
+[
+  foaf:mbox <mailto:sarah@example.com>;
+  foaf:knows [
+    foaf:mbox <mailto:mary@example.com>;
+  ];
+] foaf:knows [
+  foaf:mbox <mailto:john@example.com>;
+].

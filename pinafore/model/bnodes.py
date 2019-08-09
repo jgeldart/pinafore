@@ -12,9 +12,13 @@ class BNodeStatement(TripleSource):
       predicate_ref = predicate.predicate.reference
       
       for obj in predicate.objects:
+        if hasattr(obj, 'triples'):
+          for t in obj.triples:
+            yield t
+            
         yield (subject_ref, predicate_ref, obj.reference)
 
-class BNode(Resource):
+class BNode(Resource, TripleSource):
 
   def __init__(self, **kwargs):
     super().__init__(**kwargs)
@@ -22,12 +26,28 @@ class BNode(Resource):
     self._bnode = None
 
   @property
+  def triples(self):
+    subject_ref = self.reference
+
+    for predicate in self.predicates:
+      predicate_ref = predicate.predicate.reference
+
+      for obj in predicate.objects:
+        if hasattr(obj, 'triples'):
+          for t in obj.triples:
+            yield t
+        yield (subject_ref, predicate_ref, obj.reference)
+
+  @property
   def reference(self):
     if self._bnode is not None:
       return self._bnode
     else:
-      self._bnode = rdflib.BNode()
-      return self._bnode
+      if self.identifier is not None:
+        return self.identifier.reference
+      else:
+        self._bnode = rdflib.BNode()
+        return self._bnode
 
 MODEL_CLASSES = [
   BNodeStatement,

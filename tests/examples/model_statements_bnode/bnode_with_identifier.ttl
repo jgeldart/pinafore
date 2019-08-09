@@ -1,0 +1,4 @@
+@prefix foaf: <http://xmlns.com/0.1/foaf/>.
+@prefix ex: <http://example.com/>.
+
+ex:foo foaf:mbox <mailto:john@example.com>.

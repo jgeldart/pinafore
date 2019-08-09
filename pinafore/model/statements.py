@@ -21,11 +21,19 @@ class SubjectStatement(TripleSource):
 
     subject_reference = self.subject.reference
 
+    if hasattr(self.subject, 'triples'):
+      for t in self.subject.triples:
+        yield t
+
     for predicate_block in self.predicates:
       predicate_reference = predicate_block.predicate.reference
       
       for obj in predicate_block.objects:
         obj_reference = obj.reference
+
+        if hasattr(obj, 'triples'):
+          for t in obj.triples:
+            yield t
 
         yield (subject_reference, predicate_reference, obj_reference)
 
