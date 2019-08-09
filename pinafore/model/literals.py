@@ -25,7 +25,7 @@ class Literal(Resource):
         literal_value = self.literal.value
     else:
       if isinstance(self.literal, DecimalExpression):
-        literal_datatype = XSD.float
+        literal_datatype = XSD.decimal
         literal_value = self.literal.value
       elif isinstance(self.literal, IntegerExpression):
         literal_datatype = XSD.integer

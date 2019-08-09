@@ -1,1 +1,1 @@
-<http://example.com/John> <http://example.com/projects#hourlyRate> "76.2"^^<http://www.w3.org/2001/XMLSchema#float>.
+<http://example.com/John> <http://example.com/projects#hourlyRate> "76.2"^^<http://www.w3.org/2001/XMLSchema#decimal>.
