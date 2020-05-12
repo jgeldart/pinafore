@@ -1,0 +1,63 @@
+@prefix ex: <http://example.com/ns#>.
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#>.
+
+ex:John ex:rel _:lst1 .
+
+_:lst1 rdf:type rdf:List;
+  rdf:first "1"^^xsd:integer;
+  rdf:rest [
+    rdf:type rdf:List;
+    rdf:first "1.2"^^xsd:decimal;
+    rdf:rest [
+      rdf:type rdf:List;
+      rdf:first "true"^^xsd:boolean;
+      rdf:rest [
+        rdf:type rdf:List;
+        rdf:first "3/4"^^xsd:rational;
+        rdf:rest [
+          rdf:type rdf:List;
+          rdf:first "2018-12-31T11:59:59Z"^^xsd:dateTime;
+          rdf:rest [
+            rdf:type rdf:List;
+            rdf:first "Hello"^^xsd:string;
+            rdf:rest [
+              rdf:type rdf:List;
+              rdf:first "Goodbye"@en;
+              rdf:rest rdf:nil;
+            ]
+          ]
+        ]
+      ]
+    ]
+  ].
+
+_:lst2 rdf:type rdf:List;
+  rdf:first "1"^^xsd:integer;
+  rdf:rest [
+    rdf:type rdf:List;
+    rdf:first "1.2"^^xsd:decimal;
+    rdf:rest [
+      rdf:type rdf:List;
+      rdf:first "true"^^xsd:boolean;
+      rdf:rest [
+        rdf:type rdf:List;
+        rdf:first "3/4"^^xsd:rational;
+        rdf:rest [
+          rdf:type rdf:List;
+          rdf:first "2018-12-31T11:59:59Z"^^xsd:dateTime;
+          rdf:rest [
+            rdf:type rdf:List;
+            rdf:first "Hello"^^xsd:string;
+            rdf:rest [
+              rdf:type rdf:List;
+              rdf:first "Goodbye"@en;
+              rdf:rest rdf:nil;
+            ]
+          ]
+        ]
+      ]
+    ]
+  ].
+
+_:lst2 ex:invrel ex:Sarah.
