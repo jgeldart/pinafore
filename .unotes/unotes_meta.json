@@ -1,0 +1,63 @@
+{
+  "name": "",
+  "isOrdered": true,
+  "folders": {
+    "docs": {
+      "name": "docs",
+      "isOrdered": true,
+      "folders": {
+        "notation4": {
+          "name": "notation4",
+          "isOrdered": true,
+          "folders": {},
+          "files": {
+            "headed-lists": 0,
+            "collections": 1,
+            "introduction": 2,
+            "literals": 3,
+            "ontologies": 4,
+            "pragmas": 5,
+            "property-paths": 6,
+            "rules": 7,
+            "semantics": 8,
+            "statements": 9
+          }
+        }
+      },
+      "files": {}
+    },
+    "examples": {
+      "name": "examples",
+      "isOrdered": true,
+      "folders": {},
+      "files": {}
+    },
+    "pinafore.egg-info": {
+      "name": "pinafore.egg-info",
+      "isOrdered": true,
+      "folders": {},
+      "files": {}
+    },
+    "pinafore": {
+      "name": "pinafore",
+      "isOrdered": true,
+      "folders": {},
+      "files": {}
+    },
+    "tests": {
+      "name": "tests",
+      "isOrdered": true,
+      "folders": {},
+      "files": {}
+    },
+    "venv": {
+      "name": "venv",
+      "isOrdered": true,
+      "folders": {},
+      "files": {}
+    }
+  },
+  "files": {
+    "README": 0
+  }
+}

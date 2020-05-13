@@ -1,21 +1,14 @@
 # Introduction
 
-
 ## Features
 
 * Rich programming model allows for knowledge-informed computations.
-
 * Graph-oriented rather than tree-oriented.
-
 * Can be used both 'one-shot', and to express continuously changing knowledge.
-
 * Combines forward-chaining, backward-chaining, and streaming rules into a single language.
-
 * Supports integration with subsymbolic reasoning like neural link prediction.
-
 * A natural and comfortable extension of Notation3 and SPARQL.
-
-* Future-oriented with a design based on an RDF* world.
+* Future-oriented with a design based on an RDF\* world.
 
 ## Design principles
 
@@ -29,7 +22,7 @@ Notation4 dances on the edge between open world reasoning and the closed world a
 
 ### Homoiconic
 
-Homoiconic systems are often described pithily as those where 'code is data, data is code'. Everything in Notation4 is expressed as (nested sets of) RDF graphs, the same as the underlying knowledge. This lets rules blend code with data. Unlike existing homoiconic systems, which are list or tree oriented ours is graph-oriented through and through, allowing rich introspection and pattern matching. 
+Homoiconic systems are often described pithily as those where 'code is data, data is code'. Everything in Notation4 is expressed as (nested sets of) RDF graphs, the same as the underlying knowledge. This lets rules blend code with data. Unlike existing homoiconic systems, which are list or tree oriented ours is graph-oriented through and through, allowing rich introspection and pattern matching.
 
 ### Concise
 
@@ -42,16 +35,9 @@ I've been working on the main ideas in Notation4 since the early 2000s. The key 
 Its main inspirations and influences are, in no particular order:
 
 * Tim Berners-Lee's Notation3 and the *cwm* reasoner for it.
-
 * Adenine, the programming language built for the Haystack semantic desktop.
-
 * Prolog and the query-oriented logic programming model
-
 * LISP for its simple underlying, homoiconic model
-
 * Wolfram Language for its application of the LISP model to provide rich, rule-oriented symbolic computing.
-
 * SPARQL for making querying complex graphs simple.
-
 * Ripple and the vision of linked programs for linked data.
-

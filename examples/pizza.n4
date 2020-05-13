@@ -1,0 +1,39 @@
+prefix : <http://www.co-ode.org/ontologies/pizza/pizza.owl#>.
+
+class :Food <| object;
+  rdfs:label "Food"@en;
+  skos:prefLabel "Food"@en.
+
+class :Pizza <| :Food that :hasBase some :PizzaBase;
+  rdfs:label "Pizza"@en;
+  skos:prefLabel "Pizza"@en;
+  rdfs:seeAlso <https://en.wikipedia.org/wiki/Pizza>.
+
+class :PizzaBase <| :Food;
+  rdfs:label "PizzaBase"@en;
+  rdfs:label "BaseDaPizza"@pt;
+  skos:prefLabel "Pizza Base"@en.
+
+class :PizzaTopping <| :Food;
+  rdfs:label "PizzaTopping"@en, "CoberturaDaPizza"@pt;
+  skos:prefLabel "Pizza Topping"@en.
+
+class :RealItalianPizza 
+  <| :hasBase onlysome :ThinAndCrispyBase;
+  === :Pizza that :hasCountryOfOrigin value :Italy;
+  rdfs:label "RealItalianPizza"@en, "PizzaItalianReal"@pt;
+  skos:definition "Any Pizza that has the country of origin, Italy. RealItalianPizzas must also only have ThinAndCrispy bases."@en;
+  skos:prefLabel "Real Italian Pizza"@en.
+
+class :SpicyPizzaEquivalent 
+  === :Pizza 
+    that 
+      :hasTopping some (:PizzaTopping that :hasSpiciness some :Hot)
+  .
+
+class :LargePizza === :Pizza that :hasSize quantity > 12 om:inch .
+
+class :Customer 
+  <| role;
+  <| obligated always :hasAccount only (:balance quantity >=0 cur:GBP)
+  .

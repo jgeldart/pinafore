@@ -77,11 +77,8 @@ This will get everyone a person is friends with, or who are members of the same 
 There are four kinds of repetition that you can express by adding a suffix to a property path or subpath.
 
 * Saying that a property or subpath should be followed **zero or more** times with a `*` suffix. For example `?person foaf:knows* ?otherPerson` will bind `?otherPerson` to everyone `?person` knows, everyone `?otherPerson` knows, and so on recursively. It will *also* bind `?otherPerson` to the same value as `?person`.
-
 * Saying that a property or subpath should be followed **one or more** times with a `+` suffix.
-
 * Saying that a property may *optionally* be followed with a `?` suffix.
-
 * Saying that a property should be followed a certain number of times. Either an exact number of times (with `{n}`, where `n` is the number of time), or with a range using `{m, n}`, where it is followed between `m` and `n` times.
 
 Repetition allows long, hard-to-understand and redundant chains to be reduced to their core essence.
