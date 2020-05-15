@@ -1,6 +1,8 @@
 Ontology:
   'ontology'
   baseIRI=IRI
+  END_OF_PROP?
+  annotations*=AssertionPredicateBlock[';']
   END_OF_SUBJ
   pragmas*=Pragma
   assertions*=Assertion
@@ -31,18 +33,20 @@ Keyword:
 ;
 
 Assertion:
-  (ClassDeclaration | FactAssertion | GraphAssertion | BNodeAssertion)
+  // (ClassDeclaration | FactAssertion | GraphAssertion | BNodeAssertion)
+  (ClassDeclaration | PropertyDeclaration | AttributeDeclaration | DatatypeDeclaration | FactAssertion | GraphAssertion | BNodeAssertion)
   END_OF_SUBJ
 ;
 
 ClassDeclaration:
   'class' 
-  name=ResourceRef
-  superclasses*=SuperclassAxiom[';']
+  (subclass=ClassExpressionPrimary | name=ClassRef)
+  conceptInclusions*=CIAxiom[';']
+  END_OF_PROP?
   annotations*=AssertionPredicateBlock[';']
 ;
 
-SuperclassAxiom:
+CIAxiom:
     Superclass | EquivalentClass
 ;
 
@@ -53,6 +57,72 @@ Superclass:
 EquivalentClass:
   '===' equivalentclass=ClassExpression
 ;
+
+PropertyDeclaration:
+  (functional?='functional' inverseFunctional?='inversefunctional' reflexive?='reflexive' irreflexive?='irreflexive' symmetric?='symmetric' asymmetric?='asymmetric' transitive?='transitive')#
+  'property'
+  (subprop=PropertyExpressionChain | name=PropertyRef)
+  END_OF_PROP?
+  propertyInclusions*=PIAxiom[';']
+  annotations*=AssertionPredicateBlock[';']
+;
+
+PIAxiom:
+  Superproperty | EquivalentProperty
+;
+
+Superproperty:
+  '<|' superproperty=PropertyExpressionDisjunction
+;
+
+EquivalentProperty:
+  '===' equivalentProperty=PropertyExpressionDisjunction
+;
+
+AttributeDeclaration:
+  'attribute'
+  name=AttributeRef
+  (domain=AttributeDomain? range=AttributeRange?)#
+  END_OF_PROP?
+  attributeInclusions*=AIAxiom[';']
+  annotations*=AssertionPredicateBlock[';']
+;
+
+AttributeDomain:
+  'domain' domain=ClassExpression
+;
+
+AttributeRange:
+  'range' range=DataRestriction
+;
+
+AIAxiom:
+  Superattribute | EquivalentAttribute
+;
+
+Superattribute:
+  '<|' superattribute=AttributeRef
+;
+
+EquivalentAttribute:
+  '===' equivalentAttribute=AttributeRef
+;
+
+AttributeRef:
+  PropertyRef
+;
+
+DatatypeDeclaration:
+  'datatype' name=DatatypeRef '<|' restriction=DataRestriction
+  END_OF_PROP?
+  annotations*=AssertionPredicateBlock[';']
+;
+
+DatatypeRef:
+  IRIRef | QNameRef
+;
+
+
 
 BNodeAssertion:
   '['
@@ -135,17 +205,24 @@ ClassRef:
 ;
 
 ClassExpression:
-    '(' ClassExpression ')'
-  | ClassExpressionBasic
-  | ValueRestriction
+  ClassDescription
 ;
 
-ClassExpressionBasic:
-  baseClass=ClassRef (('that'|'and') disjuncts+=ClassExpressionConjunction['or'])?
+ClassDescription:
+  disjuncts+=ClassExpressionConjunction['or']
 ;
 
 ClassExpressionConjunction:
-  conjuncts+=ClassExpressionRestriction['and']
+    (
+      baseClass=ClassRef 'that' restrictions+=ClassExpressionPrimary['and']
+    | restrictions+=ClassExpressionPrimary['and']
+    ) 
+    ('if' condition=ClassExpressionPrimary)?
+;
+
+ClassExpressionPrimary:
+  negated?='not'
+  klass=ClassExpressionAtom
 ;
 
 ClassExpressionRestriction:
@@ -160,28 +237,28 @@ ClassExpressionRestriction:
   | ClassExpressionRestrictionValue
 ;
 
+ClassExpressionRestrictionOnlySome:
+  role=PropertyExpression 'only' 'a' restriction=ClassExpressionPrimary
+;
+
 ClassExpressionRestrictionOnly:
-  role=PropertyExpression 'only' restriction=ClassExpression
+  role=PropertyExpression 'only' restriction=ClassExpressionPrimary
 ;
 
 ClassExpressionRestrictionSome:
-  role=PropertyExpression 'some' restriction=ClassExpression
-;
-
-ClassExpressionRestrictionOnlySome:
-  role=PropertyExpression 'only' 'some' restriction=ClassExpression
+  role=PropertyExpression 'a' restriction=ClassExpressionPrimary
 ;
 
 ClassExpressionRestrictionMaxCard:
-  role=PropertyExpression 'at' 'most' cardinality=INT restriction=ClassExpression
+  role=PropertyExpression 'at' 'most' cardinality=INT restriction=ClassExpressionPrimary
 ;
 
 ClassExpressionRestrictionMinCard:
-  role=PropertyExpression 'at' 'least' cardinality=INT restriction=ClassExpression
+  role=PropertyExpression 'at' 'least' cardinality=INT restriction=ClassExpressionPrimary
 ;
 
 ClassExpressionRestrictionExactCard:
-  role=PropertyExpression 'exactly' cardinality=INT restriction=ClassExpression
+  role=PropertyExpression 'exactly' cardinality=INT restriction=ClassExpressionPrimary
 ;
 
 ClassExpressionRestrictionQuantity:
@@ -193,30 +270,151 @@ ValueAggregateFunction:
 ;
 
 ClassExpressionRestrictionSelf:
-  role=PropertyExpression 'with' 'itself'
+  role=PropertyExpression 'itself'
 ;
 
 ClassExpressionRestrictionValue:
   role=PropertyExpression 'is' value=ValueRestriction (aggregateFunction=ValueAggregateFunction)?
 ;
 
+
+ClassExpressionAtom:
+  ClassExpressionModal | ClassExpressionTemporal | ClassExpressionRestriction | ClassExpressionEnumeration | '(' ClassExpression ')' | ClassRef
+;
+
+ClassExpressionEnumeration:
+  '{' individuals+=ValueRestriction[','] '}'
+;
+
+ClassExpressionModal:
+  operator=ModalOperator
+  klass=ClassExpressionPrimary
+  ( 'when'
+    condition=ClassExpressionPrimary
+  )?
+;
+
+ModalOperator:
+  'obligated' | 'permitted' | 'prohibited' | 'omissable' | 'optionally' | 'certainly' | 'maybe' | 'currently' | 'definitely' | 'assumedly' | 'repeatedly' | 'never' | 'inevitably'
+;
+
+ClassExpressionTemporal:
+    ClassExpressionTemporalNext
+  | ClassExpressionTemporalEventually
+  | ClassExpressionTemporalAlways
+  | ClassExpressionTemporalReleases
+  | ClassExpressionTemporalUntil
+  | ClassExpressionTemporalJust
+  | ClassExpressionTemporalWas
+  | ClassExpressionTemporalHistorically
+  | ClassExpressionTemporalSince
+  | ClassExpressionTemporalFrom
+;
+
+ClassExpressionTemporalNext:
+  'next' klass=ClassExpressionPrimary
+;
+
+ClassExpressionTemporalEventually:
+  'eventually' klass=ClassExpressionPrimary
+;
+
+ClassExpressionTemporalAlways:
+  'always' klass=ClassExpressionPrimary
+;
+
+ClassExpressionTemporalReleases:
+  'up' 'until' trigger=ClassExpressionPrimary klass=ClassExpressionPrimary 
+;
+
+ClassExpressionTemporalUntil:
+  'until' trigger=ClassExpressionPrimary klass=ClassExpressionPrimary 
+;
+
+ClassExpressionTemporalJust:
+  'just' klass=ClassExpressionPrimary
+;
+
+ClassExpressionTemporalWas:
+  'was' klass=ClassExpressionPrimary
+;
+
+ClassExpressionTemporalHistorically:
+  'historically' klass=ClassExpressionPrimary
+;
+
+ClassExpressionTemporalSince:
+  'since' trigger=ClassExpressionPrimary klass=ClassExpressionPrimary 
+;
+
+ClassExpressionTemporalFrom:
+  'from' trigger=ClassExpressionPrimary klass=ClassExpressionPrimary 
+;
+
+// PropertyExpression:
+//     ResourceRef
+// ;
+
+PropertyRef:
+  IRIRef | QNameRef
+;
+
 PropertyExpression:
-    ResourceRef
+    (leftPlural=PluralOperator prop=PropertyExpressionChain)
+  | (prop=PropertyExpressionChain (rightPlural=PluralOperator)?)
+;
+
+PluralOperator:
+  'some' | 'each'
+;
+
+PropertyExpressionChain:
+  props+=PropertyExpressionDisjunction['of']
+;
+
+PropertyExpressionDisjunction:
+  disjuncts+=PropertyExpressionConjunction['or']
+;
+
+PropertyExpressionConjunction:
+  conjuncts+=PropertyExpressionPrimary['and']
+;
+
+PropertyExpressionPrimary:
+  negated?='not'
+  prop=PropertyExpressionAtom
+;
+
+PropertyExpressionAtom:
+  PropertyExpressionInverse | PropertyExpressionCartesian | '(' PropertyExpression ')' | PropertyRef
+;
+
+PropertyExpressionInverse:
+  'inverse' prop=PropertyExpressionPrimary
+;
+
+PropertyExpressionCartesian:
+  'domain' domain=ClassExpressionPrimary 'range' range=ClassExpressionPrimary
 ;
 
 DataRestriction:
-  ResourceRef ('[' facets+=DataFacet[','] ']')?
+  ('_' | dataType=ResourceRef) ('[' facets+=DataFacet[','] ']')?
 ;
+
+// ValueRestriction:
+//     '{' individuals+=ValueRestrictionValue[','] '}'
+//   | ValueRestrictionValue
+// ;
 
 ValueRestriction:
-    '{' individuals+=ValueRestrictionValue[','] '}'
-  | ValueRestrictionValue
+    LiteralExpression
+  | NominalVariable
+  | NominalRelationship
+  | ResourceRef
 ;
 
-ValueRestrictionValue:
-    LiteralExpression
-  | ResourceRef
-  | NominalVariable
+NominalRelationship:
+  'the' prop=PropertyExpressionChain
 ;
 
 NominalVariable:

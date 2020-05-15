@@ -35,10 +35,10 @@ foodon:Cheese
 class foodon:CheeseSnack 
   <|  foodon:Snack 
         that 
-             foodon:eaten_by only some person 
+             foodon:eaten_by only a person 
         and  foodon:eaten_by at most 1 person
         and  made_from only milk
-        and  portion_size some { small } 
+        and  portion_size is small 
         and  has_mass measuring decimal[<= 20.0, > 0.0] grams
   .
 
