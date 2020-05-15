@@ -40,13 +40,13 @@ Assertion:
 ClassDeclaration:
   'class' 
   (subclass=ClassExpressionPrimary | name=ClassRef)
-  conceptInclusions*=CIAxiom[';']
-  END_OF_PROP?
-  annotations*=AssertionPredicateBlock[';']
+  (END_OF_PROP?
+   axioms*=CIAxiom[';']
+  )
 ;
 
 CIAxiom:
-    Superclass | EquivalentClass
+    Superclass | EquivalentClass | AssertionPredicateBlock
 ;
 
 Superclass:
@@ -61,13 +61,13 @@ PropertyDeclaration:
   (functional?='functional' inverseFunctional?='inversefunctional' reflexive?='reflexive' irreflexive?='irreflexive' symmetric?='symmetric' asymmetric?='asymmetric' transitive?='transitive')#
   'property'
   (subprop=PropertyExpressionChain | name=PropertyRef)
-  END_OF_PROP?
-  propertyInclusions*=PIAxiom[';']
-  annotations*=AssertionPredicateBlock[';']
+  (END_OF_PROP?
+   axioms*=PIAxiom[';']
+  )
 ;
 
 PIAxiom:
-  Superproperty | EquivalentProperty
+  Superproperty | EquivalentProperty | AssertionPredicateBlock
 ;
 
 Superproperty:
@@ -81,10 +81,10 @@ EquivalentProperty:
 AttributeDeclaration:
   'attribute'
   name=AttributeRef
-  (domain=AttributeDomain? range=AttributeRange?)#
-  END_OF_PROP?
-  attributeInclusions*=AIAxiom[';']
-  annotations*=AssertionPredicateBlock[';']
+  (('with' 'domain' domain=AttributeDomain)? ('with' 'range' range=AttributeRange)?)#
+  (END_OF_PROP?
+   axioms*=AIAxiom[';']
+  )
 ;
 
 AttributeDomain:
@@ -96,7 +96,7 @@ AttributeRange:
 ;
 
 AIAxiom:
-  Superattribute | EquivalentAttribute
+  Superattribute | EquivalentAttribute | AssertionPredicateBlock
 ;
 
 Superattribute:
@@ -113,8 +113,9 @@ AttributeRef:
 
 DatatypeDeclaration:
   'datatype' name=DatatypeRef '<|' restriction=DataRestriction
-  END_OF_PROP?
-  annotations*=AssertionPredicateBlock[';']
+  (END_OF_PROP?
+   axioms*=AssertionPredicateBlock[';']
+  )
 ;
 
 DatatypeRef:
@@ -122,10 +123,10 @@ DatatypeRef:
 ;
 
 QuantityDeclaration:
-  'quantity' name=QuantityRef dimension=DimensionRef
-  conceptInclusions*=CIAxiom[';']
-  END_OF_PROP?
-  annotations*=AssertionPredicateBlock[';']
+  'quantity' name=QuantityRef (('with' 'dimension' dimension=DimensionRef)? ('with' 'property' prop=PropertyRef)?)#
+  ( END_OF_PROP?
+    axioms*=CIAxiom[';']
+  )
 ;
 
 QuantityRef:
@@ -466,6 +467,8 @@ LiteralExpression:
   | IntegerExpression
   | BooleanExpression
   | StringExpression
+  | ExistentialVariable
+  | UniversalVariable
 ;
 
 // FIXME: These would be great, if we can find a single way to desugar them
@@ -521,6 +524,7 @@ StringExpression:
 DTLang:
     '@' language=LANG
   | '^^' dtype=ResourceRef
+  | unit=ResourceRef
 ;
 
 // Lexical declarations

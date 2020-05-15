@@ -46,4 +46,6 @@ class Customer
   <| obligated always hasAccount only (balance measuring number[>= 0] cur:GBP)
   .
 
-quantity PizzaSize om:Length. 
+quantity PizzaSize with dimension om:Length with property has_size.
+
+mypizza has_size 18 om:inch.
