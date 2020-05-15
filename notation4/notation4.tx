@@ -203,6 +203,7 @@ AssertionSubject:
     ResourceRef
   | GraphAssertion
   | BNodeAssertion
+  | Collection
 ;
 
 AssertionPredicate:
@@ -215,6 +216,7 @@ AssertionObject:
   | ResourceRef
   | GraphAssertion
   | BNodeAssertion
+  | Collection
 ;
 
 
@@ -252,6 +254,36 @@ BuiltinPredicate:
 IsaPredicate: isa?='a';
 ForwardChainPredicate: forwardChain?='<==';
 
+
+//////// List expressions
+
+HeadedList:
+  head=ResourceRef '(' members*=AssertionObject[','] ')'
+;
+
+Collection:
+  SetCollection | AltsCollection | BagCollection | SeqCollection | ListCollection
+;
+
+BagCollection:
+  '@bag' '(' members*=AssertionObject[','] ')'
+;
+
+SetCollection:
+  '@set' '(' members*=AssertionObject[','] ')'
+;
+
+AltsCollection:
+  '@alts' '(' members*=AssertionObject[','] ')'
+;
+
+SeqCollection:
+  '@seq' '(' members*=AssertionObject[','] ')'
+;
+
+ListCollection:
+  '(' members*=AssertionObject[','] ')'
+;
 
 //////// Class expressions
 

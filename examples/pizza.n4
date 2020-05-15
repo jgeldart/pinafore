@@ -51,6 +51,8 @@ class Customer
 quantity PizzaSize with dimension om:Length with property has_size.
 
 mypizza a Pizza; 
-  has_size 18 om:inch.
+  has_size 18 om:inch;
+  has_tags (Pepper, Cheese)
+  .
 
 property myprop <| with domain Pizza with range PizzaTopping.
