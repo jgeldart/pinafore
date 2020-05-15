@@ -14,6 +14,9 @@ NoPrelude:
   'without' 'prelude'
 ;
 
+
+//////// Parsing pragmas
+
 Pragma:
   Import | Keyword
 ;
@@ -38,10 +41,16 @@ Keyword:
   END_OF_SUBJ
 ;
 
+
+//////// Assertions
+
 Assertion:
   (ClassDeclaration | PropertyDeclaration | AttributeDeclaration | DatatypeDeclaration | QuantityDeclaration | FactAssertion | GraphAssertion | BNodeAssertion)
   END_OF_SUBJ
 ;
+
+
+//////// Class declarations
 
 ClassDeclaration:
   'class' 
@@ -63,6 +72,9 @@ EquivalentClass:
   '===' equivalentclass=ClassExpression
 ;
 
+
+//////// Property/object property declarations
+
 PropertyDeclaration:
   (functional?='functional' inverseFunctional?='inversefunctional' reflexive?='reflexive' irreflexive?='irreflexive' symmetric?='symmetric' asymmetric?='asymmetric' transitive?='transitive')#
   'property'
@@ -83,6 +95,9 @@ Superproperty:
 EquivalentProperty:
   '===' equivalentProperty=PropertyExpressionDisjunction
 ;
+
+
+//////// Attribute/data property declarations
 
 AttributeDeclaration:
   'attribute'
@@ -117,6 +132,9 @@ AttributeRef:
   PropertyRef
 ;
 
+
+//////// Datatype declarations
+
 DatatypeDeclaration:
   'datatype' name=DatatypeRef '<|' restriction=DataRestriction
   (END_OF_PROP?
@@ -127,6 +145,9 @@ DatatypeDeclaration:
 DatatypeRef:
   IRIRef | QNameRef
 ;
+
+
+//////// Quantity declarations
 
 QuantityDeclaration:
   'quantity' name=QuantityRef (('with' 'dimension' dimension=DimensionRef)? ('with' 'property' prop=PropertyRef)?)#
@@ -143,6 +164,9 @@ DimensionRef:
   IRIRef | QNameRef
 ;
 
+
+//////// BNode assertions
+
 BNodeAssertion:
   '['
   name=NodeLabel?
@@ -151,12 +175,18 @@ BNodeAssertion:
   ']'
 ;
 
+
+//////// Graph/formula assertions
+
 GraphAssertion:
  '{'
  name=NodeLabel?
  assertions+=Assertion
  '}'
 ;
+
+
+//////// Fact assertions
 
 FactAssertion:
   subject=AssertionSubject
@@ -186,6 +216,9 @@ AssertionObject:
   | GraphAssertion
   | BNodeAssertion
 ;
+
+
+//////// Resources
 
 ResourceRef:
   ExistentialVariable | UniversalVariable | IRIRef | QNameRef
@@ -218,6 +251,9 @@ BuiltinPredicate:
 
 IsaPredicate: isa?='a';
 ForwardChainPredicate: forwardChain?='<==';
+
+
+//////// Class expressions
 
 ClassRef:
   IRIRef | QNameRef
@@ -370,6 +406,10 @@ ClassExpressionTemporalFrom:
   'from' trigger=ClassExpressionPrimary klass=ClassExpressionPrimary 
 ;
 
+
+//////// Property expressions
+
+
 PropertyRef:
   IRIRef | QNameRef
 ;
@@ -412,6 +452,9 @@ PropertyExpressionCartesian:
   (('with' 'domain' domain=ClassExpressionPrimary)? ('with' 'range' range=ClassExpressionPrimary)?)#
 ;
 
+
+//////// Data expressions
+
 DataRestriction:
   ('_' | dataType=ResourceRef) facets*=DataFacetRestriction
 ;
@@ -448,6 +491,9 @@ DataFacet:
   | 'length' '=' length=INT
   | 'matches' pattern=STRING
 ;
+
+
+//////// Literals
 
 Literal:
   literal=LiteralExpression dtlang=DTLang?
@@ -533,7 +579,8 @@ DTLang:
   | unit=ResourceRef
 ;
 
-// Lexical declarations
+
+//////// Lexical declarations
 
 IRI:            // An explicit IRI
   /<([^>]*)>/
