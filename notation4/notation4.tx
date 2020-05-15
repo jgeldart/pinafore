@@ -198,7 +198,7 @@ NodeLabel:
 ;
 
 ExistentialVariable:
-  '_:' name=ID
+  '!' name=ID
 ;
 
 UniversalVariable:
