@@ -1,6 +1,8 @@
 ontology <http://www.co-ode.org/ontologies/pizza/pizza.owl#>;
-  title "Pizza ontology"@en;
-  description "An ontology of pizzas"@en.
+  title "Pizza ontology";
+  description "An ontology of pizzas".
+
+default language en.
 
 import <> as foodon.
 import <> as om.
@@ -9,29 +11,29 @@ import <> as skos.
 import <> as cur.
 
 class Food <| object;
-  rdfs:label "Food"@en;
-  skos:prefLabel "Food"@en.
+  rdfs:label "Food";
+  skos:prefLabel "Food".
 
 class Pizza <| Food that hasBase a PizzaBase;
-  rdfs:label "Pizza"@en;
-  skos:prefLabel "Pizza"@en;
+  rdfs:label "Pizza";
+  skos:prefLabel "Pizza";
   rdfs:seeAlso <https://en.wikipedia.org/wiki/Pizza>.
 
 class PizzaBase <| Food;
-  rdfs:label "PizzaBase"@en;
+  rdfs:label "PizzaBase";
   rdfs:label "BaseDaPizza"@pt;
-  skos:prefLabel "Pizza Base"@en.
+  skos:prefLabel "Pizza Base".
 
 class PizzaTopping <| Food;
-  rdfs:label "PizzaTopping"@en, "CoberturaDaPizza"@pt;
-  skos:prefLabel "Pizza Topping"@en.
+  rdfs:label "PizzaTopping", "CoberturaDaPizza"@pt;
+  skos:prefLabel "Pizza Topping".
 
 class RealItalianPizza 
   <| hasBase only a ThinAndCrispyBase;
   === Pizza that hasCountryOfOrigin is Italy;
-  rdfs:label "RealItalianPizza"@en, "PizzaItalianReal"@pt;
-  skos:definition "Any Pizza that has the country of origin, Italy. RealItalianPizzas must also only have ThinAndCrispy bases."@en;
-  skos:prefLabel "Real Italian Pizza"@en.
+  rdfs:label "RealItalianPizza", "PizzaItalianReal"@pt;
+  skos:definition "Any Pizza that has the country of origin, Italy. RealItalianPizzas must also only have ThinAndCrispy bases.";
+  skos:prefLabel "Real Italian Pizza".
 
 class SpicyPizzaEquivalent 
   === Pizza 

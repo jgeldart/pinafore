@@ -1,11 +1,17 @@
 Ontology:
   'ontology'
   baseIRI=IRI
-  END_OF_PROP?
-  annotations*=AssertionPredicateBlock[';']
+  noPrelude?=NoPrelude
+  (END_OF_PROP
+  annotations*=AssertionPredicateBlock[';'])?
   END_OF_SUBJ
+  ('default' 'language' lang=LANG END_OF_SUBJ)?
   pragmas*=Pragma
   assertions*=Assertion
+;
+
+NoPrelude:
+  'without' 'prelude'
 ;
 
 Pragma:
