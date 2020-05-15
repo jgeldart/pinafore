@@ -39,11 +39,11 @@ class SpicyPizzaEquivalent
       hasTopping a (PizzaTopping and hasSpiciness a Hot)
   .
 
-class LargePizza === Pizza that hasSize measuring number[> 12] om:inch.
+class LargePizza === Pizza that hasSize measuring number[> 12][< 21] om:inch.
 
 class Customer 
   <| role that hasBearer a person;
   <| obligated always hasAccount only (balance measuring number[>= 0] cur:GBP)
   .
 
-quantity PizzaSize om:Length.
+quantity PizzaSize om:Length. 

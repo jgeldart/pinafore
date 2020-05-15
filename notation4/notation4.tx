@@ -363,10 +363,6 @@ ClassExpressionTemporalFrom:
   'from' trigger=ClassExpressionPrimary klass=ClassExpressionPrimary 
 ;
 
-// PropertyExpression:
-//     ResourceRef
-// ;
-
 PropertyRef:
   IRIRef | QNameRef
 ;
@@ -410,13 +406,8 @@ PropertyExpressionCartesian:
 ;
 
 DataRestriction:
-  ('_' | dataType=ResourceRef) ('[' facets+=DataFacet[','] ']')?
+  ('_' | dataType=ResourceRef) facets*=DataFacetRestriction
 ;
-
-// ValueRestriction:
-//     '{' individuals+=ValueRestrictionValue[','] '}'
-//   | ValueRestrictionValue
-// ;
 
 ValueRestriction:
     LiteralExpression
@@ -431,6 +422,10 @@ NominalRelationship:
 
 NominalVariable:
   '$' name=ID
+;
+
+DataFacetRestriction:
+  '[' DataFacet ']'
 ;
 
 DataFacet:
