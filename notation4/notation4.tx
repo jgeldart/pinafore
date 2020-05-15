@@ -200,7 +200,8 @@ AssertionPredicateBlock:
 
 
 AssertionSubject:
-    ResourceRef
+    HeadedList
+  | ResourceRef
   | GraphAssertion
   | BNodeAssertion
   | Collection
@@ -213,6 +214,7 @@ AssertionPredicate:
 
 AssertionObject:
     Literal
+  | HeadedList
   | ResourceRef
   | GraphAssertion
   | BNodeAssertion

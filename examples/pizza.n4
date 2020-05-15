@@ -9,6 +9,7 @@ import <> as om.
 import <> as rdfs.
 import <> as skos.
 import <> as cur.
+import <> as math.
 
 class Food <| object;
   rdfs:label "Food";
@@ -56,3 +57,8 @@ mypizza a Pizza;
   .
 
 property myprop <| with domain Pizza with range PizzaTopping.
+
+{ (?r, ?theta) equals to_polar_coordinates(?x, ?y) } <== {
+  ?r equals math:sqrt(math:mult(?x, ?x), math:mult(?y, ?y)).
+  ?theta equals math:atan(?x, ?y).
+}
