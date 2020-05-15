@@ -314,7 +314,7 @@ ClassExpressionModal:
 ;
 
 ModalOperator:
-  'obligated' | 'permitted' | 'prohibited' | 'omissable' | 'optionally' | 'certainly' | 'maybe' | 'currently' | 'definitely' | 'assumedly' | 'repeatedly' | 'never' | 'inevitably'
+  'obligated' | 'permitted' | 'prohibited' | 'omissable' | 'optionally' | 'certainly' | 'possibly' | 'currently' | 'definitely' | 'assumedly' | 'repeatedly' | 'never' | 'inevitably'
 ;
 
 ClassExpressionTemporal:
@@ -409,7 +409,7 @@ PropertyExpressionInverse:
 ;
 
 PropertyExpressionCartesian:
-  'domain' domain=ClassExpressionPrimary 'range' range=ClassExpressionPrimary
+  (('with' 'domain' domain=ClassExpressionPrimary)? ('with' 'range' range=ClassExpressionPrimary)?)#
 ;
 
 DataRestriction:

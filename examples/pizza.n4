@@ -41,7 +41,7 @@ class SpicyPizzaEquivalent
       hasTopping a (PizzaTopping and hasSpiciness a Hot)
   .
 
-class LargePizza === Pizza that hasSize measuring number[> 12][< 21] om:inch.
+class LargePizza === Pizza that has_size measuring number[> 12][< 21] om:inch.
 
 class Customer 
   <| role that hasBearer a person;
@@ -50,4 +50,7 @@ class Customer
 
 quantity PizzaSize with dimension om:Length with property has_size.
 
-mypizza has_size 18 om:inch.
+mypizza a Pizza; 
+  has_size 18 om:inch.
+
+property myprop <| with domain Pizza with range PizzaTopping.
