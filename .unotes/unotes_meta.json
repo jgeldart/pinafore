@@ -22,6 +22,15 @@
             "semantics": 8,
             "statements": 9
           }
+        },
+        "design-notes": {
+          "name": "design-notes",
+          "isOrdered": true,
+          "folders": {},
+          "files": {
+            "Style": 0,
+            "use-cases": 1
+          }
         }
       },
       "files": {}

@@ -1,0 +1,345 @@
+Ontology:
+  'ontology'
+  baseIRI=IRI
+  END_OF_SUBJ
+  pragmas*=Pragma
+  assertions*=Assertion
+;
+
+Pragma:
+  Import | Keyword
+;
+
+Import:
+  'import'
+  baseIRI=IRI
+  'as'
+  name=ID
+  ('from'
+    fileName=STRING
+  )?
+  END_OF_SUBJ
+;
+
+Keyword:
+  export?='exported'
+  'keyword'
+  ref=ResourceRef
+  'as'
+  name=ID
+  END_OF_SUBJ
+;
+
+Assertion:
+  (ClassDeclaration | FactAssertion | GraphAssertion | BNodeAssertion)
+  END_OF_SUBJ
+;
+
+ClassDeclaration:
+  'class' 
+  name=ResourceRef
+  superclasses*=SuperclassAxiom[';']
+  annotations*=AssertionPredicateBlock[';']
+;
+
+SuperclassAxiom:
+    Superclass | EquivalentClass
+;
+
+Superclass:
+  '<|' superclass=ClassExpression
+;
+
+EquivalentClass:
+  '===' equivalentclass=ClassExpression
+;
+
+BNodeAssertion:
+  '['
+  name=NodeLabel?
+  predicates*=AssertionPredicateBlock[';']
+  END_OF_PROP?
+  ']'
+;
+
+GraphAssertion:
+ '{'
+ name=NodeLabel?
+ assertions+=Assertion
+ '}'
+;
+
+FactAssertion:
+  subject=AssertionSubject
+  predicates+=AssertionPredicateBlock[';']
+;
+
+AssertionPredicateBlock:
+  predicate=AssertionPredicate
+  objects+=AssertionObject[',']
+;
+
+
+AssertionSubject:
+    ResourceRef
+  | GraphAssertion
+  | BNodeAssertion
+;
+
+AssertionPredicate:
+    BuiltinPredicate
+  | ResourceRef
+;
+
+AssertionObject:
+    Literal
+  | ResourceRef
+  | GraphAssertion
+  | BNodeAssertion
+;
+
+ResourceRef:
+  ExistentialVariable | UniversalVariable | IRIRef | QNameRef
+;
+
+IRIRef:
+  iri=IRI
+;
+
+QNameRef[noskipws]:
+  /\s*/ (prefix=[Import] ':')? localName=ID
+;
+
+NodeLabel:
+  ':-'- ResourceRef END_OF_SUBJ-
+;
+
+ExistentialVariable:
+  '_:' name=ID
+;
+
+UniversalVariable:
+  '?' name=ID
+;
+
+BuiltinPredicate:
+    IsaPredicate
+  | ForwardChainPredicate
+;
+
+IsaPredicate: isa?='a';
+ForwardChainPredicate: forwardChain?='<==';
+
+ClassRef:
+  IRIRef | QNameRef
+;
+
+ClassExpression:
+    '(' ClassExpression ')'
+  | ClassExpressionBasic
+  | ValueRestriction
+;
+
+ClassExpressionBasic:
+  baseClass=ClassRef (('that'|'and') disjuncts+=ClassExpressionConjunction['or'])?
+;
+
+ClassExpressionConjunction:
+  conjuncts+=ClassExpressionRestriction['and']
+;
+
+ClassExpressionRestriction:
+    ClassExpressionRestrictionOnlySome
+  | ClassExpressionRestrictionOnly
+  | ClassExpressionRestrictionSome
+  | ClassExpressionRestrictionMaxCard
+  | ClassExpressionRestrictionMinCard
+  | ClassExpressionRestrictionExactCard
+  | ClassExpressionRestrictionQuantity
+  | ClassExpressionRestrictionSelf
+  | ClassExpressionRestrictionValue
+;
+
+ClassExpressionRestrictionOnly:
+  role=PropertyExpression 'only' restriction=ClassExpression
+;
+
+ClassExpressionRestrictionSome:
+  role=PropertyExpression 'some' restriction=ClassExpression
+;
+
+ClassExpressionRestrictionOnlySome:
+  role=PropertyExpression 'only' 'some' restriction=ClassExpression
+;
+
+ClassExpressionRestrictionMaxCard:
+  role=PropertyExpression 'at' 'most' cardinality=INT restriction=ClassExpression
+;
+
+ClassExpressionRestrictionMinCard:
+  role=PropertyExpression 'at' 'least' cardinality=INT restriction=ClassExpression
+;
+
+ClassExpressionRestrictionExactCard:
+  role=PropertyExpression 'exactly' cardinality=INT restriction=ClassExpression
+;
+
+ClassExpressionRestrictionQuantity:
+  role=PropertyExpression  'measuring' restriction=DataRestriction unit=ResourceRef (aggregateFunction=ValueAggregateFunction)?
+;
+
+ValueAggregateFunction:
+  'total' | 'maximum' | 'minimum' | 'average'
+;
+
+ClassExpressionRestrictionSelf:
+  role=PropertyExpression 'with' 'itself'
+;
+
+ClassExpressionRestrictionValue:
+  role=PropertyExpression 'is' value=ValueRestriction (aggregateFunction=ValueAggregateFunction)?
+;
+
+PropertyExpression:
+    ResourceRef
+;
+
+DataRestriction:
+  ResourceRef ('[' facets+=DataFacet[','] ']')?
+;
+
+ValueRestriction:
+    '{' individuals+=ValueRestrictionValue[','] '}'
+  | ValueRestrictionValue
+;
+
+ValueRestrictionValue:
+    LiteralExpression
+  | ResourceRef
+  | NominalVariable
+;
+
+NominalVariable:
+  '$' name=ID
+;
+
+DataFacet:
+    '>' minExclusive=NumericLiteralExpression
+  | '>=' minInclusive=NumericLiteralExpression
+  | '<' maxExclusive=NumericLiteralExpression
+  | '<=' maxInclusive=NumericLiteralExpression
+  | '=' equal=NumericLiteralExpression
+  | 'length' '<' maxExclusiveLength=INT
+  | 'length' '<=' maxInclusiveLength=INT
+  | 'length' '>' minExclusiveLength=INT
+  | 'length' '>=' minInclusiveLength=INT
+  | 'length' '=' length=INT
+  | 'matches' pattern=STRING
+;
+
+Literal:
+  literal=LiteralExpression dtlang=DTLang?
+;
+
+NumericLiteralExpression:
+    DateTimeExpression
+  | TimeExpression
+  | DateExpression
+  | DurationExpression
+  | DecimalExpression
+  | RationalExpression
+  | IntegerExpression
+;
+
+LiteralExpression:
+    DateTimeExpression
+  | TimeExpression
+  | DateExpression
+  | DurationExpression
+  | DecimalExpression
+  | RationalExpression
+  | IntegerExpression
+  | BooleanExpression
+  | StringExpression
+;
+
+// FIXME: These would be great, if we can find a single way to desugar them
+RangeExpression:
+    lower=DateTimeExpression '..' upper=DateTimeExpression
+  | lower=TimeExpression '..' upper=TimeExpression
+  | lower=DateExpression '..' upper=DateExpression
+  | lower=DecimalExpression '..' upper=DecimalExpression
+  | lower=RationalExpression '..' upper=RationalExpression
+  | lower=IntegerExpression '..' upper=IntegerExpression
+;
+
+
+DecimalExpression:
+  value=STRICTFLOAT
+;
+
+RationalExpression:
+  numerator=INT '/' denominator=INT
+;
+
+IntegerExpression:
+  value=INT
+;
+
+BooleanExpression:
+  value=BOOL
+;
+
+DateExpression:
+  value=/(-?(?:[1-9][0-9]*)?[0-9]{4})-(1[0-2]|0[1-9])-(3[01]|0[1-9]|[12][0-9])(Z|[+-](?:2[0-3]|[01][0-9]):[0-5][0-9])?/
+;
+
+TimeExpression:
+  value=/(2[0-3]|[01][0-9]):([0-5][0-9]):([0-5][0-9])(\.[0-9]+)?(Z|[+-](?:2[0-3]|[01][0-9]):[0-5][0-9])?/
+;
+
+DateTimeExpression:
+  value=/(-?(?:[1-9][0-9]*)?[0-9]{4})-(1[0-2]|0[1-9])-(3[01]|0[1-9]|[12][0-9])T(2[0-3]|[01][0-9]):([0-5][0-9]):([0-5][0-9])(\.[0-9]+)?(Z|[+-](?:2[0-3]|[01][0-9]):[0-5][0-9])?/
+;
+
+DurationExpression:
+  value=/P(?!$)((\d+Y)|(\d+\.\d+Y$))?((\d+M)|(\d+\.\d+M$))?((\d+W)|(\d+\.\d+W$))?((\d+D)|(\d+\.\d+D$))?(T(?=\d)((\d+H)|(\d+\.\d+H$))?((\d+M)|(\d+\.\d+M$))?(\d+(\.\d+)?S)?)??/
+;
+
+StringExpression:
+    value=/(?ms)\"{3}(.*?)\"{3}/
+  | value=/(?ms)\'{3}(.*?)\'{3}/
+  | value=STRING
+  | value=/\'(.*?)\'/
+;
+
+DTLang:
+    '@' language=LANG
+  | '^^' dtype=ResourceRef
+;
+
+// Lexical declarations
+
+IRI:            // An explicit IRI
+  /<([^>]*)>/
+;
+
+LANG:           // A language code
+  /\w{2,3}(-\w{2,3}(-\w{2,3})?)?/
+;
+
+END_OF_OBJ:
+  ','
+;
+
+END_OF_PROP:
+  ';'
+;
+
+END_OF_SUBJ:
+  '.'?
+;
+
+Comment:        // A comment
+  /#.*$/
+;

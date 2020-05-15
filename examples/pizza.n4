@@ -1,4 +1,8 @@
-prefix : <http://www.co-ode.org/ontologies/pizza/pizza.owl#>.
+ontology <http://www.co-ode.org/ontologies/pizza/pizza.owl#>;
+  title "Pizza ontology"@en;
+  description "An ontology of pizzas"@en.
+
+import <> as foodon.
 
 class :Food <| object;
   rdfs:label "Food"@en;
@@ -37,3 +41,10 @@ class :Customer
   <| role;
   <| obligated always :hasAccount only (:balance quantity >=0 cur:GBP)
   .
+
+relation PreferredPizza(situation Situation, pizza Pizza, for Customer).
+
+PreferredPizza(situation ?sit, pizza ?pizza, for ?customer) <- {
+  PreferredTopping(situation ?sit, topping ?topping, for ?customer).
+  ?pizza hasTopping ?topping.
+}.

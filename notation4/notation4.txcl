@@ -1,0 +1,18 @@
+configuration {
+  default:
+    keyword = keyword.control;
+    operation = keyword.operator;
+
+  comment:
+    line="#";
+}
+
+rules {
+  keyword:
+    Ontology = storage.type;
+    Import = storage.modifier;
+}
+
+regular expressions {
+  "<[^>]*>" = support.constant;
+}

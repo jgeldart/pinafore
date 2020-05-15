@@ -1,0 +1,59 @@
+ontology <http://www.co-ode.org/ontologies/pizza/pizza.owl#>.
+
+import <> as foodon from "imports/foodon.owl".
+import <> as cco.
+
+exported keyword foodon:eats as eats.
+
+Mycustomer eats foodon:Cheese.
+
+foodon:Cheese 
+  foodon:basedOn foodon:Milk;
+  foodon:taste foodon:Savory, foodon:Salty.
+
+
+{
+  :- ?z.
+  foodon:a a foodon:c;
+    foodon:e foodon:f.
+} <== {
+  foodon:x foodon:y ?z.
+}.
+
+{
+  foodon:a foodon:b foodon:q.
+}.
+
+[] eats [
+  :- foodon:n.
+  foodon:p [
+    foodon:p1 "Translated"@en;
+    foodon:p2 "Hello!"^^foodon:recipeinstr;
+  ]
+].
+
+class foodon:CheeseSnack 
+  <|  foodon:Snack 
+        that 
+             foodon:eaten_by only some person 
+        and  foodon:eaten_by at most 1 person
+        and  made_from only milk
+        and  portion_size some { small } 
+        and  has_mass measuring decimal[<= 20.0, > 0.0] grams
+  .
+
+class FreeDeliveryFoodOrder
+  <| FoodOrder that has_item_price measuring decimal[>= 15.0] gbp total.
+
+# role 
+#   that obligated 
+#          eventually 
+#            do some PaymentProcess 
+#              that 
+#                has_amount is 500.0 gbp total
+#                and destination is the bank_account of buyer of contract 
+#        when 
+#          state of item of contract is Delivered
+#   .
+
+# PopGroup <| collection that subsetOf sing a PopSong and produce eachOf a Album.
