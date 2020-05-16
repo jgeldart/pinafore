@@ -832,8 +832,6 @@ LiteralExpression:
   | IntegerExpression
   | BooleanExpression
   | StringExpression
-  | ExistentialVariable
-  | UniversalVariable
 ;
 
 // FIXME: These would be great, if we can find a single way to desugar them
