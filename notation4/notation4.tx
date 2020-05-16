@@ -175,6 +175,14 @@ BNodeAssertion:
   ']'
 ;
 
+BNodeAssertionFormula:
+  '['
+  label=BNodeLabelFormula?
+  predicates*=FormulaAssertionPredicateBlock[';']
+  END_OF_PROP?
+  ']'
+;
+
 
 //////// Graph/formula assertions
 
@@ -182,6 +190,13 @@ GraphAssertion:
  '{'
  label=GraphNodeLabel?
  assertions+=Assertion
+ '}'
+;
+
+GraphAssertionFormula:
+ '{'
+ label=GraphNodeLabelFormula?
+ assertions+=FormulaAssertion
  '}'
 ;
 
@@ -202,7 +217,7 @@ AssertionPredicateBlock:
 AssertionSubject:
     HeadedList
   | ResourceRef
-  | GraphAssertion
+  | Formula
   | BNodeAssertion
   | Collection
 ;
@@ -216,7 +231,7 @@ AssertionObject:
     Literal
   | HeadedList
   | ResourceRef
-  | GraphAssertion
+  | Formula
   | BNodeAssertion
   | '(' InfixExpression ')'
   | Collection
@@ -226,7 +241,7 @@ AssertionObject:
 //////// Resources
 
 ResourceRef:
-  ExistentialVariable | UniversalVariable | IRIRef | QNameRef
+  IRIRef | QNameRef
 ;
 
 IRIRef:
@@ -241,8 +256,16 @@ BNodeLabel:
   ':-'- name=ResourceRef END_OF_SUBJ-
 ;
 
+BNodeLabelFormula:
+  ':-'- name=ResourceRefFormula END_OF_SUBJ-
+;
+
 GraphNodeLabel:
   ':-'- name=ResourceRef (END_OF_PROP metadata+=AssertionPredicateBlock[';'])? END_OF_SUBJ-
+;
+
+GraphNodeLabelFormula:
+  ':-'- name=ResourceRefFormula (END_OF_PROP metadata+=FormulaAssertionPredicateBlock[';'])? END_OF_SUBJ-
 ;
 
 ExistentialVariable:
@@ -272,23 +295,71 @@ BuiltinPredicate:
   | CollectionInclusionPredicate
 ;
 
-IsaPredicate: 'a';
-BackwardChainPredicate: '<--';
-ForwardChainPredicate: '<==';
-LogicalEqualsPredicate: '=';
-LogicalNotEqualsPredicate: '=/=';
-NumericEqualsPredicate: '==';
-NumericNotEqualsPredicate: '!=';
-NumericLessThanEqualsPredicate: '<=';
-NumericLessThanPredicate: '<';
-NumericGreaterThanEqualsPredicate: '>=';
-NumericGreaterThanPredicate: '>';
-LogicalSemanticsPredicate: '|-';
-LogicalConclusionsPredicate: '|=';
-LogicalIdenticalPredicate: '===';
-LogicalDifferentPredicate: '!==';
-CollectionInclusionPredicate: 'in';
+IsaPredicate: op='a';
+BackwardChainPredicate: op='<--';
+ForwardChainPredicate: op='<==';
+LogicalEqualsPredicate: op='=';
+LogicalNotEqualsPredicate: op='=/=';
+NumericEqualsPredicate: op='==';
+NumericNotEqualsPredicate: op='!=';
+NumericLessThanEqualsPredicate: op='<=';
+NumericLessThanPredicate: op='<';
+NumericGreaterThanEqualsPredicate: op='>=';
+NumericGreaterThanPredicate: op='>';
+LogicalSemanticsPredicate: op='|-';
+LogicalConclusionsPredicate: op='|=';
+LogicalIdenticalPredicate: op='===';
+LogicalDifferentPredicate: op='!==';
+CollectionInclusionPredicate: op='in';
 
+
+//////// Formulas
+
+Formula:
+  '{'
+    assertions*=FormulaAssertion['.']
+    END_OF_SUBJ?
+  '}'
+;
+
+FormulaAssertion:
+  subject=FormulaAssertionSubject
+  predicate+=FormulaAssertionPredicateBlock[';']
+;
+
+FormulaAssertionPredicateBlock:
+  predicate=FormulaAssertionPredicate
+  objects+=FormulaAssertionObject[',']
+;
+
+FormulaAssertionSubject:
+    HeadedListFormula
+  | ResourceRefFormula
+  | GraphAssertionFormula
+  | BNodeAssertionFormula
+  | '(' InfixExpressionFormula ')'
+  | CollectionFormula
+;
+
+FormulaAssertionPredicate:
+    BuiltinPredicate
+  | PredicatePathExpression
+  | ResourceRefFormula
+;
+
+FormulaAssertionObject:
+    Literal
+  | HeadedListFormula
+  | ResourceRefFormula
+  | GraphAssertionFormula
+  | BNodeAssertionFormula
+  | '(' InfixExpressionFormula ')'
+  | CollectionFormula
+;
+
+ResourceRefFormula:
+  ExistentialVariable | UniversalVariable | IRIRef | QNameRef
+;
 
 //////// List expressions
 
@@ -298,6 +369,7 @@ HeadedList:
 
 HeadedListObject:
     InfixExpression
+  | LiteralExpression
   | HeadedList
   | BNodeAssertion
   | GraphAssertion
@@ -305,30 +377,39 @@ HeadedListObject:
   | Collection
 ;
 
+HeadedListFormula:
+  head=ResourceRefFormula '(' members*=HeadedListFormulaObject[','] ')'
+;
+
+HeadedListFormulaObject:
+    InfixExpressionFormula
+  | LiteralExpression
+  | HeadedListFormula
+  | BNodeAssertionFormula
+  | GraphAssertionFormula
+  | ResourceRefFormula
+  | CollectionFormula
+;
 
 Collection:
-  SetCollection | AltsCollection | BagCollection | SeqCollection | ListCollection
+  (collectionType=CollectionType)? '(' members*=AssertionObject[','] ')'
 ;
 
-BagCollection:
-  '@bag' '(' members*=AssertionObject[','] ')'
+CollectionFormula:
+  (collectionType=CollectionType)? '(' members*=FormulaAssertionObject[','] ')'
 ;
 
-SetCollection:
-  '@set' '(' members*=AssertionObject[','] ')'
+CollectionType:
+    CollectionTypeBag
+  | CollectionTypeSet
+  | CollectionTypeAlts
+  | CollectionTypeSeq
 ;
 
-AltsCollection:
-  '@alts' '(' members*=AssertionObject[','] ')'
-;
-
-SeqCollection:
-  '@seq' '(' members*=AssertionObject[','] ')'
-;
-
-ListCollection:
-  '(' members*=AssertionObject[','] ')'
-;
+CollectionTypeBag: type='@bag';
+CollectionTypeSet: type='@set';
+CollectionTypeAlts: type='@alts';
+CollectionTypeSeq: type='@seq';
 
 //////// Infix expressions
 
@@ -349,7 +430,28 @@ InfixExponential:
 ;
 
 InfixNumericAtom:
-  UniversalVariable | ExistentialVariable | NumericLiteralExpression | '(' InfixExpression ')' 
+  NumericLiteralExpression | '(' InfixExpression ')' 
+;
+
+
+InfixExpressionFormula:
+  InfixAdditiveFormula
+;
+
+InfixAdditiveFormula:
+  operands=InfixMultiplicativeFormula (operator=KW_ADDITIVE operands=InfixAdditiveFormula)?
+;
+
+InfixMultiplicativeFormula:
+  operands=InfixExponentialFormula (operator=KW_MULTIPLICATIVE operands=InfixMultiplicativeFormula)?
+;
+
+InfixExponentialFormula:
+  operands=InfixNumericAtomFormula (operator=KW_EXPONENTIAL operands=InfixExponentialFormula)?
+;
+
+InfixNumericAtomFormula:
+  UniversalVariable | ExistentialVariable | NumericLiteralExpression | '(' InfixExpressionFormula ')' 
 ;
 
 KW_ADDITIVE:
@@ -357,11 +459,11 @@ KW_ADDITIVE:
 ;
 
 KW_ADDITIVE_PLUS:
-  '+'
+  op='+'
 ;
 
 KW_ADDITIVE_MINUS:
-  '-'
+  op='-'
 ;
 
 KW_MULTIPLICATIVE:
@@ -369,16 +471,63 @@ KW_MULTIPLICATIVE:
 ;
 
 KW_MULTIPLICATIVE_TIMES:
-  '*'
+  op='*'
 ;
 
 KW_MULTIPLICATIVE_DIVIDE:
-  '/'
+  op='/'
 ;
 
 KW_EXPONENTIAL:
-  '^'
+  op='^'
 ;
+
+
+//////// Path expressions
+
+PredicatePathExpression:
+  PredicatePathExpressionAlternatives
+;
+
+PredicatePathExpressionAlternatives:
+  alts+=PredicatePathExpressionPath['|']
+;
+
+PredicatePathExpressionPath:
+  elements=PredicatePathExpressionElement (operator=KW_PATH_OPERATOR elements=PredicatePathExpressionPath)?
+;
+
+PredicatePathExpressionElement:
+  negated?='!'
+  element=PredicatePathExpressionAtom
+  (repeat=PredicatePathExpressionRepeat)?
+;
+
+PredicatePathExpressionAtom:
+  PropertyRef | '(' PredicatePathExpression ')'
+;
+
+PredicatePathExpressionRepeat:
+    PredicatePathExpressionRepeatZeroOrMore 
+  | PredicatePathExpressionRepeatOneOrMore 
+  | PredicatePathExpressionRepeatOptional 
+  | PredicatePathExpressionRepeatCount
+;
+
+PredicatePathExpressionRepeatZeroOrMore: op='*';
+PredicatePathExpressionRepeatOneOrMore: op='+';
+PredicatePathExpressionRepeatOptional: op='?';
+PredicatePathExpressionRepeatCount:
+  '{' (lower=INT)? '..' (upper=INT)? '}'
+;
+
+KW_PATH_OPERATOR:
+  KW_PATH_OPERATOR_BACKWARD | KW_PATH_OPERATOR_FORWARD
+;
+
+KW_PATH_OPERATOR_BACKWARD: op='/^';
+KW_PATH_OPERATOR_FORWARD: op='/';
+
 
 //////// Class expressions
 
@@ -454,10 +603,10 @@ ValueAggregateFunction:
   | ValueAggregateFunctionAverage
 ;
 
-ValueAggregateFunctionTotal: 'total';
-ValueAggregateFunctionMaximum: 'maximum';
-ValueAggregateFunctionMinimum: 'minimum';
-ValueAggregateFunctionAverage: 'average';
+ValueAggregateFunctionTotal: op='total';
+ValueAggregateFunctionMaximum: op='maximum';
+ValueAggregateFunctionMinimum: op='minimum';
+ValueAggregateFunctionAverage: op='average';
 
 ClassExpressionRestrictionSelf:
   role=PropertyExpression 'itself'
@@ -500,19 +649,19 @@ ModalOperator:
   | ModalOperatorLiveness
 ;
 
-ModalOperatorObligation: 'obligated';
-ModalOperatorPermission: 'permitted';
-ModalOperatorProhibition: 'prohibited';
-ModalOperatorOmission: 'omissable';
-ModalOperatorOption: 'optionally';
-ModalOperatorCertain: 'certainly';
-ModalOperatorPossible: 'possibly';
-ModalOperatorCurrent: 'currently';
-ModalOperatorKnown: 'definitely';
-ModalOperatorAssumption: 'assumedly';
-ModalOperatorRepeat: 'repeatedly';
-ModalOperatorSafety: 'never';
-ModalOperatorLiveness: 'inevitably';
+ModalOperatorObligation: op='obligated';
+ModalOperatorPermission: op='permitted';
+ModalOperatorProhibition: op='prohibited';
+ModalOperatorOmission: op='omissable';
+ModalOperatorOption: op='optionally';
+ModalOperatorCertain: op='certainly';
+ModalOperatorPossible: op='possibly';
+ModalOperatorCurrent: op='currently';
+ModalOperatorKnown: op='definitely';
+ModalOperatorAssumption: op='assumedly';
+ModalOperatorRepeat: op='repeatedly';
+ModalOperatorSafety: op='never';
+ModalOperatorLiveness: op='inevitably';
 
 ClassExpressionTemporal:
     ClassExpressionTemporalNext
@@ -584,8 +733,8 @@ PluralOperator:
   PluralOperatorCumulative | PluralOperatorDistributive
 ;
 
-PluralOperatorCumulative: 'someOf';
-PluralOperatorDistributive: 'eachOf';
+PluralOperatorCumulative: op='someOf';
+PluralOperatorDistributive: op='eachOf';
 
 PropertyExpressionChain:
   props+=PropertyExpressionDisjunction['of']

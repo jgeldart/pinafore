@@ -62,4 +62,10 @@ property myprop <| with domain Pizza with range PizzaTopping.
   ?r = math:sqrt(?x ^ 2, ?y ^ 2).
   ?theta = math:atan(?x, ?y).
   ?z === (?x + ?y).
-}
+}.
+
+{
+  ?s p/^q/r !o.
+} <-- {}.
+
+john = foobar(1.0, "foo").
