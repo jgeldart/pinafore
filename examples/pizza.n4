@@ -58,7 +58,8 @@ mypizza a Pizza;
 
 property myprop <| with domain Pizza with range PizzaTopping.
 
-{ (?r, ?theta) equals to_polar_coordinates(?x, ?y) } <== {
-  ?r equals math:sqrt(math:mult(?x, ?x), math:mult(?y, ?y)).
-  ?theta equals math:atan(?x, ?y).
+{ (?r, ?theta) = to_polar_coordinates(?x, ?y) } <-- {
+  ?r = math:sqrt(?x ^ 2, ?y ^ 2).
+  ?theta = math:atan(?x, ?y).
+  ?z = (?x + ?y).
 }

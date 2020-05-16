@@ -218,6 +218,7 @@ AssertionObject:
   | ResourceRef
   | GraphAssertion
   | BNodeAssertion
+  | '(' InfixExpression ')'
   | Collection
 ;
 
@@ -250,18 +251,38 @@ UniversalVariable:
 
 BuiltinPredicate:
     IsaPredicate
+  | BackwardChainPredicate
   | ForwardChainPredicate
+  | NumericEqualsPredicate
+  | NumericNotEqualsPredicate
+  | LogicalEqualsPredicate
+  | LogicalNotEqualsPredicate
 ;
 
-IsaPredicate: isa?='a';
-ForwardChainPredicate: forwardChain?='<==';
+IsaPredicate: isa='a';
+BackwardChainPredicate: backwardChain='<--';
+ForwardChainPredicate: forwardChain='<==';
+LogicalEqualsPredicate: logicalEquals='=';
+LogicalNotEqualsPredicate: logicalEquals='=/=';
+NumericEqualsPredicate: numericEquals='==';
+NumericNotEqualsPredicate: numericEquals='!=';
 
 
 //////// List expressions
 
 HeadedList:
-  head=ResourceRef '(' members*=AssertionObject[','] ')'
+  head=ResourceRef '(' members*=HeadedListObject[','] ')'
 ;
+
+HeadedListObject:
+    InfixExpression
+  | HeadedList
+  | BNodeAssertion
+  | GraphAssertion
+  | ResourceRef
+  | Collection
+;
+
 
 Collection:
   SetCollection | AltsCollection | BagCollection | SeqCollection | ListCollection
@@ -285,6 +306,56 @@ SeqCollection:
 
 ListCollection:
   '(' members*=AssertionObject[','] ')'
+;
+
+//////// Infix expressions
+
+InfixExpression:
+  InfixAdditive
+;
+
+InfixAdditive:
+  operands=InfixMultiplicative (operator=KW_ADDITIVE operands=InfixAdditive)?
+;
+
+InfixMultiplicative:
+  operands=InfixExponential (operator=KW_MULTIPLICATIVE operands=InfixMultiplicative)?
+;
+
+InfixExponential:
+  operands=InfixNumericAtom (operator=KW_EXPONENTIAL operands=InfixExponential)?
+;
+
+InfixNumericAtom:
+  UniversalVariable | ExistentialVariable | NumericLiteralExpression | '(' InfixExpression ')' 
+;
+
+KW_ADDITIVE:
+  KW_ADDITIVE_PLUS | KW_ADDITIVE_MINUS
+;
+
+KW_ADDITIVE_PLUS:
+  '+'
+;
+
+KW_ADDITIVE_MINUS:
+  '-'
+;
+
+KW_MULTIPLICATIVE:
+  KW_MULTIPLICATIVE_TIMES | KW_MULTIPLICATIVE_DIVIDE
+;
+
+KW_MULTIPLICATIVE_TIMES:
+  '*'
+;
+
+KW_MULTIPLICATIVE_DIVIDE:
+  '/'
+;
+
+KW_EXPONENTIAL:
+  '^'
 ;
 
 //////// Class expressions
