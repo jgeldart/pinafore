@@ -1,3 +1,9 @@
+Notation4:
+  Ontology | Lexicon
+;
+
+//////// Ontology
+
 Ontology:
   'ontology'
   baseIRI=IRI
@@ -276,8 +282,9 @@ UniversalVariable:
   '?' name=ID
 ;
 
-BuiltinPredicate:
-    IsaPredicate
+BuiltinPredicate[noskipws]:
+  /\s+/
+  ( IsaPredicate
   | BackwardChainPredicate
   | ForwardChainPredicate
   | LogicalIdenticalPredicate
@@ -293,6 +300,8 @@ BuiltinPredicate:
   | LogicalSemanticsPredicate
   | LogicalConclusionsPredicate
   | CollectionInclusionPredicate
+  )
+  /\s+/
 ;
 
 IsaPredicate: op='a';
@@ -803,6 +812,189 @@ DataFacet:
   | 'length' '>=' minInclusiveLength=INT
   | 'length' '=' length=INT
   | 'matches' pattern=STRING
+;
+
+//////// Lexicon
+
+Lexicon:
+  'lexicon'
+  baseIRI=IRI
+  noPrelude?=NoPrelude
+  (END_OF_PROP
+   annotations*=AssertionPredicateBlock[';']
+  )?
+  END_OF_SUBJ
+  ('language' lang=LANG END_OF_SUBJ)?
+  pragmas*=Pragma
+  entries*=LexicalEntry
+;
+
+LexicalEntry:
+  component+=LexicalEntryComponent (',' partOfSpeech=ResourceRef)? ';'
+  (annotations+=LexicalEntryAnnotation[';'] END_OF_PROP)?
+  senses+=LexicalSense
+  END_OF_SUBJ
+;
+
+LexicalEntryComponent:
+  LexicalEntryAtom
+;
+
+LexicalEntryAtom:
+  ResourceRef | '(' LexicalEntryComponent ')'
+;
+
+LexicalEntryAnnotation:
+  predicate=LexicalEntryPredicate
+  objects+=LexicalEntryObject[',']
+;
+
+LexicalEntryPredicate:
+  ResourceRef
+;
+
+LexicalEntryObject:
+  AssertionObject
+;
+
+LexicalSense:
+  '*' ('(' modifers+=LexicalSenseModifier[','] ')')? ('TODO' | definition=LexicalSenseDefinition) ';'
+  annotations*=LexicalEntryAnnotation[';']
+;
+
+LexicalSenseModifier:
+  LexicalSenseModifierRegister | LexicalSenseModifierTemporal | LexicalSenseModifierNormative
+;
+
+LexicalSenseModifierRegister:
+    LexicalSenseModifierRegisterBench
+  | LexicalSenseModifierRegisterDialect
+  | LexicalSenseModifierRegisterFacetious
+  | LexicalSenseModifierRegisterFormal
+  | LexicalSenseModifierRegisterInHouse
+  | LexicalSenseModifierRegisterIronic
+  | LexicalSenseModifierRegisterNeutral
+  | LexicalSenseModifierRegisterSlang
+  | LexicalSenseModifierRegisterTaboo
+  | LexicalSenseModifierRegisterTechnical
+  | LexicalSenseModifierRegisterVulgar
+;
+
+LexicalSenseModifierRegisterBench: op='bench';
+LexicalSenseModifierRegisterDialect: op='dialect';
+LexicalSenseModifierRegisterFacetious: op='facetious';
+LexicalSenseModifierRegisterFormal: op='formal';
+LexicalSenseModifierRegisterInHouse: op='in-house';
+LexicalSenseModifierRegisterIronic: op='ironic';
+LexicalSenseModifierRegisterNeutral: op='neutral';
+LexicalSenseModifierRegisterSlang: op='slang';
+LexicalSenseModifierRegisterTaboo: op='taboo';
+LexicalSenseModifierRegisterTechnical: op='technical';
+LexicalSenseModifierRegisterVulgar: op='vulgar';
+
+LexicalSenseModifierTemporal:
+    LexicalSenseModiferTemporalArchaic
+  | LexicalSenseModifierTemporalObsolete
+  | LexicalSenseModifierTemporalOutdated
+;
+
+LexicalSenseModiferTemporalArchaic: op='archaic';
+LexicalSenseModifierTemporalObsolete: op='obsolete';
+LexicalSenseModifierTemporalOutdated: op='outdated';
+
+LexicalSenseModifierNormative:
+    LexicalSenseModifierNormativeAdmitted
+  | LexicalSenseModifierNormativeDeprecated
+  | LexicalSenseModifierNormativeLegal
+  | LexicalSenseModifierNormativePreferred
+  | LexicalSenseModifierNormativeRegulated
+  | LexicalSenseModifierNormativeStandardized
+  | LexicalSenseModifierNormativeSuperseded
+;
+
+LexicalSenseModifierNormativeAdmitted: op='admitted';
+LexicalSenseModifierNormativeDeprecated: op='deprecated';
+LexicalSenseModifierNormativeLegal: op='legal';
+LexicalSenseModifierNormativePreferred: op='preferred';
+LexicalSenseModifierNormativeRegulated: op='regulated';
+LexicalSenseModifierNormativeStandardized: op='standardized';
+LexicalSenseModifierNormativeSuperseded: op='superseded';
+
+LexicalSenseDefinition:
+    LexicalSenseDefinitionClass
+  | LexicalSenseDefinitionProperty
+;
+
+LexicalSenseDefinitionClass:
+  'a' (klass=ResourceRef | klass=ClassExpression)
+;
+
+LexicalSenseDefinitionProperty:
+  (meaning=LexicalSenseDefinitionPropertyAssertion | meaning=LexicalSenseDefinitionGraph)
+  ('where' conditions+=LexicalSenseDefinitionCondition[','])
+;
+
+LexicalSenseDefinitionGraph:
+  '{' assertions+=LexicalSenseDefinitionPropertyAssertion['.'] '}'
+;
+
+LexicalSenseDefinitionPropertyAssertion:
+  subject=LexicalSenseDefinitionPropertySubject
+  predicates+=LexicalSenseDefinitionPropertyPredicateBlock[';']
+;
+
+LexicalSenseDefinitionPropertySubject:
+    ResourceRef
+  | LexicalSenseArgument
+  | LexicalSenseBNode
+;
+
+LexicalSenseDefinitionPropertyPredicateBlock:
+  predicate=LexicalSenseDefinitionPropertyPredicate
+  objects+=LexicalSenseDefinitionPropertyObject[',']
+;
+
+LexicalSenseDefinitionPropertyPredicate:
+    BuiltinPredicate
+  | ResourceRef
+;
+
+LexicalSenseDefinitionPropertyObject:
+    Literal
+  | ResourceRef
+  | LexicalSenseArgument
+  | LexicalSenseBNode
+;
+
+LexicalSenseArgument:
+  '?' prop=ResourceRef
+;
+
+LexicalSenseBNode:
+  '!' name=ID
+;
+
+LexicalSenseDefinitionCondition:
+  subject=LexicalSenseArgument
+  predicate=LexicalSenseDefinitionConditionPredicate
+;
+
+LexicalSenseDefinitionConditionPredicate:
+    LexicalSenseDefinitionConditionPredicateIsA
+  | LexicalSenseDefinitionConditionPredicateMarker
+  | LexicalSenseDefinitionConditionPredicateOptional
+;
+
+LexicalSenseDefinitionConditionPredicateIsA:
+  'a' (klass=ResourceRef | klass=ClassExpression)
+;
+
+LexicalSenseDefinitionConditionPredicateMarker:
+  'marker' lexentry=LexicalEntryComponent
+;
+
+LexicalSenseDefinitionConditionPredicateOptional:
+  opt='optional'
 ;
 
 

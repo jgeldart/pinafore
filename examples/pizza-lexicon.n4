@@ -1,0 +1,48 @@
+lexicon <http://example.com/pizza-lexicon#>.
+
+language en.
+
+import <http://www.co-ode.org/ontologies/pizza/pizza.owl#> as pizza from "./pizza".
+
+pizza, noun;
+  plural pizzas;
+  * a pizza:Pizza;
+    definition "A food that consists of a flat bread base covered with toppings including tomato"
+.
+
+(italian) pizza, np;
+  * (neutral) a pizza:RealItalianPizza;
+    definition "A pizza that was made in Italy"
+  * (formal, archaic) a (pizza:Pizza that has_certification a pizza:ItalianDOPCertificate);
+    definition "A pizza that is certified as coming from Italy";
+    example "The ITALIAN PIZZA was imported last week"
+.
+
+top, v;
+  * ?subject pizza:hasTopping ?prepositionalObject
+      where ?subject a pizza:Pizza, 
+            ?prepositionalObject a pizza:PizzaTopping, 
+            ?prepositionalObject marker with;
+    definition "The placement of a topping on a particular pizza"
+.
+
+pay, v;
+  pastParticiple paid;
+  * { 
+      !event a pizza:PaymentProcess;
+        agent ?subject;
+        source ?subject;
+        destination ?object;
+        theme ?indirectObject
+    }
+    where ?subject        a agent,
+          ?object         a agent,
+          ?indirectObject a pizza:PortionOfMoney,
+          ?indirectObject optional;
+    example "John PAID the restaurant $100"
+.
+
+bill, v;
+  * TODO;
+    example "The restaurant BILLS John $32 for his pizza"
+.
