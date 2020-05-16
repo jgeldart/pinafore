@@ -763,7 +763,7 @@ PropertyExpressionPrimary:
 ;
 
 PropertyExpressionAtom:
-  PropertyExpressionInverse | PropertyExpressionCartesian | '(' PropertyExpression ')' | PropertyRef
+  PropertyExpressionInverse | PropertyExpressionCartesian | '(' PropertyExpression ')' | PropertySelf | PropertyRef
 ;
 
 PropertyExpressionInverse:
@@ -772,6 +772,10 @@ PropertyExpressionInverse:
 
 PropertyExpressionCartesian:
   (('with' 'domain' domain=ClassExpressionPrimary)? ('with' 'range' range=ClassExpressionPrimary)?)#
+;
+
+PropertySelf[noskipws]:
+  /\s+/ op='it' /\s+/
 ;
 
 
@@ -1066,7 +1070,7 @@ DateTimeExpression:
 ;
 
 DurationExpression:
-  value=/P(?!$)((\d+Y)|(\d+\.\d+Y$))?((\d+M)|(\d+\.\d+M$))?((\d+W)|(\d+\.\d+W$))?((\d+D)|(\d+\.\d+D$))?(T(?=\d)((\d+H)|(\d+\.\d+H$))?((\d+M)|(\d+\.\d+M$))?(\d+(\.\d+)?S)?)??/
+  value=/P(?!$)((\d+Y)|(\d+\.\d+Y$))?((\d+M)|(\d+\.\d+M$))?((\d+W)|(\d+\.\d+W$))?((\d+D)|(\d+\.\d+D$))?(T(?=\d)((\d+H)|(\d+\.\d+H$))?((\d+M)|(\d+\.\d+M$))?(\d+(\.\d+)?S)?)??$/
 ;
 
 StringExpression:
