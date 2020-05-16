@@ -169,7 +169,7 @@ DimensionRef:
 
 BNodeAssertion:
   '['
-  name=NodeLabel?
+  label=BNodeLabel?
   predicates*=AssertionPredicateBlock[';']
   END_OF_PROP?
   ']'
@@ -180,7 +180,7 @@ BNodeAssertion:
 
 GraphAssertion:
  '{'
- name=NodeLabel?
+ label=GraphNodeLabel?
  assertions+=Assertion
  '}'
 ;
@@ -237,8 +237,12 @@ QNameRef[noskipws]:
   /\s*/ (prefix=[Import] ':')? localName=ID
 ;
 
-NodeLabel:
-  ':-'- ResourceRef END_OF_SUBJ-
+BNodeLabel:
+  ':-'- name=ResourceRef END_OF_SUBJ-
+;
+
+GraphNodeLabel:
+  ':-'- name=ResourceRef (END_OF_PROP metadata+=AssertionPredicateBlock[';'])? END_OF_SUBJ-
 ;
 
 ExistentialVariable:
