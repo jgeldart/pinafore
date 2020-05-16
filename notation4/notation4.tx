@@ -69,7 +69,7 @@ Superclass:
 ;
 
 EquivalentClass:
-  '===' equivalentclass=ClassExpression
+  '~=' equivalentclass=ClassExpression
 ;
 
 
@@ -93,7 +93,7 @@ Superproperty:
 ;
 
 EquivalentProperty:
-  '===' equivalentProperty=PropertyExpressionDisjunction
+  '~=' equivalentProperty=PropertyExpressionDisjunction
 ;
 
 
@@ -125,7 +125,7 @@ Superattribute:
 ;
 
 EquivalentAttribute:
-  '===' equivalentAttribute=AttributeRef
+  '~=' equivalentAttribute=AttributeRef
 ;
 
 AttributeRef:
@@ -253,19 +253,37 @@ BuiltinPredicate:
     IsaPredicate
   | BackwardChainPredicate
   | ForwardChainPredicate
+  | LogicalIdenticalPredicate
+  | LogicalDifferentPredicate
   | NumericEqualsPredicate
   | NumericNotEqualsPredicate
+  | NumericLessThanEqualsPredicate
+  | NumericLessThanPredicate
+  | NumericGreaterThanEqualsPredicate
+  | NumericGreaterThanPredicate
   | LogicalEqualsPredicate
   | LogicalNotEqualsPredicate
+  | LogicalSemanticsPredicate
+  | LogicalConclusionsPredicate
+  | CollectionInclusionPredicate
 ;
 
-IsaPredicate: isa='a';
-BackwardChainPredicate: backwardChain='<--';
-ForwardChainPredicate: forwardChain='<==';
-LogicalEqualsPredicate: logicalEquals='=';
-LogicalNotEqualsPredicate: logicalEquals='=/=';
-NumericEqualsPredicate: numericEquals='==';
-NumericNotEqualsPredicate: numericEquals='!=';
+IsaPredicate: 'a';
+BackwardChainPredicate: '<--';
+ForwardChainPredicate: '<==';
+LogicalEqualsPredicate: '=';
+LogicalNotEqualsPredicate: '=/=';
+NumericEqualsPredicate: '==';
+NumericNotEqualsPredicate: '!=';
+NumericLessThanEqualsPredicate: '<=';
+NumericLessThanPredicate: '<';
+NumericGreaterThanEqualsPredicate: '>=';
+NumericGreaterThanPredicate: '>';
+LogicalSemanticsPredicate: '|-';
+LogicalConclusionsPredicate: '|=';
+LogicalIdenticalPredicate: '===';
+LogicalDifferentPredicate: '!==';
+CollectionInclusionPredicate: 'in';
 
 
 //////// List expressions
@@ -426,8 +444,16 @@ ClassExpressionRestrictionQuantity:
 ;
 
 ValueAggregateFunction:
-  'total' | 'maximum' | 'minimum' | 'average'
+    ValueAggregateFunctionTotal 
+  | ValueAggregateFunctionMaximum 
+  | ValueAggregateFunctionMinimum 
+  | ValueAggregateFunctionAverage
 ;
+
+ValueAggregateFunctionTotal: 'total';
+ValueAggregateFunctionMaximum: 'maximum';
+ValueAggregateFunctionMinimum: 'minimum';
+ValueAggregateFunctionAverage: 'average';
 
 ClassExpressionRestrictionSelf:
   role=PropertyExpression 'itself'
@@ -455,8 +481,34 @@ ClassExpressionModal:
 ;
 
 ModalOperator:
-  'obligated' | 'permitted' | 'prohibited' | 'omissable' | 'optionally' | 'certainly' | 'possibly' | 'currently' | 'definitely' | 'assumedly' | 'repeatedly' | 'never' | 'inevitably'
+    ModalOperatorObligation
+  | ModalOperatorPermission
+  | ModalOperatorProhibition
+  | ModalOperatorOmission
+  | ModalOperatorOption
+  | ModalOperatorCertain
+  | ModalOperatorPossible
+  | ModalOperatorCurrent
+  | ModalOperatorKnown
+  | ModalOperatorAssumption
+  | ModalOperatorRepeat
+  | ModalOperatorSafety
+  | ModalOperatorLiveness
 ;
+
+ModalOperatorObligation: 'obligated';
+ModalOperatorPermission: 'permitted';
+ModalOperatorProhibition: 'prohibited';
+ModalOperatorOmission: 'omissable';
+ModalOperatorOption: 'optionally';
+ModalOperatorCertain: 'certainly';
+ModalOperatorPossible: 'possibly';
+ModalOperatorCurrent: 'currently';
+ModalOperatorKnown: 'definitely';
+ModalOperatorAssumption: 'assumedly';
+ModalOperatorRepeat: 'repeatedly';
+ModalOperatorSafety: 'never';
+ModalOperatorLiveness: 'inevitably';
 
 ClassExpressionTemporal:
     ClassExpressionTemporalNext
@@ -525,8 +577,11 @@ PropertyExpression:
 ;
 
 PluralOperator:
-  'some' | 'each'
+  PluralOperatorCumulative | PluralOperatorDistributive
 ;
+
+PluralOperatorCumulative: 'someOf';
+PluralOperatorDistributive: 'eachOf';
 
 PropertyExpressionChain:
   props+=PropertyExpressionDisjunction['of']

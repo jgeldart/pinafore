@@ -31,18 +31,18 @@ class PizzaTopping <| Food;
 
 class RealItalianPizza 
   <| hasBase only a ThinAndCrispyBase;
-  === Pizza that hasCountryOfOrigin is Italy;
+  ~= Pizza that hasCountryOfOrigin is Italy;
   rdfs:label "RealItalianPizza", "PizzaItalianReal"@pt;
   skos:definition "Any Pizza that has the country of origin, Italy. RealItalianPizzas must also only have ThinAndCrispy bases.";
   skos:prefLabel "Real Italian Pizza".
 
 class SpicyPizzaEquivalent 
-  === Pizza 
-    that 
-      hasTopping a (PizzaTopping and hasSpiciness a Hot)
+  ~= Pizza 
+      that 
+        hasTopping a (PizzaTopping and hasSpiciness a Hot)
   .
 
-class LargePizza === Pizza that has_size measuring number[> 12][< 21] om:inch.
+class LargePizza ~= Pizza that has_size measuring number[> 12][< 21] om:inch.
 
 class Customer 
   <| role that hasBearer a person;
@@ -61,5 +61,5 @@ property myprop <| with domain Pizza with range PizzaTopping.
 { (?r, ?theta) = to_polar_coordinates(?x, ?y) } <-- {
   ?r = math:sqrt(?x ^ 2, ?y ^ 2).
   ?theta = math:atan(?x, ?y).
-  ?z = (?x + ?y).
+  ?z === (?x + ?y).
 }
