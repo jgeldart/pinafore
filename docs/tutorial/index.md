@@ -405,7 +405,7 @@ Representing processes, production.
 
 ## Order for table 1
 
-Modal logic and terms and conditions using DActs and OCE.
+Modal logic and terms and conditions using DActs and OCE, n-ary relations (relational qualities).
 
 ## On time, you're full
 
