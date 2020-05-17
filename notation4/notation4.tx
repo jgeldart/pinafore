@@ -697,10 +697,16 @@ ModalOperatorCurrent: op='currently';
 ModalOperatorEpistemic:
     ModalOperatorKnown
   | ModalOperatorAssumption
+  | ModalOperatorProvably
+  | ModalOperatorPurportedly
+  | ModalOperatorProbably
 ;
 
 ModalOperatorKnown: op='certainly';
 ModalOperatorAssumption: op='presumably';
+ModalOperatorProvably: op='provably';
+ModalOperatorPurportedly: op='purportedly';
+ModalOperatorProbably: op='probably';
 
 ModalOperatorTemporal:
     ModalOperatorRepeat
