@@ -61,7 +61,7 @@ Assertion:
 ClassDeclaration:
   'class' 
   (subclass=ClassExpressionPrimary | name=ClassRef)
-  (END_OF_PROP?
+  (END_OF_PROP
    axioms*=CIAxiom[';']
   )
 ;
@@ -85,7 +85,7 @@ PropertyDeclaration:
   (functional?='functional' inverseFunctional?='inversefunctional' reflexive?='reflexive' irreflexive?='irreflexive' symmetric?='symmetric' asymmetric?='asymmetric' transitive?='transitive')#
   'property'
   (subprop=PropertyExpressionChain | name=PropertyRef)
-  (END_OF_PROP?
+  (END_OF_PROP
    axioms*=PIAxiom[';']
   )
 ;
@@ -109,7 +109,7 @@ AttributeDeclaration:
   'attribute'
   name=AttributeRef
   (('with' 'domain' domain=AttributeDomain)? ('with' 'range' range=AttributeRange)?)#
-  (END_OF_PROP?
+  (END_OF_PROP
    axioms*=AIAxiom[';']
   )
 ;
@@ -143,7 +143,7 @@ AttributeRef:
 
 DatatypeDeclaration:
   'datatype' name=DatatypeRef '<|' restriction=DataRestriction
-  (END_OF_PROP?
+  (END_OF_PROP
    axioms*=AssertionPredicateBlock[';']
   )
 ;
@@ -157,7 +157,7 @@ DatatypeRef:
 
 QuantityDeclaration:
   'quantity' name=QuantityRef (('with' 'dimension' dimension=DimensionRef)? ('with' 'property' prop=PropertyRef)?)#
-  ( END_OF_PROP?
+  ( END_OF_PROP
     axioms*=CIAxiom[';']
   )
 ;
