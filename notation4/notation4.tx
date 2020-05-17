@@ -156,7 +156,7 @@ DatatypeRef:
 //////// Quantity declarations
 
 QuantityDeclaration:
-  'quantity' name=QuantityRef (('with' 'dimension' dimension=DimensionRef)? ('with' 'property' prop=PropertyRef)?)#
+  'quantity' name=QuantityRef ((('with' 'dimension' dimension=DimensionRef) | ('with' 'unit' (restriction=RangeExpressionNumber)? unit=UnitRef))? ('with' 'property' prop=PropertyRef)?)#
   ( END_OF_PROP?
     axioms*=CIAxiom[';']
   )
@@ -170,6 +170,9 @@ DimensionRef:
   IRIRef | QNameRef
 ;
 
+UnitRef:
+  IRIRef | QNameRef
+;
 
 //////// BNode assertions
 
