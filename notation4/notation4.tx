@@ -61,7 +61,7 @@ Assertion:
 ClassDeclaration:
   'class' 
   (subclass=ClassExpressionPrimary | name=ClassRef)
-  (END_OF_PROP
+  (END_OF_PROP?
    axioms*=CIAxiom[';']
   )
 ;
@@ -85,7 +85,7 @@ PropertyDeclaration:
   (functional?='functional' inverseFunctional?='inversefunctional' reflexive?='reflexive' irreflexive?='irreflexive' symmetric?='symmetric' asymmetric?='asymmetric' transitive?='transitive')#
   'property'
   (subprop=PropertyExpressionChain | name=PropertyRef)
-  (END_OF_PROP
+  (END_OF_PROP?
    axioms*=PIAxiom[';']
   )
 ;
@@ -109,7 +109,7 @@ AttributeDeclaration:
   'attribute'
   name=AttributeRef
   (('with' 'domain' domain=AttributeDomain)? ('with' 'range' range=AttributeRange)?)#
-  (END_OF_PROP
+  (END_OF_PROP?
    axioms*=AIAxiom[';']
   )
 ;
@@ -143,7 +143,7 @@ AttributeRef:
 
 DatatypeDeclaration:
   'datatype' name=DatatypeRef '<|' restriction=DataRestriction
-  (END_OF_PROP
+  (END_OF_PROP?
    axioms*=AssertionPredicateBlock[';']
   )
 ;
@@ -157,7 +157,7 @@ DatatypeRef:
 
 QuantityDeclaration:
   'quantity' name=QuantityRef (('with' 'dimension' dimension=DimensionRef)? ('with' 'property' prop=PropertyRef)?)#
-  ( END_OF_PROP
+  ( END_OF_PROP?
     axioms*=CIAxiom[';']
   )
 ;
@@ -285,6 +285,8 @@ UniversalVariable:
 BuiltinPredicate[noskipws]:
   /\s+/
   ( IsaPredicate
+  | SuperPredicate
+  | EquivalentPredicate
   | BackwardChainPredicate
   | ForwardChainPredicate
   | LogicalIdenticalPredicate
@@ -305,6 +307,8 @@ BuiltinPredicate[noskipws]:
 ;
 
 IsaPredicate: op='a';
+SuperPredicate: op='<|';
+EquivalentPredicate: op='~=';
 BackwardChainPredicate: op='<--';
 ForwardChainPredicate: op='<==';
 LogicalEqualsPredicate: op='=';
@@ -573,6 +577,7 @@ ClassExpressionRestriction:
   | ClassExpressionRestrictionMinCard
   | ClassExpressionRestrictionExactCard
   | ClassExpressionRestrictionQuantity
+  | ClassExpressionRestrictionPortion
   | ClassExpressionRestrictionSelf
   | ClassExpressionRestrictionValue
 ;
@@ -590,11 +595,11 @@ ClassExpressionRestrictionSome:
 ;
 
 ClassExpressionRestrictionMaxCard:
-  role=PropertyExpression 'at' 'most' cardinality=INT restriction=ClassExpressionPrimary
+  role=PropertyExpression 'max' cardinality=INT restriction=ClassExpressionPrimary
 ;
 
 ClassExpressionRestrictionMinCard:
-  role=PropertyExpression 'at' 'least' cardinality=INT restriction=ClassExpressionPrimary
+  role=PropertyExpression 'min' cardinality=INT restriction=ClassExpressionPrimary
 ;
 
 ClassExpressionRestrictionExactCard:
@@ -602,7 +607,20 @@ ClassExpressionRestrictionExactCard:
 ;
 
 ClassExpressionRestrictionQuantity:
-  role=PropertyExpression  'measuring' restriction=DataRestriction unit=ResourceRef (aggregateFunction=ValueAggregateFunction)?
+  role=PropertyExpression  'measuring' restriction=QuantityValueRestriction unit=ResourceRef (aggregateFunction=ValueAggregateFunction)?
+;
+
+ClassExpressionRestrictionPortion:
+  (restriction=QuantityValueRestriction unit=ResourceRef)? 'portion' klass=ClassExpressionPrimary 
+;
+
+QuantityValueRestriction:
+    RangeExpressionNumber
+  | QuantityValueRestrictionExact
+;
+
+QuantityValueRestrictionExact:
+  value=NumberLiteralExpression
 ;
 
 ValueAggregateFunction:
@@ -1018,6 +1036,19 @@ NumericLiteralExpression:
   | IntegerExpression
 ;
 
+NumberLiteralExpression:
+    DecimalExpression
+  | RationalExpression
+  | IntegerExpression
+;
+
+TemporalLiteralExpression:
+    DateTimeExpression
+  | TimeExpression
+  | DateExpression
+  | DurationExpression
+;
+
 LiteralExpression:
     DateTimeExpression
   | TimeExpression
@@ -1032,14 +1063,44 @@ LiteralExpression:
 
 // FIXME: These would be great, if we can find a single way to desugar them
 RangeExpression:
-    lower=DateTimeExpression '..' upper=DateTimeExpression
-  | lower=TimeExpression '..' upper=TimeExpression
-  | lower=DateExpression '..' upper=DateExpression
-  | lower=DecimalExpression '..' upper=DecimalExpression
-  | lower=RationalExpression '..' upper=RationalExpression
-  | lower=IntegerExpression '..' upper=IntegerExpression
+  RangeExpressionTemporal | RangeExpressionNumber
 ;
 
+RangeExpressionNumber:
+    RangeExpressionDecimal
+  | RangeExpressionRational
+  | RangeExpressionInteger
+;
+
+RangeExpressionTemporal:
+    RangeExpressionDateTime
+  | RangeExpressionTime
+  | RangeExpressionDate
+;
+
+RangeExpressionDateTime:
+  (lowerOpen='(' | lowerClosed='[') lower=DateTimeExpression? '..' higher=DateTimeExpression? (higherOpen=')' | higherClosed=']')
+;
+
+RangeExpressionTime:
+  (lowerOpen='(' | lowerClosed='[') lower=TimeExpression? '..' higher=TimeExpression? (higherOpen=')' | higherClosed=']')
+;
+
+RangeExpressionDate:
+  (lowerOpen='(' | lowerClosed='[') lower=DateExpression? '..' higher=DateExpression? (higherOpen=')' | higherClosed=']')
+;
+
+RangeExpressionDecimal:
+  (lowerOpen='(' | lowerClosed='[') lower=DecimalExpression? '..' higher=DecimalExpression? (higherOpen=')' | higherClosed=']')
+;
+
+RangeExpressionRational:
+  (lowerOpen='(' | lowerClosed='[') lower=RationalExpression? '..' higher=RationalExpression? (higherOpen=')' | higherClosed=']')
+;
+
+RangeExpressionInteger:
+  (lowerOpen='(' | lowerClosed='[') lower=IntegerExpression? '..' higher=IntegerExpression? (higherOpen=')' | higherClosed=']')
+;
 
 DecimalExpression:
   value=STRICTFLOAT
