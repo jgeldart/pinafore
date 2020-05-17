@@ -573,12 +573,12 @@ ClassExpressionPrimary:
 ;
 
 ClassExpressionRestriction:
-    ClassExpressionRestrictionOnlySome
-  | ClassExpressionRestrictionOnly
-  | ClassExpressionRestrictionSome
-  | ClassExpressionRestrictionMaxCard
+    ClassExpressionRestrictionMaxCard
   | ClassExpressionRestrictionMinCard
   | ClassExpressionRestrictionExactCard
+  | ClassExpressionRestrictionOnlySome
+  | ClassExpressionRestrictionOnly
+  | ClassExpressionRestrictionSome
   | ClassExpressionRestrictionQuantity
   | ClassExpressionRestrictionPortion
   | ClassExpressionRestrictionSelf
@@ -598,11 +598,11 @@ ClassExpressionRestrictionSome:
 ;
 
 ClassExpressionRestrictionMaxCard:
-  role=PropertyExpression 'max' cardinality=INT restriction=ClassExpressionPrimary
+  role=PropertyExpression 'at' 'most' cardinality=INT restriction=ClassExpressionPrimary
 ;
 
 ClassExpressionRestrictionMinCard:
-  role=PropertyExpression 'min' cardinality=INT restriction=ClassExpressionPrimary
+  role=PropertyExpression 'at' 'least' cardinality=INT restriction=ClassExpressionPrimary
 ;
 
 ClassExpressionRestrictionExactCard:
@@ -664,31 +664,50 @@ ClassExpressionModal:
 ;
 
 ModalOperator:
+    ModalOperatorDeontic
+  | ModalOperatorAlethic
+  | ModalOperatorEpistemic
+  | ModalOperatorTemporal
+;
+
+ModalOperatorDeontic:
     ModalOperatorObligation
   | ModalOperatorPermission
   | ModalOperatorProhibition
   | ModalOperatorOmission
   | ModalOperatorOption
-  | ModalOperatorCertain
+;
+
+ModalOperatorObligation: op='must';
+ModalOperatorPermission: op='may';
+ModalOperatorProhibition: op='cannot';
+ModalOperatorOmission: op='might';
+ModalOperatorOption: op='could';
+
+ModalOperatorAlethic:
+    ModalOperatorNecessary
   | ModalOperatorPossible
   | ModalOperatorCurrent
-  | ModalOperatorKnown
+;
+
+ModalOperatorNecessary: op='necessarily';
+ModalOperatorPossible: op='maybe';
+ModalOperatorCurrent: op='currently';
+
+ModalOperatorEpistemic:
+    ModalOperatorKnown
   | ModalOperatorAssumption
-  | ModalOperatorRepeat
+;
+
+ModalOperatorKnown: op='certainly';
+ModalOperatorAssumption: op='presumably';
+
+ModalOperatorTemporal:
+    ModalOperatorRepeat
   | ModalOperatorSafety
   | ModalOperatorLiveness
 ;
 
-ModalOperatorObligation: op='obligated';
-ModalOperatorPermission: op='permitted';
-ModalOperatorProhibition: op='prohibited';
-ModalOperatorOmission: op='omissable';
-ModalOperatorOption: op='optionally';
-ModalOperatorCertain: op='certainly';
-ModalOperatorPossible: op='possibly';
-ModalOperatorCurrent: op='currently';
-ModalOperatorKnown: op='definitely';
-ModalOperatorAssumption: op='assumedly';
 ModalOperatorRepeat: op='repeatedly';
 ModalOperatorSafety: op='never';
 ModalOperatorLiveness: op='inevitably';
@@ -763,8 +782,8 @@ PluralOperator:
   PluralOperatorCumulative | PluralOperatorDistributive
 ;
 
-PluralOperatorCumulative: op='someOf';
-PluralOperatorDistributive: op='eachOf';
+PluralOperatorCumulative: op='variously';
+PluralOperatorDistributive: op='separately';
 
 PropertyExpressionChain:
   props+=PropertyExpressionDisjunction['of']
@@ -789,7 +808,7 @@ PropertyExpressionAtom:
 ;
 
 PropertyExpressionInverse:
-  'inverse' prop=PropertyExpressionPrimary
+  ('inverse' prop=PropertyExpressionPrimary) | ('be' prop=PropertyExpressionPrimary 'by')
 ;
 
 PropertyExpressionCartesian:
@@ -797,7 +816,7 @@ PropertyExpressionCartesian:
 ;
 
 PropertyExpressionQuantity:
-  'quantity' quantity=QuantityRef
+  'the' 'quantity' quantity=QuantityRef
 ;
 
 PropertySelf[noskipws]:

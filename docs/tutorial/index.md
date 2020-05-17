@@ -225,8 +225,8 @@ class MammalianMilk ~= foodon:_03315150.
 class VegetarianPizza <| Pizza that has_topping only VegetarianFoodProduct.
 class VeganPizza <| VegetarianPizza that has_topping only not (MammalianMilk or derived_from a MammalianMilk).
 
-class SimplePizza ~= Pizza that has_topping max 3 object.
-class FullyLoadedPizza ~= Pizza that has_defining_topping min 6 object.
+class SimplePizza ~= Pizza that has_topping at most 3 object.
+class FullyLoadedPizza ~= Pizza that has_defining_topping at least 6 object.
 ```
 
 Since this is a knowledge-based approach, we can continually evolve our categories to meet changing customer needs. By defining the categories in terms of more primitive facts, as soon as we add the class it will automatically apply to all relevant individuals and subclasses. Say goodbye to lots of tedious, manual, and error-prone tagging work.
@@ -243,7 +243,7 @@ In this section, we have learnt:
 * The benefits of using ontologies for organizing and querying in everyday information systems;
 * How to quickly define human-centred taxonomies by declaring classes that capture the meaning of each category;
 * The ease with which we can combine concepts across multiple ontologies (here, FOODON, HP, and RO); and
-* How to build more complex expressions including cardinality constraints (`max`/`min`), complements (`not`), and disjunctions (`or`).
+* How to build more complex expressions including cardinality constraints (`at most`/`at least`), complements (`not`), and disjunctions (`or`).
 
 ## Portion control
 
@@ -295,15 +295,15 @@ In the above declaration, we also provide an (optional) instruction to define a 
 For now, lets add some more quantities for the other standard nutritional data that food labels tend to focus on:
 <br>
 ```
-quantity FatContent with unit [0 ..) om:gram with property has_fat_content.
+quantity FatContent with unit [0 ..) om:gram.
 
-quantity ProteinContent with unit [0 ..) om:gram with property has_protein_content.
+quantity ProteinContent with unit [0 ..) om:gram.
 
-quantity CarbohydrateContent with unit [0 ..) om:gram with property has_carbohydrate_content.
+quantity CarbohydrateContent with unit [0 ..) om:gram.
 
-quantity FibreContent with unit [0 ..) om:gram with property has_fibre_content.
+quantity FibreContent with unit [0 ..) om:gram.
 
-quantity SodiumContent with unit [0 ..) om:gram with property has_sodium_content.
+quantity SodiumContent with unit [0 ..) om:gram.
 ```
 
 In these cases, we have chosen to define them using a preferred unit rather than dimension. This lets us place restrictions on the range of values this quantity may take (here, that they're all non-negative).
@@ -313,11 +313,11 @@ With these in hand, we can describe a category of especially healthy pizzas:
 ```
 property has_ingredient ~= foodon:_00002420.
 
-class SuperLeanPizza ~= Pizza 
-  that 
-      quantity FoodEnergyContent measuring [.. 1000] om:kilocalorie
-  and quantity CarbohydrateContent of has_ingredient measuring [.. 180] om:gram total
-  and quantity FatContent of has_ingredient measuring [.. 30] om:gram total.
+class SuperLeanPizza ~= Pizza 
+  that 
+      the quantity FoodEnergyContent measuring [.. 1000] om:kilocalorie
+  and the quantity CarbohydrateContent of has_ingredient measuring [.. 180] om:gram total
+  and the quantity FatContent of has_ingredient measuring [.. 30] om:gram total.
 ```
 
 Whew. That's a lot of new syntax. We might need a couple of these delicious-yet-healthy pizzas after we've gone through it. Let's break it down.

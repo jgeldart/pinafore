@@ -55,8 +55,8 @@ class MammalianMilk ~= foodon:_03315150.
 class VegetarianPizza <| Pizza that has_topping only VegetarianFoodProduct.
 class VeganPizza <| VegetarianPizza that has_topping only not (MammalianMilk or derived_from a MammalianMilk).
 
-class SimplePizza ~= Pizza that has_topping max 3 object.
-class FullyLoadedPizza ~= Pizza that has_defining_topping min 6 object.
+class SimplePizza ~= Pizza that has_topping at most 3 object.
+class FullyLoadedPizza ~= Pizza that has_defining_topping at least 6 object.
 
 class Mozzerella ~= foodon:_03303578.
 class StandardChessePortion ~= [123..127] om:gram portion Mozzerella.
@@ -66,22 +66,37 @@ quantity FoodEnergyContent
   with property has_energy_content
 .
 
-quantity FatContent with unit [0 ..) om:gram with property has_fat_content.
+quantity FatContent with unit [0 ..) om:gram.
 
-quantity ProteinContent with unit [0 ..) om:gram with property has_protein_content.
+quantity ProteinContent with unit [0 ..) om:gram.
 
-quantity CarbohydrateContent with unit [0 ..) om:gram with property has_carbohydrate_content.
+quantity CarbohydrateContent with unit [0 ..) om:gram.
 
-quantity FibreContent with unit [0 ..) om:gram with property has_fibre_content.
+quantity FibreContent with unit [0 ..) om:gram.
 
-quantity SodiumContent with unit [0 ..) om:gram with property has_sodium_content.
+quantity SodiumContent with unit [0 ..) om:gram.
 
 transitive property has_ingredient ~= foodon:_00002420.
 
 class SuperLeanPizza ~= Pizza 
   that 
-      quantity FoodEnergyContent measuring [.. 1000] om:kilocalorie
-  and quantity CarbohydrateContent of has_ingredient measuring [.. 180] om:gram total
-  and quantity FatContent of has_ingredient measuring [.. 30] om:gram total.
+      the quantity FoodEnergyContent measuring [.. 1000] om:kilocalorie
+  and the quantity CarbohydrateContent of has_ingredient measuring [.. 180] om:gram total
+  and the quantity FatContent of has_ingredient measuring [.. 30] om:gram total.
 
 property causes_allergic_reaction of has_ingredient <| causes_allergic_reaction.
+
+class QuattroStagioni 
+  <|  Pizza 
+        that 
+            has_topping a 25 om:gram portion Mozzerella
+        and has_topping a portion HealthyPassata
+        and has_topping a portion CherryTomato
+        and has_topping a portion Caper
+        and has_topping a portion Courgette
+        and has_topping a portion GreenOlive
+        and has_topping a portion Garlic
+        and has_topping a portion OliveOil
+        and has_topping a portion Parsely
+.
+

@@ -46,7 +46,7 @@ class LargePizza ~= Pizza that has_size of item measuring (12 .. 21) om:inch.
 
 class Customer 
   <| role that hasBearer a person;
-  <| obligated always hasAccount only (balance of it measuring [0 ..] cur:GBP)
+  <| must always has_account only (balance of it measuring [0 ..] cur:GBP)
   .
 
 quantity PizzaSize with dimension om:Length with property has_size.
@@ -55,6 +55,10 @@ mypizza a Pizza;
   has_size 18 om:inch;
   has_tags (Pepper, Cheese)
   .
+
+class PopGroup ~= MusicGroup that variously perform a PopSong.
+
+class PopSong ~= Song that be has_composition by a PopGroup.
 
 property myprop <| with domain Pizza with range PizzaTopping.
 
