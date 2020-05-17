@@ -31,6 +31,14 @@
             "Style": 0,
             "use-cases": 1
           }
+        },
+        "tutorial": {
+          "name": "tutorial",
+          "isOrdered": true,
+          "folders": {},
+          "files": {
+            "index": 0
+          }
         }
       },
       "files": {}
@@ -63,6 +71,31 @@
       "name": "venv",
       "isOrdered": true,
       "folders": {},
+      "files": {}
+    },
+    "build": {
+      "name": "build",
+      "isOrdered": true,
+      "folders": {},
+      "files": {}
+    },
+    "dist": {
+      "name": "dist",
+      "isOrdered": true,
+      "folders": {},
+      "files": {}
+    },
+    "notation4": {
+      "name": "notation4",
+      "isOrdered": true,
+      "folders": {
+        "__pycache__": {
+          "name": "__pycache__",
+          "isOrdered": true,
+          "folders": {},
+          "files": {}
+        }
+      },
       "files": {}
     }
   },

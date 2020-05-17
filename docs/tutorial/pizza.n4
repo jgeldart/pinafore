@@ -1,0 +1,85 @@
+ontology <https://example.com/healthy-pizzas/0.1#>;
+  title "Healthy Pizzas"; 
+  version "0.1"; 
+  description """ 
+    An ontology for the Healthy Pizza Restaurant, providing customers with easy access to the best pizzas in the world 
+  """; 
+  creator [ 
+    a foaf:Person; 
+    foaf:mbox <mailto:joe@example.com>; 
+    foaf:mbox <mailto:sales@example.com>; 
+    foaf:homepage <http://www.example.com>, <https://www.example.com>; 
+  ] 
+. 
+
+import <http://xmlns.com/foaf/0.1/> as foaf.
+import <http://purl.obolibrary.org/obo/FOODON> as foodon.
+import <http://purl.obolibrary.org/obo/HP> as hp.
+import <http://purl.obolibrary.org/obo/RO> as ro.
+import <http://www.ontology-of-units-of-measure.org/resource/om-2/> as om.
+
+class PizzaCrust ~= foodon:_03317327.
+
+class PizzaSauce ~= foodon:_03306786.
+
+class Pizza <| foodon:_03310775;
+  <| has_base only PizzaCrust and has_topping a PizzaSauce;
+  status "testing";
+  label "pizza".
+
+property has_base <| foodon:_00001563;
+  <| with domain Pizza with range PizzaCrust;
+  status "stable";
+  label "has base".
+
+property has_topping <| foodon:_00002420;
+  <| with domain Pizza.
+
+property has_defining_topping ~= has_topping and foodon:_00001563.
+
+class StandardCrust <| PizzaCrust.
+class ItalianStyleCrust <| PizzaCrust.
+
+property causes_allergic_reaction ~= ro:_0001020.
+class GlutenIntolerance ~= hp:_0012538.
+class GlutenFreeCrust <| PizzaCrust and not causes_allergic_reaction a GlutenIntolerance.
+
+class ThinGlutenFreeCrust <| GlutenFreeCrust.
+
+class GlutenFreePizza <| Pizza that has_base only GlutenFreeCrust.
+
+class VegetarianFoodProduct ~= foodon:_00003194.
+property derived_from ~= ro:_0001000.
+class MammalianMilk ~= foodon:_03315150.
+
+class VegetarianPizza <| Pizza that has_topping only VegetarianFoodProduct.
+class VeganPizza <| VegetarianPizza that has_topping only not (MammalianMilk or derived_from a MammalianMilk).
+
+class SimplePizza ~= Pizza that has_topping max 3 object.
+class FullyLoadedPizza ~= Pizza that has_defining_topping min 6 object.
+
+class Mozzerella ~= foodon:_03303578.
+class StandardChessePortion ~= [123..127] om:gram portion Mozzerella.
+
+quantity FoodEnergyContent 
+  with dimension <http://www.ontology-of-units-of-measure.org/resource/om-2/energy-Dimension> 
+  with property has_energy_content
+.
+
+quantity FatContent with unit [0 ..) om:gram with property has_fat_content.
+
+quantity ProteinContent with unit [0 ..) om:gram with property has_protein_content.
+
+quantity CarbohydrateContent with unit [0 ..) om:gram with property has_carbohydrate_content.
+
+quantity FibreContent with unit [0 ..) om:gram with property has_fibre_content.
+
+quantity SodiumContent with unit [0 ..) om:gram with property has_sodium_content.
+
+property has_ingredient ~= foodon:_00002420.
+
+class SuperLeanPizza ~= Pizza 
+  that 
+      quantity FoodEnergyContent measuring [.. 1000] om:kilocalorie
+  and quantity CarbohydrateContent of has_ingredient measuring [.. 180] om:gram total
+  and quantity FatContent of has_ingredient measuring [.. 30] om:gram total.
