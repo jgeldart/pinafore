@@ -76,10 +76,12 @@ quantity FibreContent with unit [0 ..) om:gram with property has_fibre_content.
 
 quantity SodiumContent with unit [0 ..) om:gram with property has_sodium_content.
 
-property has_ingredient ~= foodon:_00002420.
+transitive property has_ingredient ~= foodon:_00002420.
 
 class SuperLeanPizza ~= Pizza 
   that 
       quantity FoodEnergyContent measuring [.. 1000] om:kilocalorie
   and quantity CarbohydrateContent of has_ingredient measuring [.. 180] om:gram total
   and quantity FatContent of has_ingredient measuring [.. 30] om:gram total.
+
+property causes_allergic_reaction of has_ingredient <| causes_allergic_reaction.

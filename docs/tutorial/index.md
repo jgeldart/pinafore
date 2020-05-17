@@ -337,6 +337,41 @@ In this section, we have learnt:
 * The use of value aggregation functions to apply calculations across all values for a property expression; and
 * How we can use the quantity property expression constructor to reference a quantity without manually tracking the associated property.
 
+## Product safety
+
+As a quick aside, now we know about property expressions we can express some knowledge about product safety. We will begin by amending our declaration of `has_ingredient`:
+<br>
+```
+transitive property has_ingredient ~= foodon:_00002420.
+```
+
+The `transitive` modifer on the property says that whenever we see three entities related by a chain of `has_ingredient` predicates, we can treat the first and last in the chain as also being related by a `has_ingredient` predicate. The following modifiers are available:
+
+* `transitive`: if `p` is transitive and we have `a p b` and `b p c`, then we have `a p c`
+* `functional`: if `p` is functional and we have `a p b` and `a p c`, then `b` must refer to the same thing as `c`
+* `inversefunctional`: if `p` is inverse functional and we have `a p b` and `c p b`, then `a` must refer to the same thing as `c`
+* `symmetric`: if `p` is symmetric and `a p b`, then `b p a`
+* `asymmetric`: if `p` is asymmetric and `a p b`, then we cannot also have `b p a`
+* `reflexive`: if `p` is reflexive and `a p b`, then we must also have `a p a`
+* `irreflexive`: if `p` is irreflexive and `a p b`, then we cannot also have `a p a`
+
+These modifiers could be expressed in other, more cumbersome ways, but the syntactic sugar is provided to make them easier to use.
+
+With that definition of `has_ingredient`, we can now state an important product safety principle:
+<br>
+```
+property causes_allergic_reaction of has_ingredient <| causes_allergic_reaction.
+```
+
+That is, any allergic reaction caused by an ingredient is an allergic reaction of the thing with that ingredient. This sort of declaration is called a property chain axiom, and is a simple (and efficient) way of stating basic rules about the world.
+
+### Review
+
+In this aside, we have learnt:
+
+* That property declarations can take modifiers that provide a shorthand for asserting particular properties; and
+* That property declarations don't have to declare a simple QName, but can declare complex property expressions.
+
 ## On the menu
 
 Describing individual pizzas, available sizes.
