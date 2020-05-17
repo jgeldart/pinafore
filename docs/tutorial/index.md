@@ -166,6 +166,10 @@ class Pizza <| foodon:_03310775;
 
 Instead of saying `Pizza` is a subclass of another simple class, in this case we're using a *class expression* to state more complex relationships. The `only` keyword is used to assert that whenever an individual of type `Pizza` has a predicate of `has_base` then the object can only be a `PizzaCrust`. The `a` keyword says that any individual of type `Pizza` **must** be related to some instance of type `PizzaSauce` by the `has_topping` property. This makes precise the informal description above.
 
+### Exercises
+
+* Add some extra annotations to one of the classes
+
 ### Review
 
 In this section we have learnt:
@@ -226,6 +230,11 @@ class FullyLoadedPizza ~= Pizza that has_defining_topping min 6 object.
 ```
 
 Since this is a knowledge-based approach, we can continually evolve our categories to meet changing customer needs. By defining the categories in terms of more primitive facts, as soon as we add the class it will automatically apply to all relevant individuals and subclasses. Say goodbye to lots of tedious, manual, and error-prone tagging work.
+
+### Exercises
+
+* Define your own crust class
+* Define some additional categories that you think customers will want to search for using the properties we defined above and concepts from FOODON
 
 ### Review
 
@@ -326,6 +335,12 @@ We are not limited to simple properties however. This constructor (and all const
 
 Property expressions are powerful, and can be used to define more complex properties much like class expressions can be used to define complex classes. There are more ways to construct property expressions than just chains. You can use inverses (which says to traverse the expression component from object to subject instead of subject to object), conjunction, disjunction, and more. In this case, we're using a special piece of syntactic sugar `quantity` for referencing whatever property is created for a quantity (either the default one, or a manually declared one).
 
+### Exercises
+
+* Add quantities for some micronutrients (such as iron) with the appropriate units
+* Define a class for vitamins and some quantities for different kinds of vitamins with the appropriate units
+* Define a class for a particular diet that is rich in, say, iron
+
 ### Review
 
 In this section, we have learnt:
@@ -364,6 +379,10 @@ property causes_allergic_reaction of has_ingredient <| causes_allergic_reac
 ```
 
 That is, any allergic reaction caused by an ingredient is an allergic reaction of the thing with that ingredient. This sort of declaration is called a property chain axiom, and is a simple (and efficient) way of stating basic rules about the world.
+
+### Exercises
+
+* The above rule for allergic reactions isn't quite enough to capture our product safety requirement. Define an additional rule to state that if a pizza derives from (ro:\_0001000) another food and that food causes an allergic reaction then the pizza also causes the allergic reaction
 
 ### Review
 
