@@ -768,6 +768,7 @@ PluralOperatorDistributive: op='eachOf';
 
 PropertyExpressionChain:
   props+=PropertyExpressionDisjunction['of']
+  (isLocalRooted?=PropertySelf)
 ;
 
 PropertyExpressionDisjunction:
@@ -784,7 +785,7 @@ PropertyExpressionPrimary:
 ;
 
 PropertyExpressionAtom:
-  PropertyExpressionInverse | PropertyExpressionCartesian | '(' PropertyExpression ')' | PropertySelf | PropertyRef
+  PropertyExpressionInverse | PropertyExpressionCartesian | PropertyExpressionQuantity | '(' PropertyExpression ')' | PropertySelf | PropertyRef
 ;
 
 PropertyExpressionInverse:
@@ -795,8 +796,12 @@ PropertyExpressionCartesian:
   (('with' 'domain' domain=ClassExpressionPrimary)? ('with' 'range' range=ClassExpressionPrimary)?)#
 ;
 
+PropertyExpressionQuantity:
+  'quantity' quantity=QuantityRef
+;
+
 PropertySelf[noskipws]:
-  /\s+/ op='it' /\s+/
+  /\s+/ 'of' /\s+/ 'it' /\s+/
 ;
 
 
