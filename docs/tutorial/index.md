@@ -2,7 +2,7 @@
 
 Notation4 is a high-level ontology and knowledge representation language that makes it easy to create and maintain domain knowledge. This document introduces the concepts and syntax gradually, helping you understand the philosophy behind the language and how you can use it to model your own domains.
 
-The running example used is of a takeaway pizza restaurant looking to model its delicious food and its relationships with its customers. At each step, you will learn new concepts from the language as we build them a bespoke ontology.
+You can think of Notation4 as a programming language for knowledge. We will, therefore, come at modelling from the perspective of human-centred design with a clear motivating scenario. The running example used is of a takeaway pizza restaurant looking to model its delicious food and its relationships with its customers. At each step, you will learn new concepts from the language as we build them a bespoke ontology.
 
 ## Scenarios and competency questions
 
