@@ -720,6 +720,16 @@ ModalOperatorLiveness: op='inevitably';
 ModalOperatorOnce: op='once';
 
 ClassExpressionTemporal:
+  expression=ClassExpressionTemporalOperator
+  (('after' after=TemporalMeasureExpression)? ('before' before=TemporalMeasureExpression)?)#
+;
+
+TemporalMeasureExpression:
+    TemporalLiteralExpression
+  | NominalRelationship
+;
+
+ClassExpressionTemporalOperator:
     ClassExpressionTemporalNext
   | ClassExpressionTemporalEventually
   | ClassExpressionTemporalAlways
@@ -733,7 +743,7 @@ ClassExpressionTemporal:
 ;
 
 ClassExpressionTemporalNext:
-  'next' klass=ClassExpressionPrimary
+  ('next'|'then') klass=ClassExpressionPrimary
 ;
 
 ClassExpressionTemporalEventually:
