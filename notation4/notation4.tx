@@ -698,14 +698,14 @@ ModalOperatorEpistemic:
     ModalOperatorAssumption
   | ModalOperatorProvably
   | ModalOperatorPurportedly
-  | ModalOperatorProbably
+  | ModalOperatorLikely
 ;
 
 // ModalOperatorKnown: op='certainly'; This was semantically equivalent to purportedly
 ModalOperatorAssumption: op='presumably';
 ModalOperatorProvably: op='provably'; // Known and with a validated proof
 ModalOperatorPurportedly: op='purportedly'; // Known without a validated proof
-ModalOperatorProbably: op='probably'; // Balance of evidence favours this
+ModalOperatorLikely: op='likely'; // Balance of evidence favours this
 
 ModalOperatorTemporal:
     ModalOperatorRepeat
