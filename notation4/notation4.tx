@@ -695,18 +695,17 @@ ModalOperatorPossible: op='maybe';
 ModalOperatorCurrent: op='currently';
 
 ModalOperatorEpistemic:
-    ModalOperatorKnown
-  | ModalOperatorAssumption
+    ModalOperatorAssumption
   | ModalOperatorProvably
   | ModalOperatorPurportedly
   | ModalOperatorProbably
 ;
 
-ModalOperatorKnown: op='certainly';
+// ModalOperatorKnown: op='certainly'; This was semantically equivalent to purportedly
 ModalOperatorAssumption: op='presumably';
-ModalOperatorProvably: op='provably';
-ModalOperatorPurportedly: op='purportedly';
-ModalOperatorProbably: op='probably';
+ModalOperatorProvably: op='provably'; // Known and with a validated proof
+ModalOperatorPurportedly: op='purportedly'; // Known without a validated proof
+ModalOperatorProbably: op='probably'; // Balance of evidence favours this
 
 ModalOperatorTemporal:
     ModalOperatorRepeat
