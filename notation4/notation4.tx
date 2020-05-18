@@ -691,7 +691,7 @@ ModalOperatorAlethic:
 ;
 
 ModalOperatorNecessary: op='necessarily';
-ModalOperatorPossible: op='maybe';
+ModalOperatorPossible: op='possibly';
 ModalOperatorCurrent: op='currently';
 
 ModalOperatorEpistemic:
@@ -711,11 +711,13 @@ ModalOperatorTemporal:
     ModalOperatorRepeat
   | ModalOperatorSafety
   | ModalOperatorLiveness
+  | ModalOperatorOnce
 ;
 
 ModalOperatorRepeat: op='repeatedly';
 ModalOperatorSafety: op='never';
 ModalOperatorLiveness: op='inevitably';
+ModalOperatorOnce: op='once';
 
 ClassExpressionTemporal:
     ClassExpressionTemporalNext
