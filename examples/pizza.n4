@@ -6,35 +6,33 @@ default language en.
 
 import <> as foodon.
 import <> as om.
-import <> as rdfs.
-import <> as skos.
 import <> as cur.
 import <> as math.
 
 class Food <| object;
-  rdfs:label "Food";
-  skos:prefLabel "Food".
+  label "Food";
+  prefLabel "Food".
 
 class Pizza <| Food that hasBase a PizzaBase;
-  rdfs:label "Pizza";
-  skos:prefLabel "Pizza";
-  rdfs:seeAlso <https://en.wikipedia.org/wiki/Pizza>.
+  label "Pizza";
+  prefLabel "Pizza";
+  seeAlso <https://en.wikipedia.org/wiki/Pizza>.
 
 class PizzaBase <| Food;
-  rdfs:label "PizzaBase";
-  rdfs:label "BaseDaPizza"@pt;
-  skos:prefLabel "Pizza Base".
+  label "PizzaBase";
+  label "BaseDaPizza"@pt;
+  prefLabel "Pizza Base".
 
 class PizzaTopping <| Food;
-  rdfs:label "PizzaTopping", "CoberturaDaPizza"@pt;
-  skos:prefLabel "Pizza Topping".
+  label "PizzaTopping", "CoberturaDaPizza"@pt;
+  prefLabel "Pizza Topping".
 
 class RealItalianPizza 
   <| hasBase only a ThinAndCrispyBase;
   ~= Pizza that hasCountryOfOrigin is Italy;
-  rdfs:label "RealItalianPizza", "PizzaItalianReal"@pt;
-  skos:definition "Any Pizza that has the country of origin, Italy. RealItalianPizzas must also only have ThinAndCrispy bases.";
-  skos:prefLabel "Real Italian Pizza".
+  label "RealItalianPizza", "PizzaItalianReal"@pt;
+  definition "Any Pizza that has the country of origin, Italy. RealItalianPizzas must also only have ThinAndCrispy bases.";
+  prefLabel "Real Italian Pizza".
 
 class SpicyPizzaEquivalent 
   ~= Pizza 
