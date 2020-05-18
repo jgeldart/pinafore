@@ -814,7 +814,7 @@ PropertyExpressionAtom:
 ;
 
 PropertyExpressionInverse:
-  ('inverse' prop=PropertyExpressionPrimary) | ('be' prop=PropertyExpressionPrimary 'by')
+  'inverse' prop=PropertyExpressionPrimary
 ;
 
 PropertyExpressionCartesian:
