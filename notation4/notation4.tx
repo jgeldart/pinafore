@@ -792,7 +792,6 @@ PluralOperatorDistributive: op='separately';
 
 PropertyExpressionChain:
   props+=PropertyExpressionDisjunction['of']
-  (isLocalRooted?=PropertySelf)
 ;
 
 PropertyExpressionDisjunction:
@@ -809,7 +808,7 @@ PropertyExpressionPrimary:
 ;
 
 PropertyExpressionAtom:
-  PropertyExpressionInverse | PropertyExpressionCartesian | PropertyExpressionQuantity | '(' PropertyExpression ')' | PropertySelf | PropertyRef
+  PropertyExpressionTop | PropertyExpressionInverse | PropertyExpressionCartesian | PropertyExpressionQuantity | '(' PropertyExpression ')' | PropertySelf | PropertyRef
 ;
 
 PropertyExpressionInverse:
@@ -824,8 +823,12 @@ PropertyExpressionQuantity:
   'the' 'quantity' quantity=QuantityRef
 ;
 
-PropertySelf[noskipws]:
-  /\s+/ 'of' /\s+/ 'it' /\s+/
+PropertyExpressionTop:
+  op='something'
+;
+
+PropertySelf:
+  'its'
 ;
 
 
@@ -843,7 +846,7 @@ ValueRestriction:
 ;
 
 NominalRelationship:
-  'the' prop=PropertyExpressionChain
+  ('the' | locallyRooted='its') prop=PropertyExpressionChain
 ;
 
 NominalVariable:

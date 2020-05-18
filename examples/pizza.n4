@@ -46,7 +46,8 @@ class LargePizza ~= Pizza that has_size of item measuring (12 .. 21) om:inch.
 
 class Customer 
   <| role that hasBearer a person;
-  <| must always has_account only (balance of it measuring [0 ..] cur:GBP)
+  <| must always has_account only (balance measuring [0 ..] cur:GBP);
+  <| balance is its balance
   .
 
 quantity PizzaSize with dimension om:Length with property has_size.
