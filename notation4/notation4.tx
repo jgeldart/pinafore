@@ -648,7 +648,7 @@ ClassExpressionRestrictionValue:
 
 
 ClassExpressionAtom:
-  ClassExpressionModal | ClassExpressionTemporal | ClassExpressionRestriction | ClassExpressionEnumeration | '(' ClassExpression ')' | ClassRef
+  ClassExpressionModal | ClassExpressionRestriction | ClassExpressionEnumeration | '(' ClassExpression ')' | ClassRef
 ;
 
 ClassExpressionEnumeration:
@@ -656,130 +656,211 @@ ClassExpressionEnumeration:
 ;
 
 ClassExpressionModal:
-  operator=ModalOperator
-  klass=ClassExpressionPrimary
-  ( 'when'
-    condition=ClassExpressionPrimary
-  )?
+    ClassExpressionModalDeontic
+  | ClassExpressionModalAlethic
+  | ClassExpressionModalEpistemic
+  | ClassExpressionModalTemporal
 ;
 
-ModalOperator:
-    ModalOperatorDeontic
-  | ModalOperatorAlethic
-  | ModalOperatorEpistemic
-  | ModalOperatorTemporal
+ClassExpressionModalDeontic:
+    ClassExpressionModalDeonticSTIT
+  | ClassExpressionModalDeonticObligation
+  | ClassExpressionModalDeonticPermission
+  | ClassExpressionModalDeonticProhibition
+  | ClassExpressionModalDeonticOmission
+  | ClassExpressionModalDeonticOption
 ;
 
-ModalOperatorDeontic:
-    ModalOperatorObligation
-  | ModalOperatorPermission
-  | ModalOperatorProhibition
-  | ModalOperatorOmission
-  | ModalOperatorOption
+ClassExpressionModalDeonticSTIT:
+  (agent=AgentExpression)? 'ensure' 'that' situation=ModalSituation ('when' condition=ClassExpressionPrimary)?
 ;
 
-ModalOperatorObligation: op='must';
-ModalOperatorPermission: op='may';
-ModalOperatorProhibition: op='cannot';
-ModalOperatorOmission: op='might';
-ModalOperatorOption: op='could';
-
-ModalOperatorAlethic:
-    ModalOperatorNecessary
-  | ModalOperatorPossible
-  | ModalOperatorCurrent
+ClassExpressionModalDeonticObligation:
+  (agent=AgentExpression)? 'must' 'ensure' 'that' situation=ModalSituation ('when' condition=ClassExpressionPrimary)?
 ;
 
-ModalOperatorNecessary: op='necessarily';
-ModalOperatorPossible: op='possibly';
-ModalOperatorCurrent: op='currently';
-
-ModalOperatorEpistemic:
-    ModalOperatorAssumption
-  | ModalOperatorProvably
-  | ModalOperatorPurportedly
-  | ModalOperatorLikely
+ClassExpressionModalDeonticPermission:
+  (agent=AgentExpression)? 'may' 'ensure' 'that' situation=ModalSituation ('when' condition=ClassExpressionPrimary)?
 ;
 
-// ModalOperatorKnown: op='certainly'; This was semantically equivalent to purportedly
-ModalOperatorAssumption: op='presumably';
-ModalOperatorProvably: op='provably'; // Known and with a validated proof
-ModalOperatorPurportedly: op='purportedly'; // Known without a validated proof
-ModalOperatorLikely: op='likely'; // Balance of evidence favours this
-
-ModalOperatorTemporal:
-    ModalOperatorRepeat
-  | ModalOperatorSafety
-  | ModalOperatorLiveness
-  | ModalOperatorOnce
+ClassExpressionModalDeonticProhibition:
+  (agent=AgentExpression)? 'cannot' 'ensure' 'that' situation=ModalSituation ('when' condition=ClassExpressionPrimary)?
 ;
 
-ModalOperatorRepeat: op='repeatedly';
-ModalOperatorSafety: op='never';
-ModalOperatorLiveness: op='inevitably';
-ModalOperatorOnce: op='once';
+ClassExpressionModalDeonticOmission:
+  (agent=AgentExpression)? 'might' 'not' 'ensure' 'that' situation=ModalSituation ('when' condition=ClassExpressionPrimary)?
+;
+
+ClassExpressionModalDeonticOption:
+  (agent=AgentExpression)? 'could' 'ensure' 'that' situation=ModalSituation ('when' condition=ClassExpressionPrimary)?
+;
+
+AgentExpression:
+  complemented?=AgentExpressionNegative
+  set=AgentExpressionSet
+;
+
+AgentExpressionNegative:
+  'anyone' 'but'
+;
+
+AgentExpressionSet:
+    AgentExpressionAll
+  | AgentExpressionThis
+  | AgentExpressionEmpty
+  | ClassExpressionEnumeration
+  | NominalRelationship
+  | NominalVariable
+  | ResourceRef
+;
+
+AgentExpressionAll:
+  op='everyone'
+;
+
+AgentExpressionThis:
+  op='they' | op='them'
+;
+
+AgentExpressionEmpty:
+  op='anyway'
+;
+
+ClassExpressionModalAlethic:
+    ClassExpressionModalAlethicNecessity
+  | ClassExpressionModalAlethicPossibility
+;
+
+ClassExpressionModalAlethicNecessity:
+  'necessarily' situation=ModalSituation ('when' condition=ClassExpressionPrimary)?
+;
+
+ClassExpressionModalAlethicPossibility:
+  'possibly' situation=ModalSituation ('when' condition=ClassExpressionPrimary)?
+;
+
+ClassExpressionModalEpistemic:
+    ClassExpressionModalEpistemicAssumption
+  | ClassExpressionModalEpistemicProven
+  | ClassExpressionModalEpistemicClaimed
+;
+
+ClassExpressionModalEpistemicAssumption:
+  'presumably' situation=ModalSituation ('when' condition=ClassExpressionPrimary)?
+;
+
+ClassExpressionModalEpistemicProven:
+  'provably' situation=ModalSituation ('when' condition=ClassExpressionPrimary)?
+;
+
+ClassExpressionModalEpistemicClaimed:
+  'purportedly' situation=ModalSituation ('when' condition=ClassExpressionPrimary)?
+;
+
+ClassExpressionModalTemporal:
+    ClassExpressionModalTemporalRepeat
+  | ClassExpressionModalTemporalOnce
+  | ClassExpressionModalTemporalNever
+  | ClassExpressionModalTemporalInevitable
+;
+
+ClassExpressionModalTemporalRepeat:
+  'repeatedly' situation=ModalSituation ('when' condition=ClassExpressionPrimary)?
+;
+
+ClassExpressionModalTemporalOnce:
+  'once' situation=ModalSituation ('when' condition=ClassExpressionPrimary)?
+;
+
+ClassExpressionModalTemporalNever:
+  'never' situation=ModalSituation ('when' condition=ClassExpressionPrimary)?
+;
+
+ClassExpressionModalTemporalInevitable:
+  'inevitably' situation=ModalSituation ('when' condition=ClassExpressionPrimary)?
+;
+
+ModalSituation:
+  ClassExpressionTemporal
+;
 
 ClassExpressionTemporal:
-  expression=ClassExpressionTemporalOperator
+  first=ClassExpressionTemporalPrimary (connective=ClassExpressionTemporalConnective subsequent=ClassExpressionTemporal)?
+;
+
+ClassExpressionTemporalConnective:
+    ClassExpressionTemporalConnectiveEventually
+  | ClassExpressionTemporalConnectiveFutureUntil
+  | ClassExpressionTemporalConnectivePastUntil
+;
+
+ClassExpressionTemporalConnectiveEventually: op='then';
+ClassExpressionTemporalConnectiveFutureUntil: op='until';
+ClassExpressionTemporalConnectivePastUntil: op='since';
+
+ClassExpressionTemporalPrimary:
+    ClassExpressionTemporalRepeatPoint
+  | ClassExpressionTemporalFutureGlobal
+  | ClassExpressionTemporalFutureNext
+  | ClassExpressionTemporalPastEventually
+  | ClassExpressionTemporalPastGlobal
+  | ClassExpressionTemporalPastNext
+  | ClassExpressionTemporalForkOr
+  | ClassExpressionTemporalForkAnd
+  | ClassExpressionTemporalFutureEventually
+;
+
+ClassExpressionTemporalRepeatPoint:
+  'again' condition=TemporalCondition
+;
+
+ClassExpressionTemporalFutureGlobal:
+  'always' situation=TemporalSituation condition=TemporalCondition
+;
+
+ClassExpressionTemporalFutureNext:
+  'immediately' situation=TemporalSituation condition=TemporalCondition
+;
+
+ClassExpressionTemporalPastEventually:
+  'was' situation=TemporalSituation condition=TemporalCondition
+;
+
+ClassExpressionTemporalPastGlobal:
+  'historically' situation=TemporalSituation condition=TemporalCondition
+;
+
+ClassExpressionTemporalPastNext:
+  'just' situation=TemporalSituation condition=TemporalCondition
+;
+
+ClassExpressionTemporalFutureEventually:
+  'eventually'? situation=TemporalSituation condition=TemporalCondition
+;
+
+ClassExpressionTemporalForkOr:
+  'either' exclusive?='exclusively' (paths+=ClassExpressionTemporalForkPath['or'])
+;
+
+ClassExpressionTemporalForkAnd:
+  'together' (paths+=ClassExpressionTemporalForkPath['and'])
+;
+
+ClassExpressionTemporalForkPath:
+  ClassExpressionPrimary
+;
+
+TemporalSituation:
+  ClassExpressionPrimary
+;
+
+TemporalCondition:
   (('after' after=TemporalMeasureExpression)? ('before' before=TemporalMeasureExpression)?)#
 ;
 
 TemporalMeasureExpression:
     TemporalLiteralExpression
   | NominalRelationship
-;
-
-ClassExpressionTemporalOperator:
-    ClassExpressionTemporalNext
-  | ClassExpressionTemporalEventually
-  | ClassExpressionTemporalAlways
-  | ClassExpressionTemporalReleases
-  | ClassExpressionTemporalUntil
-  | ClassExpressionTemporalJust
-  | ClassExpressionTemporalWas
-  | ClassExpressionTemporalHistorically
-  | ClassExpressionTemporalSince
-  | ClassExpressionTemporalFrom
-;
-
-ClassExpressionTemporalNext:
-  ('next'|'then') klass=ClassExpressionPrimary
-;
-
-ClassExpressionTemporalEventually:
-  'eventually' klass=ClassExpressionPrimary
-;
-
-ClassExpressionTemporalAlways:
-  'always' klass=ClassExpressionPrimary
-;
-
-ClassExpressionTemporalReleases:
-  'up' 'until' trigger=ClassExpressionPrimary klass=ClassExpressionPrimary 
-;
-
-ClassExpressionTemporalUntil:
-  'until' trigger=ClassExpressionPrimary klass=ClassExpressionPrimary 
-;
-
-ClassExpressionTemporalJust:
-  'just' klass=ClassExpressionPrimary
-;
-
-ClassExpressionTemporalWas:
-  'was' klass=ClassExpressionPrimary
-;
-
-ClassExpressionTemporalHistorically:
-  'historically' klass=ClassExpressionPrimary
-;
-
-ClassExpressionTemporalSince:
-  'since' trigger=ClassExpressionPrimary klass=ClassExpressionPrimary 
-;
-
-ClassExpressionTemporalFrom:
-  'from' trigger=ClassExpressionPrimary klass=ClassExpressionPrimary 
 ;
 
 
@@ -1075,8 +1156,6 @@ Literal:
 
 NumericLiteralExpression:
     DateTimeExpression
-  | TimeExpression
-  | DateExpression
   | DurationExpression
   | DecimalExpression
   | RationalExpression
@@ -1091,15 +1170,11 @@ NumberLiteralExpression:
 
 TemporalLiteralExpression:
     DateTimeExpression
-  | TimeExpression
-  | DateExpression
   | DurationExpression
 ;
 
 LiteralExpression:
     DateTimeExpression
-  | TimeExpression
-  | DateExpression
   | DurationExpression
   | DecimalExpression
   | RationalExpression
@@ -1121,20 +1196,10 @@ RangeExpressionNumber:
 
 RangeExpressionTemporal:
     RangeExpressionDateTime
-  | RangeExpressionTime
-  | RangeExpressionDate
 ;
 
 RangeExpressionDateTime:
   (lowerOpen='(' | lowerClosed='[') lower=DateTimeExpression? '..' higher=DateTimeExpression? (higherOpen=')' | higherClosed=']')
-;
-
-RangeExpressionTime:
-  (lowerOpen='(' | lowerClosed='[') lower=TimeExpression? '..' higher=TimeExpression? (higherOpen=')' | higherClosed=']')
-;
-
-RangeExpressionDate:
-  (lowerOpen='(' | lowerClosed='[') lower=DateExpression? '..' higher=DateExpression? (higherOpen=')' | higherClosed=']')
 ;
 
 RangeExpressionDecimal:
@@ -1165,20 +1230,13 @@ BooleanExpression:
   value=BOOL
 ;
 
-DateExpression:
-  value=/(-?(?:[1-9][0-9]*)?[0-9]{4})-(1[0-2]|0[1-9])-(3[01]|0[1-9]|[12][0-9])(Z|[+-](?:2[0-3]|[01][0-9]):[0-5][0-9])?/
-;
-
-TimeExpression:
-  value=/(2[0-3]|[01][0-9]):([0-5][0-9]):([0-5][0-9])(\.[0-9]+)?(Z|[+-](?:2[0-3]|[01][0-9]):[0-5][0-9])?/
-;
-
 DateTimeExpression:
-  value=/(-?(?:[1-9][0-9]*)?[0-9]{4})-(1[0-2]|0[1-9])-(3[01]|0[1-9]|[12][0-9])T(2[0-3]|[01][0-9]):([0-5][0-9]):([0-5][0-9])(\.[0-9]+)?(Z|[+-](?:2[0-3]|[01][0-9]):[0-5][0-9])?/
+  value=/(?:[\+-]?\d{4}(?!\d{2}\b))(?:(-?)(?:(?:0[1-9]|1[0-2])(?:\1(?:[12]\d|0[1-9]|3[01]))?|W(?:[0-4]\d|5[0-2])(?:-?[1-7])?|(?:00[1-9]|0[1-9]\d|[12]\d{2}|3(?:[0-5]\d|6[1-6])))(?:[T\s](?:(?:(?:[01]\d|2[0-3])(?:(:?)[0-5]\d)?|24\:?00)(?:[\.,]\d+(?!:))?)?(?:\2[0-5]\d(?:[\.,]\d+)?)?(?:[zZ]|(?:[\+-])(?:[01]\d|2[0-3]):?(?:[0-5]\d)?)?)?)?/
 ;
 
 DurationExpression:
-  value=/P(?!$)((\d+Y)|(\d+\.\d+Y$))?((\d+M)|(\d+\.\d+M$))?((\d+W)|(\d+\.\d+W$))?((\d+D)|(\d+\.\d+D$))?(T(?=\d)((\d+H)|(\d+\.\d+H$))?((\d+M)|(\d+\.\d+M$))?(\d+(\.\d+)?S)?)??$/
+  value=/(-?)P(?=\d|T\d)(?:(\d+)Y)?(?:(\d+)M)?(?:(\d+)([DW]))?(?:T(?:(\d+)H)?(?:(\d+)M)?(?:(\d+(?:\.\d+)?)S)?)?/
+  //value=/^P(?!$)((\d+Y)|(\d+\.\d+Y$))?((\d+M)|(\d+\.\d+M$))?((\d+W)|(\d+\.\d+W$))?((\d+D)|(\d+\.\d+D$))?(T(?=\d)((\d+H)|(\d+\.\d+H$))?((\d+M)|(\d+\.\d+M$))?(\d+(\.\d+)?S)?)??$/
 ;
 
 StringExpression:
@@ -1214,7 +1272,7 @@ END_OF_PROP:
 ;
 
 END_OF_SUBJ:
-  '.'?
+  '.'
 ;
 
 Comment:        // A comment
