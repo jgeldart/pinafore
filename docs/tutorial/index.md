@@ -393,15 +393,19 @@ In this aside, we have learnt:
 
 ## On the menu
 
-Describing individual pizzas, available sizes.
-<br>
+Describing individual pizzas, available sizes (GCIs).
+
+## Give me the standard
+
+Fuzzy logic for representing preferences. Typicality.
+
 ## The real Italian
 
 Values (is constructor), nominals, and referencing individuals from a vocabulary.
 
 ## Processed food
 
-Representing processes, production.
+Representing processes, production. Temporal connectives, repetition, path comparators.
 
 ## Order for table 1
 
@@ -409,11 +413,11 @@ Modal logic and terms and conditions using DActs and OCE, n-ary relations (relat
 
 ## On time, you're full
 
-Delivery times, introduction to rules, headed lists, functional definitions.
+Delivery times, introduction to rules, headed lists, functional definitions. Programming with knowledge.
 
 ## Cosmopolitan crowds
 
-Internationalization.
+Internationalization, custom datatypes for IDs, key identity.
 
 ## Chatty customers
 
