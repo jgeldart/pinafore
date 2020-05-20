@@ -44,6 +44,7 @@ class LargePizza ~= Pizza that has_size of item measuring (12 .. 21) om:inch.
 
 class Customer 
   <| role that hasBearer a person;
+  <| all measuring balance = total transaction cur:GBP;
   <| must ensure that repeatedly
         always has_account only (balance measuring [0 ..] cur:GBP)
         then again after P1D before P1DT1H

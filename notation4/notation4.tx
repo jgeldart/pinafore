@@ -579,10 +579,14 @@ ClassExpressionRestriction:
   | ClassExpressionRestrictionOnlySome
   | ClassExpressionRestrictionOnly
   | ClassExpressionRestrictionSome
+  | ClassExpressionRestrictionQuantityCompareAll
+  | ClassExpressionRestrictionQuantityCompareSome
   | ClassExpressionRestrictionQuantity
   | ClassExpressionRestrictionPortion
   | ClassExpressionRestrictionSelf
   | ClassExpressionRestrictionValue
+  | ClassExpressionRestrictionValueCompareAll
+  | ClassExpressionRestrictionValueCompareSome
 ;
 
 ClassExpressionRestrictionOnlySome:
@@ -609,8 +613,24 @@ ClassExpressionRestrictionExactCard:
   role=PropertyExpression 'exactly' cardinality=INT restriction=ClassExpressionPrimary
 ;
 
+ClassExpressionRestrictionValueCompareAll:
+  'all' role=PropertyExpression restriction=ComparativeRestriction
+;
+
+ClassExpressionRestrictionValueCompareSome:
+  'some' role=PropertyExpression restriction=ComparativeRestriction
+;
+
 ClassExpressionRestrictionQuantity:
   role=PropertyExpression  'measuring' restriction=QuantityValueRestriction unit=ResourceRef (aggregateFunction=ValueAggregateFunction)?
+;
+
+ClassExpressionRestrictionQuantityCompareAll:
+  'all' 'measuring' role=PropertyExpression restriction=ComparativeRestriction unit=ResourceRef
+;
+
+ClassExpressionRestrictionQuantityCompareSome:
+  'some' 'measuring' role=PropertyExpression restriction=ComparativeRestriction unit=ResourceRef
 ;
 
 ClassExpressionRestrictionPortion:
@@ -644,6 +664,14 @@ ClassExpressionRestrictionSelf:
 
 ClassExpressionRestrictionValue:
   role=PropertyExpression 'is' value=ValueRestriction (aggregateFunction=ValueAggregateFunction)?
+;
+
+ComparativeRestriction:
+  comparison=ComparativeRestrictionComparison (aggregateFunction=ValueAggregateFunction)? comparator=PropertyExpression 
+;
+
+ComparativeRestrictionComparison:
+  ('!=') | ('=') | ('<=') | ('<') | ('>=') | ('>')
 ;
 
 
