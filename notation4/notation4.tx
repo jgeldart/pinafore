@@ -663,12 +663,12 @@ ClassExpressionModal:
 ;
 
 ClassExpressionModalDeontic:
-    ClassExpressionModalDeonticSTIT
-  | ClassExpressionModalDeonticObligation
+    ClassExpressionModalDeonticObligation
   | ClassExpressionModalDeonticPermission
   | ClassExpressionModalDeonticProhibition
   | ClassExpressionModalDeonticOmission
   | ClassExpressionModalDeonticOption
+  | ClassExpressionModalDeonticSTIT
 ;
 
 ClassExpressionModalDeonticSTIT:
@@ -697,6 +697,7 @@ ClassExpressionModalDeonticOption:
 
 AgentExpression:
   complemented?=AgentExpressionNegative
+  !('must' | 'may' | 'cannot' | 'might' | 'could')
   set=AgentExpressionSet
 ;
 
