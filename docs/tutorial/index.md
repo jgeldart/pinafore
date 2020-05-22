@@ -393,15 +393,82 @@ In this aside, we have learnt:
 
 ## On the menu
 
-Describing individual pizzas, available sizes (GCIs).
+We will now turn to modelling our menu. As good knowledge engineers, we will represent each pizza as a class (where the instances of that class will be the actual pizzas our restaurant makes and sends to its customers). Our first pizza will be a simple margherita:
+<br>
+```
+class Margherita
+  <|  Pizza
+        that
+            has_topping a 50 om:gram portion Mozzerella
+        and has_topping a 200 om:gram portion Ricotta
+        and has_topping a 5 om:gram portion FreshBasil
+        and has_topping a 200 om:gram portion HealthyPassata
+        and has_base a (StandardCrust or ItalianStyleCrust or GlutenFreeCrust or ThinGlutenFreeCrust)
+.
+```
 
-## Give me the standard
+If we want to keep our recipe secret, we can leave out the quantities of each ingredient:
+<br>
+```
+class QuattroStagioni 
+  <|  Pizza 
+        that 
+            has_topping a 25 om:gram portion Mozzerella
+        and has_topping a portion HealthyPassata
+        and has_topping a portion CherryTomato
+        and has_topping a portion Caper
+        and has_topping a portion Courgette
+        and has_topping a portion GreenOlive
+        and has_topping a portion Garlic
+        and has_topping a portion OliveOil
+        and has_topping a portion Parsely
+        and has_base a (ItalianStyleCrust or ThinGlutenFreeCrust)
+.
+```
 
-Fuzzy logic for representing preferences. Typicality.
+But how do we express the relationship between bases and sizes? What we want is to say that a pizza that has a particular base is restricted to a certain set of sizes. This is an example of *general* *subclassing*, also called a general class inclusion (GCI) by the ontology geeks. It is done by using a full class expression on the left of a subclass or equivalence relation. Defining the sizes is straightforward, and just uses what we've already seen:
+<br>
+```
+class SmallPizza <| has_size measuring 8 om:inch.
+class MediumPizza <| has_size measuring 12 om:inch.
+class LargePizza <| has_size measuring 16 om:inch.
+class FamilySizePizza <| has_size measuring 18 om:inch.
+```
+
+We can use these sizes to expresss our general subclasses by wrapping the expression with parentheses:
+<br>
+```
+class (Pizza that has_base a StandardCrust) <| SmallPizza or MediumPizza or LargePizza or FamilySizePizza.
+
+class (Pizza that has_base a ItalianStyleCrust) <| MediumPizza or LargePizza or FamilySizePizza.
+
+class (Pizza that has_base a (GlutenFreeCrust or ThinGlutenFreeCrust)) <| SmallPizza or MediumPizza or LargePizza.
+```
+
+We can use *any* class expression on the left. For example, we could say that pizzas which use less than 30 grams of mozzerella are not available in family size:
+<br>
+```
+class (Pizza that has_topping a [.. 30] om:gram portion Mozzerella) <| not FamilySizePizza.
+```
+
+### Exercises
+
+* Add another pizza definition for your favourite combination of toppings
+* Restrict that pizza to only be available in family-size, because everyone deserves as much of it as possible (hint: Notation4 uses an open-world assumption, so you'll have to explicitly state what sizes it **cannot** be)
+
+### Review
+
+In this section, we have learnt:
+
+* How to model complex relationships between classes using general subclasses.
 
 ## The real Italian
 
 Values (is constructor), nominals, and referencing individuals from a vocabulary.
+
+## Give me the standard
+
+Fuzzy logic for representing preferences. Typicality.
 
 ## Processed food
 

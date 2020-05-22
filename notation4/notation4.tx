@@ -60,7 +60,7 @@ Assertion:
 
 ClassDeclaration:
   'class' 
-  (subclass=ClassExpressionPrimary | name=ClassRef)
+  (('(' subclass=ClassExpression ')') | name=ClassRef)
   (END_OF_PROP?
    axioms*=CIAxiom[';']
   )

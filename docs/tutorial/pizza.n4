@@ -86,6 +86,22 @@ class SuperLeanPizza ~= Pizza
 
 property causes_allergic_reaction of has_ingredient <| causes_allergic_reaction.
 
+class HealthyPassata <| PizzaSauce.
+
+class Ricotta ~= foodon:_03302908.
+class FreshBasil ~= foodon:_03301192.
+class Rocket ~= foodon:_03310858.
+
+class Margherita
+  <|  Pizza
+        that
+            has_topping a 50 om:gram portion Mozzerella
+        and has_topping a 200 om:gram portion Ricotta
+        and has_topping a 5 om:gram portion FreshBasil
+        and has_topping a 200 om:gram portion HealthyPassata
+        and has_base a (StandardCrust or ItalianStyleCrust or GlutenFreeCrust or ThinGlutenFreeCrust)
+.
+
 class QuattroStagioni 
   <|  Pizza 
         that 
@@ -98,5 +114,18 @@ class QuattroStagioni
         and has_topping a portion Garlic
         and has_topping a portion OliveOil
         and has_topping a portion Parsely
+        and has_base a (ItalianStyleCrust or ThinGlutenFreeCrust)
 .
 
+class SmallPizza <| has_size measuring 8 om:inch.
+class MediumPizza <| has_size measuring 12 om:inch.
+class LargePizza <| has_size measuring 16 om:inch.
+class FamilySizePizza <| has_size measuring 18 om:inch.
+
+class (Pizza that has_base a StandardCrust) <| SmallPizza or MediumPizza or LargePizza or FamilySizePizza.
+
+class (Pizza that has_base a ItalianStyleCrust) <| MediumPizza or LargePizza or FamilySizePizza.
+
+class (Pizza that has_base a (GlutenFreeCrust or ThinGlutenFreeCrust)) <| SmallPizza or MediumPizza or LargePizza.
+
+class (Pizza that has_topping a [.. 30] om:gram portion Mozzerella) <| not FamilySizePizza.
