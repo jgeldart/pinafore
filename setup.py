@@ -36,7 +36,7 @@ setup(
     packages=find_packages(
         exclude=["*.tests", "*.tests.*", "tests.*", "tests"]),
     package_data={"notation4": ["*.tx"]},
-    install_requires=["textX>=2.0.0", "rdflib>=4.2.0", "textx_ls_core"],
+    install_requires=["textX>=2.0.0", "rdflib>=4.2.0", "html5lib", "textx_ls_core", "requests"],
     setup_requires=[
         'pytest-runner',
     ],

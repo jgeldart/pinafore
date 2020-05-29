@@ -1,1183 +1,838 @@
 Notation4:
-  Ontology | Lexicon
+  OntologyDecl
 ;
 
-//////// Ontology
 
-Ontology:
-  'ontology'
-  baseIRI=IRI
-  noPrelude?=NoPrelude
-  (END_OF_PROP
-  annotations*=AssertionPredicateBlock[';'])?
+
+
+////// Ontologies
+
+OntologyDecl:
+  KW_ENTITY_ONTOLOGY
+  name=OntologyName
+  (
+    (KW_GENERIC_AS prefix=PREFIX)?
+    (KW_GENERIC_WITH KW_MODIFIER_PRELUDE ((no_prelude=KW_MODIFIER_HIDDEN) | (prelude=OntologyRef)))?
+    (KW_GENERIC_WITH KW_MODIFIER_LANGUAGE default_language=LANG)?
+  )#
   END_OF_SUBJ
-  ('default' 'language' lang=LANG END_OF_SUBJ)?
   pragmas*=Pragma
-  assertions*=Assertion
+  assertions*=OntologyAssertions
 ;
 
-NoPrelude:
-  'without' 'prelude'
+OntologyAssertions:
+    ClassDecl
+  | PropertyDecl
+  | AttributeDecl
+  | DatatypeDecl
+  | IndividualDecl
 ;
 
 
-//////// Parsing pragmas
+
+
+////// Pragmas
 
 Pragma:
-  Import | Keyword
+    ImportPragma
+  | KeywordPragma
 ;
 
-Import:
-  'import'
-  baseIRI=IRI
-  'as'
-  name=ID
-  ('from'
-    fileName=STRING
-  )?
+ImportPragma:
+  is_exported?=KW_MODIFIER_EXPORTED
+  KW_PRAGMA_IMPORT
+  ontology=OntologyRef
+  (KW_GENERIC_AS name=PREFIX)?
   END_OF_SUBJ
 ;
 
-Keyword:
-  export?='exported'
-  'keyword'
-  ref=ResourceRef
-  'as'
-  name=ID
+KeywordPragma:
+    KeywordPragmaClass
+  | KeywordPragmaProperty
+  | KeywordPragmaAttribute
+  | KeywordPragmaDatatype
+  | KeywordPragmaIndividual
+;
+
+KeywordPragmaClass:
+  is_exported?=KW_MODIFIER_EXPORTED
+  KW_PRAGMA_KEYWORD
+  KW_ENTITY_CLASS
+  entity=ClassRef
+  KW_GENERIC_AS
+  name=KeywordName
+  END_OF_SUBJ
+;
+
+KeywordPragmaProperty:
+  is_exported?=KW_MODIFIER_EXPORTED
+  KW_PRAGMA_KEYWORD
+  KW_ENTITY_PROPERTY
+  entity=PropertyRef
+  KW_GENERIC_AS
+  name=KeywordName
+  END_OF_SUBJ
+;
+
+KeywordPragmaAttribute:
+  is_exported?=KW_MODIFIER_EXPORTED
+  KW_PRAGMA_KEYWORD
+  KW_ENTITY_ATTRIBUTE
+  entity=AttributeRef
+  KW_GENERIC_AS
+  name=KeywordName
+  END_OF_SUBJ
+;
+
+KeywordPragmaDatatype:
+  is_exported?=KW_MODIFIER_EXPORTED
+  KW_PRAGMA_KEYWORD
+  KW_ENTITY_DATATYPE
+  entity=DatatypeRef
+  KW_GENERIC_AS
+  name=KeywordName
+  END_OF_SUBJ
+;
+
+KeywordPragmaIndividual:
+  is_exported?=KW_MODIFIER_EXPORTED
+  KW_PRAGMA_KEYWORD
+  KW_ENTITY_INDIVIDUAL
+  entity=IndividualRef
+  KW_GENERIC_AS
+  name=KeywordName
   END_OF_SUBJ
 ;
 
 
-//////// Assertions
 
-Assertion:
-  (ClassDeclaration | PropertyDeclaration | AttributeDeclaration | DatatypeDeclaration | QuantityDeclaration | FactAssertion | GraphAssertion | BNodeAssertion)
+
+////// Individuals
+
+IndividualDecl:
+  is_exported?=KW_MODIFIER_EXPORTED
+  KW_ENTITY_INDIVIDUAL?
+  name=IndividualName
+  axioms*=IndividualAxiom[';']
   END_OF_SUBJ
 ;
 
-
-//////// Class declarations
-
-ClassDeclaration:
-  'class' 
-  (('(' subclass=ClassExpression ')') | name=ClassRef)
-  (END_OF_PROP?
-   axioms*=CIAxiom[';']
-  )
-;
-
-CIAxiom:
-    Superclass | EquivalentClass | AssertionPredicateBlock
-;
-
-Superclass:
-  '<|' superclass=ClassExpression
-;
-
-EquivalentClass:
-  '~=' equivalentclass=ClassExpression
-;
-
-
-//////// Property/object property declarations
-
-PropertyDeclaration:
-  (functional?='functional' inverseFunctional?='inversefunctional' reflexive?='reflexive' irreflexive?='irreflexive' symmetric?='symmetric' asymmetric?='asymmetric' transitive?='transitive')#
-  'property'
-  (subprop=PropertyExpressionChain | name=PropertyRef)
-  (END_OF_PROP?
-   axioms*=PIAxiom[';']
-  )
-;
-
-PIAxiom:
-  Superproperty | EquivalentProperty | AssertionPredicateBlock
-;
-
-Superproperty:
-  '<|' superproperty=PropertyExpressionDisjunction
-;
-
-EquivalentProperty:
-  '~=' equivalentProperty=PropertyExpressionDisjunction
-;
-
-
-//////// Attribute/data property declarations
-
-AttributeDeclaration:
-  'attribute'
-  name=AttributeRef
-  (('with' 'domain' domain=AttributeDomain)? ('with' 'range' range=AttributeRange)?)#
-  (END_OF_PROP?
-   axioms*=AIAxiom[';']
-  )
-;
-
-AttributeDomain:
-  'domain' domain=ClassExpression
-;
-
-AttributeRange:
-  'range' range=DataRestriction
-;
-
-AIAxiom:
-  Superattribute | EquivalentAttribute | AssertionPredicateBlock
-;
-
-Superattribute:
-  '<|' superattribute=AttributeRef
-;
-
-EquivalentAttribute:
-  '~=' equivalentAttribute=AttributeRef
-;
-
-AttributeRef:
-  PropertyRef
-;
-
-
-//////// Datatype declarations
-
-DatatypeDeclaration:
-  'datatype' name=DatatypeRef '<|' restriction=DataRestriction
-  (END_OF_PROP?
-   axioms*=AssertionPredicateBlock[';']
-  )
-;
-
-DatatypeRef:
-  IRIRef | QNameRef
-;
-
-
-//////// Quantity declarations
-
-QuantityDeclaration:
-  'quantity' name=QuantityRef ((('with' 'dimension' dimension=DimensionRef) | ('with' 'unit' (restriction=RangeExpressionNumber)? unit=UnitRef))? ('with' 'property' prop=PropertyRef)?)#
-  ( END_OF_PROP?
-    axioms*=CIAxiom[';']
-  )
-;
-
-QuantityRef:
-  IRIRef | QNameRef
-;
-
-DimensionRef:
-  IRIRef | QNameRef
-;
-
-UnitRef:
-  IRIRef | QNameRef
-;
-
-//////// BNode assertions
-
-BNodeAssertion:
-  '['
-  label=BNodeLabel?
-  predicates*=AssertionPredicateBlock[';']
-  END_OF_PROP?
-  ']'
-;
-
-BNodeAssertionFormula:
-  '['
-  label=BNodeLabelFormula?
-  predicates*=FormulaAssertionPredicateBlock[';']
-  END_OF_PROP?
-  ']'
-;
-
-
-//////// Graph/formula assertions
-
-GraphAssertion:
- '{'
- label=GraphNodeLabel?
- assertions+=Assertion
- '}'
-;
-
-GraphAssertionFormula:
- '{'
- label=GraphNodeLabelFormula?
- assertions+=FormulaAssertion
- '}'
-;
-
-
-//////// Fact assertions
-
-FactAssertion:
-  subject=AssertionSubject
-  predicates+=AssertionPredicateBlock[';']
-;
-
-AssertionPredicateBlock:
-  predicate=AssertionPredicate
-  objects+=AssertionObject[',']
-;
-
-
-AssertionSubject:
-    HeadedList
-  | ResourceRef
-  | Formula
-  | BNodeAssertion
-  | Collection
-;
-
-AssertionPredicate:
-    BuiltinPredicate
-  | ResourceRef
-;
-
-AssertionObject:
-    Literal
-  | HeadedList
-  | ResourceRef
-  | Formula
-  | BNodeAssertion
-  | '(' InfixExpression ')'
-  | Collection
-;
-
-
-//////// Resources
-
-ResourceRef:
-  IRIRef | QNameRef
-;
-
-IRIRef:
-  iri=IRI
-;
-
-QNameRef[noskipws]:
-  /\s*/ (prefix=[Import] ':')? localName=ID
-;
-
-BNodeLabel:
-  ':-'- name=ResourceRef END_OF_SUBJ-
-;
-
-BNodeLabelFormula:
-  ':-'- name=ResourceRefFormula END_OF_SUBJ-
-;
-
-GraphNodeLabel:
-  ':-'- name=ResourceRef (END_OF_PROP metadata+=AssertionPredicateBlock[';'])? END_OF_SUBJ-
-;
-
-GraphNodeLabelFormula:
-  ':-'- name=ResourceRefFormula (END_OF_PROP metadata+=FormulaAssertionPredicateBlock[';'])? END_OF_SUBJ-
-;
-
-ExistentialVariable:
-  '!' name=ID
-;
-
-UniversalVariable:
-  '?' name=ID
-;
-
-BuiltinPredicate[noskipws]:
-  /\s+/
-  ( IsaPredicate
-  | SuperPredicate
-  | EquivalentPredicate
-  | BackwardChainPredicate
-  | ForwardChainPredicate
-  | LogicalIdenticalPredicate
-  | LogicalDifferentPredicate
-  | NumericEqualsPredicate
-  | NumericNotEqualsPredicate
-  | NumericLessThanEqualsPredicate
-  | NumericLessThanPredicate
-  | NumericGreaterThanEqualsPredicate
-  | NumericGreaterThanPredicate
-  | LogicalEqualsPredicate
-  | LogicalNotEqualsPredicate
-  | LogicalSemanticsPredicate
-  | LogicalConclusionsPredicate
-  | CollectionInclusionPredicate
-  )
-  /\s+/
+IndividualAxiom:
+    Predicate
 ;
 
-IsaPredicate: op='a';
-SuperPredicate: op='<|';
-EquivalentPredicate: op='~=';
-BackwardChainPredicate: op='<--';
-ForwardChainPredicate: op='<==';
-LogicalEqualsPredicate: op='=';
-LogicalNotEqualsPredicate: op='=/=';
-NumericEqualsPredicate: op='==';
-NumericNotEqualsPredicate: op='!=';
-NumericLessThanEqualsPredicate: op='<=';
-NumericLessThanPredicate: op='<';
-NumericGreaterThanEqualsPredicate: op='>=';
-NumericGreaterThanPredicate: op='>';
-LogicalSemanticsPredicate: op='|-';
-LogicalConclusionsPredicate: op='|=';
-LogicalIdenticalPredicate: op='===';
-LogicalDifferentPredicate: op='!==';
-CollectionInclusionPredicate: op='in';
 
 
-//////// Formulas
 
-Formula:
-  '{'
-    assertions*=FormulaAssertion['.']
-    END_OF_SUBJ?
-  '}'
-;
-
-FormulaAssertion:
-  subject=FormulaAssertionSubject
-  predicate+=FormulaAssertionPredicateBlock[';']
-;
-
-FormulaAssertionPredicateBlock:
-  predicate=FormulaAssertionPredicate
-  objects+=FormulaAssertionObject[',']
-;
-
-FormulaAssertionSubject:
-    HeadedListFormula
-  | ResourceRefFormula
-  | GraphAssertionFormula
-  | BNodeAssertionFormula
-  | '(' InfixExpressionFormula ')'
-  | CollectionFormula
-;
-
-FormulaAssertionPredicate:
-    BuiltinPredicate
-  | PredicatePathExpression
-  | ResourceRefFormula
-;
-
-FormulaAssertionObject:
-    Literal
-  | HeadedListFormula
-  | ResourceRefFormula
-  | GraphAssertionFormula
-  | BNodeAssertionFormula
-  | '(' InfixExpressionFormula ')'
-  | CollectionFormula
-;
-
-ResourceRefFormula:
-  ExistentialVariable | UniversalVariable | IRIRef | QNameRef
-;
-
-//////// List expressions
-
-HeadedList:
-  head=ResourceRef '(' members*=HeadedListObject[','] ')'
-;
+////// Classes
 
-HeadedListObject:
-    InfixExpression
-  | LiteralExpression
-  | HeadedList
-  | BNodeAssertion
-  | GraphAssertion
-  | ResourceRef
-  | Collection
+ClassDecl:
+  is_exported?=KW_MODIFIER_EXPORTED
+  KW_ENTITY_CLASS
+  name=ClassName
+  axioms*=ClassAxiom[';']
+  END_OF_SUBJ
 ;
 
-HeadedListFormula:
-  head=ResourceRefFormula '(' members*=HeadedListFormulaObject[','] ')'
+ClassAxiom:
+    ClassAxiomSpecializes
+  | ClassAxiomEquivalence
+  | ClassAxiomInstanceOf
+  | Predicate
 ;
 
-HeadedListFormulaObject:
-    InfixExpressionFormula
-  | LiteralExpression
-  | HeadedListFormula
-  | BNodeAssertionFormula
-  | GraphAssertionFormula
-  | ResourceRefFormula
-  | CollectionFormula
+ClassAxiomSpecializes:
+  KW_OPERATOR_SPECIALIZES
+  expression=ClassExpression
 ;
 
-Collection:
-  (collectionType=CollectionType)? '(' members*=AssertionObject[','] ')'
+ClassAxiomEquivalence:
+  KW_OPERATOR_EQUIVALENCE
+  expression=ClassExpression
 ;
 
-CollectionFormula:
-  (collectionType=CollectionType)? '(' members*=FormulaAssertionObject[','] ')'
+ClassAxiomInstanceOf:
+  KW_OPERATOR_INSTANCEOF
+  expression=ClassExpression
 ;
 
-CollectionType:
-    CollectionTypeBag
-  | CollectionTypeSet
-  | CollectionTypeAlts
-  | CollectionTypeSeq
-;
-
-CollectionTypeBag: type='@bag';
-CollectionTypeSet: type='@set';
-CollectionTypeAlts: type='@alts';
-CollectionTypeSeq: type='@seq';
 
-//////// Infix expressions
-
-InfixExpression:
-  InfixAdditive
-;
 
-InfixAdditive:
-  operands=InfixMultiplicative (operator=KW_ADDITIVE operands=InfixAdditive)?
-;
 
-InfixMultiplicative:
-  operands=InfixExponential (operator=KW_MULTIPLICATIVE operands=InfixMultiplicative)?
-;
+////// Properties
 
-InfixExponential:
-  operands=InfixNumericAtom (operator=KW_EXPONENTIAL operands=InfixExponential)?
+PropertyDecl:
+  is_exported?=KW_MODIFIER_EXPORTED
+  KW_ENTITY_PROPERTY
+  name=PropertyName
+  axioms*=PropertyAxiom[';']
+  END_OF_SUBJ
 ;
 
-InfixNumericAtom:
-  NumericLiteralExpression | '(' InfixExpression ')' 
+PropertyAxiom:
+    PropertyAxiomSpecializes
+  | PropertyAxiomEquivalence
+  | PropertyAxiomInstanceOf
+  | Predicate
 ;
 
-
-InfixExpressionFormula:
-  InfixAdditiveFormula
+PropertyAxiomSpecializes:
+  KW_OPERATOR_SPECIALIZES
+  expression=PropertyExpressionDisjoint
 ;
 
-InfixAdditiveFormula:
-  operands=InfixMultiplicativeFormula (operator=KW_ADDITIVE operands=InfixAdditiveFormula)?
+PropertyAxiomEquivalence:
+  KW_OPERATOR_EQUIVALENCE
+  expression=PropertyExpressionDisjoint
 ;
 
-InfixMultiplicativeFormula:
-  operands=InfixExponentialFormula (operator=KW_MULTIPLICATIVE operands=InfixMultiplicativeFormula)?
+PropertyAxiomInstanceOf:
+  KW_OPERATOR_INSTANCEOF
+  expression=PropertyExpressionDisjoint
 ;
 
-InfixExponentialFormula:
-  operands=InfixNumericAtomFormula (operator=KW_EXPONENTIAL operands=InfixExponentialFormula)?
-;
 
-InfixNumericAtomFormula:
-  UniversalVariable | ExistentialVariable | NumericLiteralExpression | '(' InfixExpressionFormula ')' 
-;
 
-KW_ADDITIVE:
-  KW_ADDITIVE_PLUS | KW_ADDITIVE_MINUS
-;
 
-KW_ADDITIVE_PLUS:
-  op='+'
-;
+////// Attributes
 
-KW_ADDITIVE_MINUS:
-  op='-'
+AttributeDecl:
+  is_exported?=KW_MODIFIER_EXPORTED
+  KW_ENTITY_ATTRIBUTE
+  name=AttributeName
+  axioms*=AttributeAxiom[';']
+  END_OF_SUBJ
 ;
 
-KW_MULTIPLICATIVE:
-  KW_MULTIPLICATIVE_TIMES | KW_MULTIPLICATIVE_DIVIDE
+AttributeAxiom:
+    AttributeAxiomSpecializes
+  | AttributeAxiomEquivalence
+  | AttributeAxiomInstanceOf
+  | Predicate
 ;
 
-KW_MULTIPLICATIVE_TIMES:
-  op='*'
+AttributeAxiomSpecializes:
+  KW_OPERATOR_SPECIALIZES
+  expression=AttributeExpressionDisjoint
 ;
 
-KW_MULTIPLICATIVE_DIVIDE:
-  op='/'
+AttributeAxiomEquivalence:
+  KW_OPERATOR_EQUIVALENCE
+  expression=AttributeExpressionDisjoint
 ;
 
-KW_EXPONENTIAL:
-  op='^'
+AttributeAxiomInstanceOf:
+  KW_OPERATOR_INSTANCEOF
+  expression=AttributeExpressionDisjoint
 ;
-
 
-//////// Path expressions
 
-PredicatePathExpression:
-  PredicatePathExpressionAlternatives
-;
-
-PredicatePathExpressionAlternatives:
-  alts+=PredicatePathExpressionPath['|']
-;
 
-PredicatePathExpressionPath:
-  elements=PredicatePathExpressionElement (operator=KW_PATH_OPERATOR elements=PredicatePathExpressionPath)?
-;
+////// Datatypes
 
-PredicatePathExpressionElement:
-  negated?='!'
-  element=PredicatePathExpressionAtom
-  (repeat=PredicatePathExpressionRepeat)?
+DatatypeDecl:
+  is_exported?=KW_MODIFIER_EXPORTED
+  KW_ENTITY_DATATYPE
+  name=DatatypeName
+  axioms*=DatatypeAxiom[';']
+  END_OF_SUBJ
 ;
 
-PredicatePathExpressionAtom:
-  PropertyRef | '(' PredicatePathExpression ')'
+DatatypeAxiom:
+    DatatypeAxiomSpecializes
+  | DatatypeAxiomEquivalence
+  | DatatypeAxiomInstanceOf
+  | Predicate
 ;
 
-PredicatePathExpressionRepeat:
-    PredicatePathExpressionRepeatZeroOrMore 
-  | PredicatePathExpressionRepeatOneOrMore 
-  | PredicatePathExpressionRepeatOptional 
-  | PredicatePathExpressionRepeatCount
+DatatypeAxiomSpecializes:
+  KW_OPERATOR_SPECIALIZES
+  expression=DataExpression
 ;
 
-PredicatePathExpressionRepeatZeroOrMore: op='*';
-PredicatePathExpressionRepeatOneOrMore: op='+';
-PredicatePathExpressionRepeatOptional: op='?';
-PredicatePathExpressionRepeatCount:
-  '{' (lower=INT)? '..' (upper=INT)? '}'
+DatatypeAxiomEquivalence:
+  KW_OPERATOR_EQUIVALENCE
+  expression=DataExpression
 ;
 
-KW_PATH_OPERATOR:
-  KW_PATH_OPERATOR_BACKWARD | KW_PATH_OPERATOR_FORWARD
+DatatypeAxiomInstanceOf:
+  KW_OPERATOR_INSTANCEOF
+  expression=DataExpression
 ;
 
-KW_PATH_OPERATOR_BACKWARD: op='/^';
-KW_PATH_OPERATOR_FORWARD: op='/';
 
 
-//////// Class expressions
 
-ClassRef:
-  IRIRef | QNameRef
-;
+////// Class expressions
 
 ClassExpression:
-  ClassDescription
+  ClassExpressionDisjoint
 ;
 
-ClassDescription:
-  disjuncts+=ClassExpressionConjunction['or']
+ClassExpressionDisjoint:
+    ClassExpressionDisjunction
+  | ClassExpressionConjoint
+;
+
+ClassExpressionDisjunction:
+  disjuncts=ClassExpressionConjoint (KW_EXPRESSION_DISJUNCTION disjuncts+=ClassExpressionConjoint['or'])?
+;
+
+ClassExpressionConjoint:
+    ClassExpressionConjunction
+  | ClassExpressionPrimary
 ;
 
 ClassExpressionConjunction:
-    (
-      baseClass=ClassRef 'that' restrictions+=ClassExpressionPrimary['and']
-    | restrictions+=ClassExpressionPrimary['and']
-    ) 
-    ('if' condition=ClassExpressionPrimary)?
+  (
+    (base_class=ClassRef KW_EXPRESSION_THAT)? 
+    conjuncts+=ClassExpressionPrimary['and']
+  )
+  (KW_EXPRESSION_IF condition=ClassExpressionPrimary)?
 ;
 
 ClassExpressionPrimary:
-  negated?='not'
-  klass=ClassExpressionAtom
+    ClassExpressionComplement
+  | ClassExpressionAtom
+;
+
+ClassExpressionComplement:
+  KW_EXPRESSION_COMPLEMENT expression=ClassExpressionAtom
+;
+
+ClassExpressionAtom:
+  ClassExpressionRestriction | ('(' ClassExpression ')') | ClassRef
 ;
 
 ClassExpressionRestriction:
-    ClassExpressionRestrictionMaxCard
-  | ClassExpressionRestrictionMinCard
-  | ClassExpressionRestrictionExactCard
-  | ClassExpressionRestrictionOnlySome
-  | ClassExpressionRestrictionOnly
-  | ClassExpressionRestrictionSome
-  | ClassExpressionRestrictionQuantityCompareAll
-  | ClassExpressionRestrictionQuantityCompareSome
-  | ClassExpressionRestrictionQuantity
-  | ClassExpressionRestrictionPortion
-  | ClassExpressionRestrictionSelf
-  | ClassExpressionRestrictionValue
-  | ClassExpressionRestrictionValueCompareAll
-  | ClassExpressionRestrictionValueCompareSome
+    ClassExpressionAttributeMaxCard
+  | ClassExpressionPropertyMaxCard
+  | ClassExpressionAttributeMinCard
+  | ClassExpressionPropertyMinCard
+  | ClassExpressionAttributeExactCard
+  | ClassExpressionPropertyExactCard
+  | ClassExpressionAttributeOnlySome
+  | ClassExpressionPropertyOnlySome
+  | ClassExpressionAttributeOnly
+  | ClassExpressionPropertyOnly
+  | ClassExpressionAttributeSome
+  | ClassExpressionPropertySome
+  | ClassExpressionAttributeValue
+  | ClassExpressionPropertyValue
+  | ClassExpressionSelf
 ;
 
-ClassExpressionRestrictionOnlySome:
-  role=PropertyExpression 'only' 'a' restriction=ClassExpressionPrimary
+ClassExpressionAttributeMaxCard[noskipws]:
+  /\s*/ role=RestrictedAttributeRole /\s+/ KW_EXPRESSION_AT /\s+/ KW_EXPRESSION_MAXCARD /\s+/ cardinality=INT /\s+/ restriction=RestrictedDataExpression
 ;
 
-ClassExpressionRestrictionOnly:
-  role=PropertyExpression 'only' restriction=ClassExpressionPrimary
+ClassExpressionPropertyMaxCard[noskipws]:
+  /\s*/ role=RestrictedPropertyRole /\s+/ KW_EXPRESSION_AT /\s+/ KW_EXPRESSION_MAXCARD /\s+/ cardinality=INT /\s+/ restriction=RestrictedClassExpression
 ;
 
-ClassExpressionRestrictionSome:
-  role=PropertyExpression 'a' restriction=ClassExpressionPrimary
+ClassExpressionAttributeMinCard[noskipws]:
+  /\s*/ role=RestrictedAttributeRole /\s+/ KW_EXPRESSION_AT /\s+/ KW_EXPRESSION_MINCARD /\s+/ cardinality=INT /\s+/ restriction=RestrictedDataExpression
 ;
 
-ClassExpressionRestrictionMaxCard:
-  role=PropertyExpression 'at' 'most' cardinality=INT restriction=ClassExpressionPrimary
+ClassExpressionPropertyMinCard[noskipws]:
+  /\s*/ role=RestrictedPropertyRole /\s+/ KW_EXPRESSION_AT /\s+/ KW_EXPRESSION_MINCARD /\s+/ cardinality=INT /\s+/ restriction=RestrictedClassExpression
 ;
 
-ClassExpressionRestrictionMinCard:
-  role=PropertyExpression 'at' 'least' cardinality=INT restriction=ClassExpressionPrimary
+ClassExpressionAttributeExactCard[noskipws]:
+  /\s*/ role=RestrictedAttributeRole /\s+/ KW_EXPRESSION_EXACTCARD /\s+/ cardinality=INT /\s+/ restriction=RestrictedDataExpression
 ;
 
-ClassExpressionRestrictionExactCard:
-  role=PropertyExpression 'exactly' cardinality=INT restriction=ClassExpressionPrimary
+ClassExpressionPropertyExactCard[noskipws]:
+  /\s*/ role=RestrictedPropertyRole /\s+/ KW_EXPRESSION_EXACTCARD /\s+/ cardinality=INT /\s+/ restriction=RestrictedClassExpression
 ;
 
-ClassExpressionRestrictionValueCompareAll:
-  'all' role=PropertyExpression restriction=ComparativeRestriction
+ClassExpressionAttributeOnlySome[noskipws]:
+  /\s*/ role=RestrictedAttributeRole /\s+/ KW_EXPRESSION_ONLY /\s+/ KW_EXPRESSION_SOME /\s+/ restriction=RestrictedDataExpression
 ;
 
-ClassExpressionRestrictionValueCompareSome:
-  'some' role=PropertyExpression restriction=ComparativeRestriction
+ClassExpressionPropertyOnlySome[noskipws]:
+  /\s*/ role=RestrictedPropertyRole /\s+/ KW_EXPRESSION_ONLY /\s+/ KW_EXPRESSION_SOME /\s+/ restriction=RestrictedClassExpression
 ;
 
-ClassExpressionRestrictionQuantity:
-  role=PropertyExpression  'measuring' restriction=QuantityValueRestriction unit=ResourceRef (aggregateFunction=ValueAggregateFunction)?
+ClassExpressionAttributeOnly[noskipws]:
+  /\s*/ role=RestrictedAttributeRole /\s+/ KW_EXPRESSION_ONLY /\s+/ restriction=RestrictedDataExpression
 ;
 
-ClassExpressionRestrictionQuantityCompareAll:
-  'all' 'measuring' role=PropertyExpression restriction=ComparativeRestriction unit=ResourceRef
+ClassExpressionPropertyOnly[noskipws]:
+  /\s*/ role=RestrictedPropertyRole /\s+/ KW_EXPRESSION_ONLY /\s+/ restriction=RestrictedClassExpression
 ;
 
-ClassExpressionRestrictionQuantityCompareSome:
-  'some' 'measuring' role=PropertyExpression restriction=ComparativeRestriction unit=ResourceRef
+ClassExpressionAttributeSome[noskipws]:
+  /\s*/ role=RestrictedAttributeRole /\s+/ KW_EXPRESSION_SOME /\s+/ restriction=RestrictedDataExpression
 ;
 
-ClassExpressionRestrictionPortion:
-  (restriction=QuantityValueRestriction unit=ResourceRef)? 'portion' klass=ClassExpressionPrimary 
+ClassExpressionPropertySome[noskipws]:
+  /\s*/ role=RestrictedPropertyRole /\s+/ KW_EXPRESSION_SOME /\s+/ restriction=RestrictedClassExpression
 ;
 
-QuantityValueRestriction:
-    RangeExpressionNumber
-  | QuantityValueRestrictionExact
+ClassExpressionAttributeValue[noskipws]:
+  /\s*/ role=RestrictedAttributeRole /\s+/ KW_EXPRESSION_IS /\s+/ restriction=AttributeValueRestriction
 ;
 
-QuantityValueRestrictionExact:
-  value=NumberLiteralExpression
+ClassExpressionPropertyValue[noskipws]:
+  /\s*/ role=RestrictedPropertyRole /\s+/ KW_EXPRESSION_IS /\s+/ restriction=PropertyValueRestriction
 ;
 
-ValueAggregateFunction:
-    ValueAggregateFunctionTotal 
-  | ValueAggregateFunctionMaximum 
-  | ValueAggregateFunctionMinimum 
-  | ValueAggregateFunctionAverage
+ClassExpressionSelf[noskipws]:
+  /\s*/ role=RestrictedPropertyRole /\s+/ KW_EXPRESSION_SELF
 ;
 
-ValueAggregateFunctionTotal: op='total';
-ValueAggregateFunctionMaximum: op='maximum';
-ValueAggregateFunctionMinimum: op='minimum';
-ValueAggregateFunctionAverage: op='average';
-
-ClassExpressionRestrictionSelf:
-  role=PropertyExpression 'itself'
-;
-
-ClassExpressionRestrictionValue:
-  role=PropertyExpression 'is' value=ValueRestriction (aggregateFunction=ValueAggregateFunction)?
-;
-
-ComparativeRestriction:
-  comparison=ComparativeRestrictionComparison (aggregateFunction=ValueAggregateFunction)? comparator=PropertyExpression 
-;
-
-ComparativeRestrictionComparison:
-  ('!=') | ('=') | ('<=') | ('<') | ('>=') | ('>')
-;
-
-
-ClassExpressionAtom:
-  ClassExpressionModal | ClassExpressionRestriction | ClassExpressionEnumeration | '(' ClassExpression ')' | ClassRef
-;
-
-ClassExpressionEnumeration:
-  '{' individuals+=ValueRestriction[','] '}'
-;
-
-ClassExpressionModal:
-    ClassExpressionModalDeontic
-  | ClassExpressionModalAlethic
-  | ClassExpressionModalEpistemic
-  | ClassExpressionModalTemporal
-;
-
-ClassExpressionModalDeontic:
-    ClassExpressionModalDeonticObligation
-  | ClassExpressionModalDeonticPermission
-  | ClassExpressionModalDeonticProhibition
-  | ClassExpressionModalDeonticOmission
-  | ClassExpressionModalDeonticOption
-  | ClassExpressionModalDeonticSTIT
-;
-
-ClassExpressionModalDeonticSTIT:
-  (agent=AgentExpression)? 'ensure' 'that' situation=ModalSituation ('when' condition=ClassExpressionPrimary)?
-;
-
-ClassExpressionModalDeonticObligation:
-  (agent=AgentExpression)? 'must' 'ensure' 'that' situation=ModalSituation ('when' condition=ClassExpressionPrimary)?
-;
-
-ClassExpressionModalDeonticPermission:
-  (agent=AgentExpression)? 'may' 'ensure' 'that' situation=ModalSituation ('when' condition=ClassExpressionPrimary)?
-;
-
-ClassExpressionModalDeonticProhibition:
-  (agent=AgentExpression)? 'cannot' 'ensure' 'that' situation=ModalSituation ('when' condition=ClassExpressionPrimary)?
-;
-
-ClassExpressionModalDeonticOmission:
-  (agent=AgentExpression)? 'might' 'not' 'ensure' 'that' situation=ModalSituation ('when' condition=ClassExpressionPrimary)?
-;
-
-ClassExpressionModalDeonticOption:
-  (agent=AgentExpression)? 'could' 'ensure' 'that' situation=ModalSituation ('when' condition=ClassExpressionPrimary)?
-;
-
-AgentExpression:
-  complemented?=AgentExpressionNegative
-  !('must' | 'may' | 'cannot' | 'might' | 'could')
-  set=AgentExpressionSet
-;
-
-AgentExpressionNegative:
-  'anyone' 'but'
-;
-
-AgentExpressionSet:
-    AgentExpressionAll
-  | AgentExpressionThis
-  | AgentExpressionEmpty
-  | ClassExpressionEnumeration
-  | NominalRelationship
-  | NominalVariable
-  | ResourceRef
-;
-
-AgentExpressionAll:
-  op='everyone'
-;
-
-AgentExpressionThis:
-  op='they' | op='them'
-;
-
-AgentExpressionEmpty:
-  op='anyway'
-;
-
-ClassExpressionModalAlethic:
-    ClassExpressionModalAlethicNecessity
-  | ClassExpressionModalAlethicPossibility
-;
-
-ClassExpressionModalAlethicNecessity:
-  'necessarily' situation=ModalSituation ('when' condition=ClassExpressionPrimary)?
-;
-
-ClassExpressionModalAlethicPossibility:
-  'possibly' situation=ModalSituation ('when' condition=ClassExpressionPrimary)?
-;
-
-ClassExpressionModalEpistemic:
-    ClassExpressionModalEpistemicAssumption
-  | ClassExpressionModalEpistemicProven
-  | ClassExpressionModalEpistemicClaimed
-;
-
-ClassExpressionModalEpistemicAssumption:
-  'presumably' situation=ModalSituation ('when' condition=ClassExpressionPrimary)?
-;
-
-ClassExpressionModalEpistemicProven:
-  'provably' situation=ModalSituation ('when' condition=ClassExpressionPrimary)?
-;
-
-ClassExpressionModalEpistemicClaimed:
-  'purportedly' situation=ModalSituation ('when' condition=ClassExpressionPrimary)?
-;
-
-ClassExpressionModalTemporal:
-    ClassExpressionModalTemporalRepeat
-  | ClassExpressionModalTemporalOnce
-  | ClassExpressionModalTemporalNever
-  | ClassExpressionModalTemporalInevitable
-;
-
-ClassExpressionModalTemporalRepeat:
-  'repeatedly' situation=ModalSituation ('when' condition=ClassExpressionPrimary)?
-;
-
-ClassExpressionModalTemporalOnce:
-  'once' situation=ModalSituation ('when' condition=ClassExpressionPrimary)?
-;
-
-ClassExpressionModalTemporalNever:
-  'never' situation=ModalSituation ('when' condition=ClassExpressionPrimary)?
-;
-
-ClassExpressionModalTemporalInevitable:
-  'inevitably' situation=ModalSituation ('when' condition=ClassExpressionPrimary)?
-;
-
-ModalSituation:
-  ClassExpressionTemporal
-;
-
-ClassExpressionTemporal:
-  first=ClassExpressionTemporalPrimary (connective=ClassExpressionTemporalConnective subsequent=ClassExpressionTemporal)?
-;
-
-ClassExpressionTemporalConnective:
-    ClassExpressionTemporalConnectiveEventually
-  | ClassExpressionTemporalConnectiveFutureUntil
-  | ClassExpressionTemporalConnectivePastUntil
+RestrictedAttributeRole[skipws]:
+  AttributeExpression
 ;
 
-ClassExpressionTemporalConnectiveEventually: op='then';
-ClassExpressionTemporalConnectiveFutureUntil: op='until';
-ClassExpressionTemporalConnectivePastUntil: op='since';
-
-ClassExpressionTemporalPrimary:
-    ClassExpressionTemporalRepeatPoint
-  | ClassExpressionTemporalFutureGlobal
-  | ClassExpressionTemporalFutureNext
-  | ClassExpressionTemporalPastEventually
-  | ClassExpressionTemporalPastGlobal
-  | ClassExpressionTemporalPastNext
-  | ClassExpressionTemporalForkOr
-  | ClassExpressionTemporalForkAnd
-  | ClassExpressionTemporalFutureEventually
-;
-
-ClassExpressionTemporalRepeatPoint:
-  'again' condition=TemporalCondition
-;
-
-ClassExpressionTemporalFutureGlobal:
-  'always' situation=TemporalSituation condition=TemporalCondition
-;
-
-ClassExpressionTemporalFutureNext:
-  'immediately' situation=TemporalSituation condition=TemporalCondition
-;
-
-ClassExpressionTemporalPastEventually:
-  'was' situation=TemporalSituation condition=TemporalCondition
-;
-
-ClassExpressionTemporalPastGlobal:
-  'historically' situation=TemporalSituation condition=TemporalCondition
-;
-
-ClassExpressionTemporalPastNext:
-  'just' situation=TemporalSituation condition=TemporalCondition
-;
-
-ClassExpressionTemporalFutureEventually:
-  'eventually'? situation=TemporalSituation condition=TemporalCondition
-;
-
-ClassExpressionTemporalForkOr:
-  'either' exclusive?='exclusively' (paths+=ClassExpressionTemporalForkPath['or'])
-;
-
-ClassExpressionTemporalForkAnd:
-  'together' (paths+=ClassExpressionTemporalForkPath['and'])
-;
-
-ClassExpressionTemporalForkPath:
-  ClassExpressionPrimary
+RestrictedPropertyRole[skipws]:
+  PropertyExpression
 ;
 
-TemporalSituation:
-  ClassExpressionPrimary
+RestrictedClassExpression[skipws]:
+  ClassExpressionAtom
 ;
 
-TemporalCondition:
-  (('after' after=TemporalMeasureExpression)? ('before' before=TemporalMeasureExpression)?)#
+RestrictedDataExpression[skipws]:
+  DataExpressionAtom
 ;
 
-TemporalMeasureExpression:
-    TemporalLiteralExpression
-  | NominalRelationship
-;
 
 
-//////// Property expressions
 
-
-PropertyRef:
-  IRIRef | QNameRef
-;
+////// Property expressions
 
 PropertyExpression:
-    (leftPlural=PluralOperator prop=PropertyExpressionChain)
-  | (prop=PropertyExpressionChain (rightPlural=PluralOperator)?)
+  (
+    left_plural=ExpressionPlural expression=PropertyExpressionDisjoint
+  )
+  |
+  (
+    expression=PropertyExpressionDisjoint right_plural=ExpressionPlural?
+  )
 ;
 
-PluralOperator:
-  PluralOperatorCumulative | PluralOperatorDistributive
-;
-
-PluralOperatorCumulative: op='variously';
-PluralOperatorDistributive: op='separately';
-
-PropertyExpressionChain:
-  props+=PropertyExpressionDisjunction['of']
+PropertyExpressionDisjoint:
+    PropertyExpressionDisjunction
+  | PropertyExpressionConjoint
 ;
 
 PropertyExpressionDisjunction:
-  disjuncts+=PropertyExpressionConjunction['or']
+  '(' disjuncts=PropertyExpressionConjoint (KW_EXPRESSION_DISJUNCTION disjuncts+=PropertyExpressionConjoint['or'])? ')'
+;
+
+PropertyExpressionConjoint:
+    PropertyExpressionConjunction
+  | PropertyExpressionChain
 ;
 
 PropertyExpressionConjunction:
-  conjuncts+=PropertyExpressionPrimary['and']
+  '(' conjuncts=PropertyExpressionChain (KW_EXPRESSION_CONJUNCTION conjuncts+=PropertyExpressionChain['and'])? ')'
 ;
 
-PropertyExpressionPrimary:
-  negated?='not'
-  prop=PropertyExpressionAtom
+PropertyExpressionChain:
+  complemented?=KW_EXPRESSION_COMPLEMENT steps+=PropertyExpressionAtom['of']
 ;
 
 PropertyExpressionAtom:
-  PropertyExpressionTop | PropertyExpressionInverse | PropertyExpressionCartesian | PropertyExpressionQuantity | '(' PropertyExpression ')' | PropertySelf | PropertyRef
-;
-
-PropertyExpressionInverse:
-  'inverse' prop=PropertyExpressionPrimary
-;
-
-PropertyExpressionCartesian:
-  (('with' 'domain' domain=ClassExpressionPrimary)? ('with' 'range' range=ClassExpressionPrimary)?)#
-;
-
-PropertyExpressionQuantity:
-  'the' 'quantity' quantity=QuantityRef
+    PropertyExpressionTop 
+  | PropertyExpressionBottom
+  | PropertyExpressionProduct
+  | PropertyExpressionInverse
+  | ('(' PropertyExpression ')')
+  | PropertyRef
 ;
 
 PropertyExpressionTop:
-  op='something'
+  expression=KW_EXPRESSION_SOMETHING
 ;
 
-PropertySelf:
-  'its'
+PropertyExpressionBottom:
+  expression=KW_EXPRESSION_NOTHING
+;
+
+PropertyExpressionProduct:
+  ((KW_GENERIC_FROM domain=ClassExpressionAtom)? (KW_GENERIC_TO range=ClassExpressionAtom)?)#
+;
+
+PropertyExpressionInverse:
+  KW_EXPRESSION_INVERSE KW_GENERIC_OF expression=PropertyExpressionAtom
 ;
 
 
-//////// Data expressions
 
-DataRestriction:
-  ('_' | dataType=ResourceRef) facets*=DataFacetRestriction
+////// Plurality quantification
+
+ExpressionPlural:
+    PluralCumulative
+  | PluralDistributive
 ;
 
-ValueRestriction:
-    LiteralExpression
-  | NominalVariable
-  | NominalRelationship
-  | ResourceRef
+PluralCumulative: op=KW_EXPRESSION_CUMULATIVE;
+PluralDistributive: op=KW_EXPRESSION_DISTRIBUTIVE;
+
+
+
+////// Attribute expressions
+
+AttributeExpression:
+    left_plural=ExpressionPlural? KW_EXPRESSION_VALUE KW_GENERIC_OF expression=AttributeExpressionDisjoint
 ;
 
-NominalRelationship:
-  ('the' | locallyRooted='its') prop=PropertyExpressionChain
+AttributeExpressionDisjoint:
+    AttributeExpressionDisjunction
+  | AttributeExpressionConjoint
 ;
 
-NominalVariable:
-  '$' name=ID
+// FIXME: Disjunction not parsing: value of (foaf:givenName or foaf:firstName) of foaf:knows is "John"
+AttributeExpressionDisjunction:
+  '(' disjuncts=AttributeExpressionConjoint (KW_EXPRESSION_DISJUNCTION disjuncts+=AttributeExpressionConjoint['or'])? ')'
 ;
 
-DataFacetRestriction:
-  '[' DataFacet ']'
+AttributeExpressionConjoint:
+    AttributeExpressionConjunction
+  | AttributeExpressionChain
 ;
+
+// FIXME: Conjunction not parsing: value of (foaf:givenName and foaf:firstName) of foaf:knows is "John"
+AttributeExpressionConjunction:
+  '(' conjuncts=AttributeExpressionChain (KW_EXPRESSION_CONJUNCTION conjuncts+=AttributeExpressionChain['and'])? ')'
+;
+
+AttributeExpressionChain:
+  complemented?=KW_EXPRESSION_COMPLEMENT steps=AttributeExpressionAtom (KW_GENERIC_OF steps+=PropertyExpressionAtom['of'])?
+;
+
+AttributeExpressionAtom:
+    AttributeExpressionTop 
+  | AttributeExpressionBottom
+  | AttributeExpressionProduct
+  | AttributeExpressionInverse
+  | ('(' AttributeExpressionDisjoint ')')
+  | AttributeRef
+;
+
+AttributeExpressionTop:
+  expression=KW_EXPRESSION_SOMETHING
+;
+
+AttributeExpressionBottom:
+  expression=KW_EXPRESSION_NOTHING
+;
+
+AttributeExpressionProduct:
+  ((KW_GENERIC_FROM domain=ClassExpressionAtom)? (KW_GENERIC_TO range=DataExpressionAtom)?)#
+;
+
+AttributeExpressionInverse:
+  KW_EXPRESSION_INVERSE KW_GENERIC_OF expression=PropertyExpressionAtom
+;
+
+
+
+////// Data expressions
+
+DataExpression:
+  DataExpressionDisjoint
+;
+
+DataExpressionDisjoint:
+    DataExpressionDisjunction
+  | DataExpressionConjoint
+;
+
+DataExpressionDisjunction:
+  '(' disjuncts=DataExpressionConjoint (KW_EXPRESSION_DISJUNCTION disjuncts+=DataExpressionConjoint['or'])? ')'
+;
+
+DataExpressionConjoint:
+    DataExpressionConjunction
+  | DataExpressionPrimary
+;
+
+DataExpressionConjunction:
+  '(' conjuncts=DataExpressionPrimary (KW_EXPRESSION_CONJUNCTION conjuncts+=DataExpressionPrimary['and'])? ')'
+;
+
+DataExpressionPrimary:
+    DataExpressionComplement
+  | DataExpressionAtom
+;
+
+DataExpressionComplement:
+  KW_EXPRESSION_COMPLEMENT expression=DataExpressionAtom
+;
+
+DataExpressionAtom:
+  DataExpressionTop | DataFacet | ('(' DataExpression ')') | DatatypeRef
+;
+
+DataExpressionTop: KW_EXPRESSION_SOMETHING;
 
 DataFacet:
-    '>' minExclusive=NumericLiteralExpression
-  | '>=' minInclusive=NumericLiteralExpression
-  | '<' maxExclusive=NumericLiteralExpression
-  | '<=' maxInclusive=NumericLiteralExpression
-  | '=' equal=NumericLiteralExpression
-  | 'length' '<' maxExclusiveLength=INT
-  | 'length' '<=' maxInclusiveLength=INT
-  | 'length' '>' minExclusiveLength=INT
-  | 'length' '>=' minInclusiveLength=INT
-  | 'length' '=' length=INT
-  | 'matches' pattern=STRING
+    DataFacetGTE
+  | DataFacetGT
+  | DataFacetLTE
+  | DataFacetLT
+  | DataFacetEq
+  | DataFacetMinLengthInclusive
+  | DataFacetMinLengthExclusive
+  | DataFacetMaxLengthInclusive
+  | DataFacetMaxLengthExclusive
+  | DataFacetMatches
 ;
 
-//////// Lexicon
+DataFacetGTE: KW_OPERATOR_GTE value=NumericLiteralExpression;
+DataFacetGT: KW_OPERATOR_GT value=NumericLiteralExpression;
+DataFacetLTE: KW_OPERATOR_LTE value=NumericLiteralExpression;
+DataFacetLT: KW_OPERATOR_LT value=NumericLiteralExpression;
+DataFacetEq: KW_OPERATOR_EQ value=NumericLiteralExpression;
+DataFacetMinLengthInclusive: KW_OPERATOR_LENGTH KW_OPERATOR_GTE value=INT;
+DataFacetMinLengthExclusive: KW_OPERATOR_LENGTH KW_OPERATOR_GT value=INT;
+DataFacetMaxLengthInclusive: KW_OPERATOR_LENGTH KW_OPERATOR_LTE value=INT;
+DataFacetMaxLengthExclusive: KW_OPERATOR_LENGTH KW_OPERATOR_LT value=INT;
+DataFacetMatches: KW_OPERATOR_MATCHES value=StringExpression;
 
-Lexicon:
-  'lexicon'
-  baseIRI=IRI
-  noPrelude?=NoPrelude
-  (END_OF_PROP
-   annotations*=AssertionPredicateBlock[';']
-  )?
-  END_OF_SUBJ
-  ('language' lang=LANG END_OF_SUBJ)?
-  pragmas*=Pragma
-  entries*=LexicalEntry
+
+
+////// Value restrictions
+
+AttributeValueRestriction[skipws]:
+    NominalAttributeRestriction
+  | LiteralExpression
 ;
 
-LexicalEntry:
-  component+=LexicalEntryComponent (',' partOfSpeech=ResourceRef)? ';'
-  (annotations+=LexicalEntryAnnotation[';'] END_OF_PROP)?
-  senses+=LexicalSense
-  END_OF_SUBJ
+PropertyValueRestriction[skipws]:
+    NominalPropertyRestriction
+  | IndividualRef
 ;
 
-LexicalEntryComponent:
-  LexicalEntryAtom
+NominalAttributeRestriction[skipws]:
+  KW_GENERIC_THE KW_EXPRESSION_VALUE KW_GENERIC_OF expression=AttributeExpressionDisjoint is_local?=NominalRestrictionLocal
 ;
 
-LexicalEntryAtom:
-  ResourceRef | '(' LexicalEntryComponent ')'
+NominalPropertyRestriction[skipws]:
+  KW_GENERIC_THE expression=PropertyExpression is_local?=NominalRestrictionLocal
 ;
 
-LexicalEntryAnnotation:
-  predicate=LexicalEntryPredicate
-  objects+=LexicalEntryObject[',']
-;
-
-LexicalEntryPredicate:
-  ResourceRef
-;
-
-LexicalEntryObject:
-  AssertionObject
-;
-
-LexicalSense:
-  '*' ('(' modifers+=LexicalSenseModifier[','] ')')? ('TODO' | definition=LexicalSenseDefinition) ';'
-  annotations*=LexicalEntryAnnotation[';']
-;
-
-LexicalSenseModifier:
-  LexicalSenseModifierRegister | LexicalSenseModifierTemporal | LexicalSenseModifierNormative
-;
-
-LexicalSenseModifierRegister:
-    LexicalSenseModifierRegisterBench
-  | LexicalSenseModifierRegisterDialect
-  | LexicalSenseModifierRegisterFacetious
-  | LexicalSenseModifierRegisterFormal
-  | LexicalSenseModifierRegisterInHouse
-  | LexicalSenseModifierRegisterIronic
-  | LexicalSenseModifierRegisterNeutral
-  | LexicalSenseModifierRegisterSlang
-  | LexicalSenseModifierRegisterTaboo
-  | LexicalSenseModifierRegisterTechnical
-  | LexicalSenseModifierRegisterVulgar
-;
-
-LexicalSenseModifierRegisterBench: op='bench';
-LexicalSenseModifierRegisterDialect: op='dialect';
-LexicalSenseModifierRegisterFacetious: op='facetious';
-LexicalSenseModifierRegisterFormal: op='formal';
-LexicalSenseModifierRegisterInHouse: op='in-house';
-LexicalSenseModifierRegisterIronic: op='ironic';
-LexicalSenseModifierRegisterNeutral: op='neutral';
-LexicalSenseModifierRegisterSlang: op='slang';
-LexicalSenseModifierRegisterTaboo: op='taboo';
-LexicalSenseModifierRegisterTechnical: op='technical';
-LexicalSenseModifierRegisterVulgar: op='vulgar';
-
-LexicalSenseModifierTemporal:
-    LexicalSenseModiferTemporalArchaic
-  | LexicalSenseModifierTemporalObsolete
-  | LexicalSenseModifierTemporalOutdated
-;
-
-LexicalSenseModiferTemporalArchaic: op='archaic';
-LexicalSenseModifierTemporalObsolete: op='obsolete';
-LexicalSenseModifierTemporalOutdated: op='outdated';
-
-LexicalSenseModifierNormative:
-    LexicalSenseModifierNormativeAdmitted
-  | LexicalSenseModifierNormativeDeprecated
-  | LexicalSenseModifierNormativeLegal
-  | LexicalSenseModifierNormativePreferred
-  | LexicalSenseModifierNormativeRegulated
-  | LexicalSenseModifierNormativeStandardized
-  | LexicalSenseModifierNormativeSuperseded
-;
-
-LexicalSenseModifierNormativeAdmitted: op='admitted';
-LexicalSenseModifierNormativeDeprecated: op='deprecated';
-LexicalSenseModifierNormativeLegal: op='legal';
-LexicalSenseModifierNormativePreferred: op='preferred';
-LexicalSenseModifierNormativeRegulated: op='regulated';
-LexicalSenseModifierNormativeStandardized: op='standardized';
-LexicalSenseModifierNormativeSuperseded: op='superseded';
-
-LexicalSenseDefinition:
-    LexicalSenseDefinitionClass
-  | LexicalSenseDefinitionProperty
-;
-
-LexicalSenseDefinitionClass:
-  'a' (klass=ResourceRef | klass=ClassExpression)
-;
-
-LexicalSenseDefinitionProperty:
-  (meaning=LexicalSenseDefinitionPropertyAssertion | meaning=LexicalSenseDefinitionGraph)
-  ('where' conditions+=LexicalSenseDefinitionCondition[','])
-;
-
-LexicalSenseDefinitionGraph:
-  '{' assertions+=LexicalSenseDefinitionPropertyAssertion['.'] '}'
-;
-
-LexicalSenseDefinitionPropertyAssertion:
-  subject=LexicalSenseDefinitionPropertySubject
-  predicates+=LexicalSenseDefinitionPropertyPredicateBlock[';']
-;
-
-LexicalSenseDefinitionPropertySubject:
-    ResourceRef
-  | LexicalSenseArgument
-  | LexicalSenseBNode
-;
-
-LexicalSenseDefinitionPropertyPredicateBlock:
-  predicate=LexicalSenseDefinitionPropertyPredicate
-  objects+=LexicalSenseDefinitionPropertyObject[',']
-;
-
-LexicalSenseDefinitionPropertyPredicate:
-    BuiltinPredicate
-  | ResourceRef
-;
-
-LexicalSenseDefinitionPropertyObject:
-    Literal
-  | ResourceRef
-  | LexicalSenseArgument
-  | LexicalSenseBNode
-;
-
-LexicalSenseArgument:
-  '?' prop=ResourceRef
-;
-
-LexicalSenseBNode:
-  '!' name=ID
-;
-
-LexicalSenseDefinitionCondition:
-  subject=LexicalSenseArgument
-  predicate=LexicalSenseDefinitionConditionPredicate
-;
-
-LexicalSenseDefinitionConditionPredicate:
-    LexicalSenseDefinitionConditionPredicateIsA
-  | LexicalSenseDefinitionConditionPredicateMarker
-  | LexicalSenseDefinitionConditionPredicateOptional
-;
-
-LexicalSenseDefinitionConditionPredicateIsA:
-  'a' (klass=ResourceRef | klass=ClassExpression)
-;
-
-LexicalSenseDefinitionConditionPredicateMarker:
-  'marker' lexentry=LexicalEntryComponent
-;
-
-LexicalSenseDefinitionConditionPredicateOptional:
-  opt='optional'
+NominalRestrictionLocal:
+  KW_GENERIC_OF KW_GENERIC_IT
 ;
 
 
-//////// Literals
+
+////// Predicates
+
+Predicate:
+  property=PredicateRef
+  objects+=PropertyObject[',']
+;
+
+PropertyObject:
+    IndividualRef
+  | Literal
+;
+
+
+
+
+
+////// References
+
+GeneralName: IRI | QNAME;
+
+OntologyName:
+  IRI
+;
+
+OntologyRef:
+  ref=[OntologyDecl|IRI] (KW_GENERIC_FROM local_file=STRING)?
+;
+
+KeywordName: LOCALNAME;
+
+KeywordRef:
+  ref=[KeywordPragma|LOCALNAME]
+;
+
+IndividualName: GeneralName;
+
+IndividualRef:
+  ref=[IndividualDecl|IRI] | ref=[IndividualDecl|QNAME]
+;
+
+ClassName: GeneralName;
+
+ClassRef:
+  ref=[ClassDecl|IRI] | ref=[ClassDecl|QNAME]
+;
+
+PropertyName: GeneralName;
+
+PropertyRef:
+  ref=[PropertyDecl|IRI] | ref=[PropertyDecl|QNAME]
+;
+
+AttributeName: GeneralName;
+
+AttributeRef:
+  ref=[AttributeDecl|IRI] | ref=[AttributeDecl|QNAME]
+;
+
+PredicateRef:
+  ref=IRI | ref=QNAME
+;
+
+DatatypeName: GeneralName;
+
+DatatypeRef:
+  ref=[DatatypeDecl|IRI] | ref=[DatatypeDecl|QNAME]
+;
+
+
+
+
+////// Keywords
+
+KW:
+    KW_ENTITY
+  | KW_PRAGMA
+  | KW_GENERIC
+  | KW_MODIFIER
+  | KW_OPERATOR
+  | KW_EXPRESSION
+;
+
+KW_ENTITY:
+    KW_ENTITY_ATTRIBUTE
+  | KW_ENTITY_CLASS
+  | KW_ENTITY_DATATYPE
+  | KW_ENTITY_INDIVIDUAL
+  | KW_ENTITY_ONTOLOGY
+  | KW_ENTITY_PROPERTY
+;
+
+KW_ENTITY_ATTRIBUTE: 'attribute';
+KW_ENTITY_CLASS: 'class';
+KW_ENTITY_DATATYPE: 'datatype';
+KW_ENTITY_INDIVIDUAL: 'individual';
+KW_ENTITY_ONTOLOGY: 'ontology';
+KW_ENTITY_PROPERTY: 'property';
+
+
+KW_PRAGMA:
+    KW_PRAGMA_IMPORT
+  | KW_PRAGMA_KEYWORD
+;
+
+KW_PRAGMA_IMPORT: 'import';
+KW_PRAGMA_KEYWORD: 'keyword';
+
+
+KW_GENERIC:
+    KW_GENERIC_AS
+  | KW_GENERIC_FROM
+  | KW_GENERIC_IT
+  | KW_GENERIC_OF
+  | KW_GENERIC_THE
+  | KW_GENERIC_TO
+  | KW_GENERIC_WITH
+;
+
+KW_GENERIC_AS: 'as';
+KW_GENERIC_FROM: 'from';
+KW_GENERIC_IT: 'it';
+KW_GENERIC_OF: 'of';
+KW_GENERIC_THE: 'the';
+KW_GENERIC_TO: 'to';
+KW_GENERIC_WITH: 'with';
+
+
+KW_MODIFIER:
+    KW_MODIFIER_EXPORTED
+  | KW_MODIFIER_HIDDEN
+  | KW_MODIFIER_LANGUAGE
+  | KW_MODIFIER_PRELUDE
+;
+
+KW_MODIFIER_EXPORTED: 'exported';
+KW_MODIFIER_HIDDEN: 'hidden';
+KW_MODIFIER_LANGUAGE: 'language';
+KW_MODIFIER_PRELUDE: 'prelude';
+
+
+KW_OPERATOR:
+    KW_OPERATOR_EQUIVALENCE
+  | KW_OPERATOR_INSTANCEOF
+  | KW_OPERATOR_SPECIALIZES
+  | KW_OPERATOR_LTE
+  | KW_OPERATOR_LT
+  | KW_OPERATOR_GTE
+  | KW_OPERATOR_GT
+  | KW_OPERATOR_EQ
+  | KW_OPERATOR_LENGTH
+  | KW_OPERATOR_MATCHES
+;
+
+KW_OPERATOR_EQUIVALENCE: '~=';
+KW_OPERATOR_INSTANCEOF: 'a';
+KW_OPERATOR_SPECIALIZES: '<|';
+KW_OPERATOR_LTE: '<=';
+KW_OPERATOR_LT: '<';
+KW_OPERATOR_GTE: '>=';
+KW_OPERATOR_GT: '>';
+KW_OPERATOR_EQ: '=';
+KW_OPERATOR_LENGTH: 'length';
+KW_OPERATOR_MATCHES: 'matches';
+
+
+KW_EXPRESSION:
+    KW_EXPRESSION_AT
+  | KW_EXPRESSION_COMPLEMENT
+  | KW_EXPRESSION_CONJUNCTION
+  | KW_EXPRESSION_CUMULATIVE
+  | KW_EXPRESSION_DISJUNCTION
+  | KW_EXPRESSION_DISTRIBUTIVE
+  | KW_EXPRESSION_EXACTCARD
+  | KW_EXPRESSION_IF
+  | KW_EXPRESSION_INVERSE
+  | KW_EXPRESSION_IS
+  | KW_EXPRESSION_MAXCARD
+  | KW_EXPRESSION_MINCARD
+  | KW_EXPRESSION_NOTHING
+  | KW_EXPRESSION_ONLY
+  | KW_EXPRESSION_SELF
+  | KW_EXPRESSION_SOMETHING
+  | KW_EXPRESSION_SOME
+  | KW_EXPRESSION_THAT
+  | KW_EXPRESSION_VALUE
+;
+
+KW_EXPRESSION_AT: 'at';
+KW_EXPRESSION_COMPLEMENT: 'not';
+KW_EXPRESSION_CONJUNCTION: 'and';
+KW_EXPRESSION_CUMULATIVE: 'variously';
+KW_EXPRESSION_DISJUNCTION: 'or';
+KW_EXPRESSION_DISTRIBUTIVE: 'separately';
+KW_EXPRESSION_EXACTCARD: 'exactly';
+KW_EXPRESSION_IF: 'if';
+KW_EXPRESSION_INVERSE: 'inverse';
+KW_EXPRESSION_IS: 'is';
+KW_EXPRESSION_MAXCARD: 'most';
+KW_EXPRESSION_MINCARD: 'least';
+KW_EXPRESSION_NOTHING: 'nothing';
+KW_EXPRESSION_ONLY: 'only';
+KW_EXPRESSION_SELF: 'itself';
+KW_EXPRESSION_SOMETHING: 'something';
+KW_EXPRESSION_SOME: 'a';
+KW_EXPRESSION_THAT: 'that'|'where';
+KW_EXPRESSION_VALUE: 'value';
+
+
+
+
+////// Literals
 
 Literal:
   literal=LiteralExpression dtlang=DTLang?
@@ -1212,7 +867,6 @@ LiteralExpression:
   | StringExpression
 ;
 
-// FIXME: These would be great, if we can find a single way to desugar them
 RangeExpression:
   RangeExpressionTemporal | RangeExpressionNumber
 ;
@@ -1277,18 +931,32 @@ StringExpression:
 
 DTLang:
     '@' language=LANG
-  | '^^' dtype=ResourceRef
-  | unit=ResourceRef
+  | '^^' data_type=DatatypeRef
+  | unit=IndividualRef
 ;
 
 
-//////// Lexical declarations
 
-IRI:            // An explicit IRI
-  /<[^>\s]*>/
+
+////// Lexer
+
+IRI:
+  /<([^>\s]*)>/
 ;
 
-LANG:           // A language code
+QNAME:
+  !KW /(([A-Za-z_\-][A-Za-z0-9_\-]*\:)?([A-Za-z_\-][A-Za-z0-9_\-]*))/
+;
+
+PREFIX:
+  /([A-Za-z_\-][A-Za-z0-9_\-]*)/
+;
+
+LOCALNAME:
+  /([A-Za-z_\-][A-Za-z0-9_\-]*)/
+;
+
+LANG:
   /\w{2,3}(-\w{2,3}(-\w{2,3})?)?/
 ;
 
@@ -1304,6 +972,6 @@ END_OF_SUBJ:
   '.'
 ;
 
-Comment:        // A comment
-  /#.*$/
+Comment:
+  /\s#.*$/
 ;
