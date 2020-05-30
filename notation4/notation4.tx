@@ -429,20 +429,24 @@ ClassExpressionDisjoint:
 ;
 
 ClassExpressionDisjunction:
-  disjuncts=ClassExpressionConjoint (KW_EXPRESSION_DISJUNCTION disjuncts+=ClassExpressionConjoint['or'])?
+  disjuncts=ClassExpressionConjoint KW_EXPRESSION_DISJUNCTION disjuncts+=ClassExpressionConjoint['or']
 ;
 
 ClassExpressionConjoint:
-    ClassExpressionConjunction
+    ClassExpressionBase
+  | ClassExpressionConjunction
   | ClassExpressionPrimary
 ;
 
-ClassExpressionConjunction:
-  (
-    (base_class=ClassRef KW_EXPRESSION_THAT)? 
-    conjuncts+=ClassExpressionPrimary['and']
-  )
+ClassExpressionBase:
+  (KW_EXPRESSION_SOMETHING | base_class=ClassRef)
+  KW_EXPRESSION_THAT 
+  restriction=ClassExpressionConjoint 
   (KW_EXPRESSION_IF condition=ClassExpressionPrimary)?
+;
+
+ClassExpressionConjunction:
+  conjuncts=ClassExpressionPrimary KW_EXPRESSION_CONJUNCTION conjuncts+=ClassExpressionPrimary['and']
 ;
 
 ClassExpressionPrimary:
@@ -573,20 +577,34 @@ PropertyExpressionDisjoint:
 ;
 
 PropertyExpressionDisjunction:
-  '(' disjuncts=PropertyExpressionConjoint (KW_EXPRESSION_DISJUNCTION disjuncts+=PropertyExpressionConjoint['or'])? ')'
+  disjuncts=PropertyExpressionConjoint KW_EXPRESSION_DISJUNCTION disjuncts+=PropertyExpressionConjoint['or']
 ;
 
 PropertyExpressionConjoint:
     PropertyExpressionConjunction
-  | PropertyExpressionChain
+  | PropertyExpressionPrimary
 ;
 
 PropertyExpressionConjunction:
-  '(' conjuncts=PropertyExpressionChain (KW_EXPRESSION_CONJUNCTION conjuncts+=PropertyExpressionChain['and'])? ')'
+  conjuncts=PropertyExpressionPrimary KW_EXPRESSION_CONJUNCTION conjuncts+=PropertyExpressionPrimary['and']
+;
+
+PropertyExpressionPrimary:
+    PropertyExpressionComplement
+  | PropertyExpressionChain1
+;
+
+PropertyExpressionComplement:
+  KW_EXPRESSION_COMPLEMENT expression=PropertyExpressionChain1
+;
+
+PropertyExpressionChain1:
+    PropertyExpressionChain
+  | PropertyExpressionAtom
 ;
 
 PropertyExpressionChain:
-  complemented?=KW_EXPRESSION_COMPLEMENT steps+=PropertyExpressionAtom['of']
+  steps=PropertyExpressionAtom KW_GENERIC_OF steps+=PropertyExpressionAtom['of']
 ;
 
 PropertyExpressionAtom:
@@ -632,7 +650,7 @@ PluralDistributive: op=KW_EXPRESSION_DISTRIBUTIVE;
 ////// Attribute expressions
 
 AttributeExpression:
-    left_plural=ExpressionPlural? KW_EXPRESSION_VALUE KW_GENERIC_OF expression=AttributeExpressionDisjoint
+    left_plural=ExpressionPlural? KW_EXPRESSION_VALUE KW_GENERIC_OF expression=AttributeExpressionDisjoint (KW_GENERIC_OF property=PropertyExpression)?
 ;
 
 AttributeExpressionDisjoint:
@@ -640,23 +658,26 @@ AttributeExpressionDisjoint:
   | AttributeExpressionConjoint
 ;
 
-// FIXME: Disjunction not parsing: value of (foaf:givenName or foaf:firstName) of foaf:knows is "John"
 AttributeExpressionDisjunction:
-  '(' disjuncts=AttributeExpressionConjoint (KW_EXPRESSION_DISJUNCTION disjuncts+=AttributeExpressionConjoint['or'])? ')'
+  disjuncts=AttributeExpressionConjoint KW_EXPRESSION_DISJUNCTION disjuncts+=AttributeExpressionConjoint['or']
 ;
 
 AttributeExpressionConjoint:
     AttributeExpressionConjunction
-  | AttributeExpressionChain
+  | AttributeExpressionPrimary
 ;
 
-// FIXME: Conjunction not parsing: value of (foaf:givenName and foaf:firstName) of foaf:knows is "John"
 AttributeExpressionConjunction:
-  '(' conjuncts=AttributeExpressionChain (KW_EXPRESSION_CONJUNCTION conjuncts+=AttributeExpressionChain['and'])? ')'
+  conjuncts=AttributeExpressionPrimary KW_EXPRESSION_CONJUNCTION conjuncts+=AttributeExpressionPrimary['and']
 ;
 
-AttributeExpressionChain:
-  complemented?=KW_EXPRESSION_COMPLEMENT steps=AttributeExpressionAtom (KW_GENERIC_OF steps+=PropertyExpressionAtom['of'])?
+AttributeExpressionPrimary:
+    AttributeExpressionComplement
+  | AttributeExpressionAtom
+;
+
+AttributeExpressionComplement:
+  KW_EXPRESSION_COMPLEMENT expression=AttributeExpressionAtom
 ;
 
 AttributeExpressionAtom:
@@ -681,7 +702,7 @@ AttributeExpressionProduct:
 ;
 
 AttributeExpressionInverse:
-  KW_EXPRESSION_INVERSE KW_GENERIC_OF expression=PropertyExpressionAtom
+  KW_EXPRESSION_INVERSE KW_GENERIC_OF expression=AttributeExpressionAtom
 ;
 
 
@@ -698,7 +719,7 @@ DataExpressionDisjoint:
 ;
 
 DataExpressionDisjunction:
-  '(' disjuncts=DataExpressionConjoint (KW_EXPRESSION_DISJUNCTION disjuncts+=DataExpressionConjoint['or'])? ')'
+  disjuncts=DataExpressionConjoint KW_EXPRESSION_DISJUNCTION disjuncts+=DataExpressionConjoint['or']
 ;
 
 DataExpressionConjoint:
@@ -707,7 +728,7 @@ DataExpressionConjoint:
 ;
 
 DataExpressionConjunction:
-  '(' conjuncts=DataExpressionPrimary (KW_EXPRESSION_CONJUNCTION conjuncts+=DataExpressionPrimary['and'])? ')'
+  conjuncts=DataExpressionPrimary KW_EXPRESSION_CONJUNCTION conjuncts+=DataExpressionPrimary['and']
 ;
 
 DataExpressionPrimary:
