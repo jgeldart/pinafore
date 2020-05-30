@@ -662,7 +662,7 @@ DataFacetMinLengthInclusive: KW_OPERATOR_LENGTH KW_OPERATOR_GTE value=INT;
 DataFacetMinLengthExclusive: KW_OPERATOR_LENGTH KW_OPERATOR_GT value=INT;
 DataFacetMaxLengthInclusive: KW_OPERATOR_LENGTH KW_OPERATOR_LTE value=INT;
 DataFacetMaxLengthExclusive: KW_OPERATOR_LENGTH KW_OPERATOR_LT value=INT;
-DataFacetMatches: KW_OPERATOR_MATCHES value=StringExpression;
+DataFacetMatches: KW_OPERATOR_MATCHES value=StringLiteralExpression;
 
 
 
@@ -954,6 +954,7 @@ LiteralExpression:
   | RationalExpression
   | IntegerExpression
   | BooleanExpression
+  | RegexExpression
   | StringExpression
 ;
 
@@ -1010,6 +1011,15 @@ DateTimeExpression:
 DurationExpression:
   value=/(-?)P(?=\d|T\d)(?:(\d+)Y)?(?:(\d+)M)?(?:(\d+)([DW]))?(?:T(?:(\d+)H)?(?:(\d+)M)?(?:(\d+(?:\.\d+)?)S)?)?/
   //value=/^P(?!$)((\d+Y)|(\d+\.\d+Y$))?((\d+M)|(\d+\.\d+M$))?((\d+W)|(\d+\.\d+W$))?((\d+D)|(\d+\.\d+D$))?(T(?=\d)((\d+H)|(\d+\.\d+H$))?((\d+M)|(\d+\.\d+M$))?(\d+(\.\d+)?S)?)??$/
+;
+
+StringLiteralExpression:
+    RegexExpression
+  | StringExpression
+;
+
+RegexExpression:
+  value=/(\/.*\/)/
 ;
 
 StringExpression:
