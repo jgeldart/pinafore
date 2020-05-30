@@ -297,10 +297,10 @@ def variable_scope_check(model, metamodel):
             ((hasattr(x, "universal_var") and x.universal_var is not None) or (hasattr(x, "existential_var") and x.existential_var is not None))
             and get_parent_of_type("Formula", x) is None
         )
-        
+
     def _headed_list_decider(x):
         return (
-            x.__class__.__name__ == "HeadedList"
+            (x.__class__.__name__ == "HeadedList" or x.__class__.__name__.startswith("Infix"))
             and get_parent_of_type("Formula", x) is None
         )
 
@@ -315,8 +315,10 @@ def variable_scope_check(model, metamodel):
             var = "Variable '?{}'".format(first_error.universal_var)
         elif hasattr(first_error, "existential_var"):
             var = "Variable '!{}'".format(first_error.existential_var)
-        else:
+        elif hasattr(first_error, "head"):
             var = "Headed list '{}'".format(first_error.head.ref.name)
+        else:
+            var = "Infix expression '{}'".format(first_error)
         parser = model._tx_parser
         line, col = parser.pos_to_linecol(
             first_error._tx_position
@@ -347,10 +349,11 @@ def notation4():
         'AttributeRef.ref': FYNResolver("Attribute"),
         'DatatypeRef.ref': FYNResolver("Datatype"),
         'IndividualRef.ref': FYNResolver("Individual"),
+        'ConstantRef.ref': FYNResolver("Constant"),
         'BNodeRef.ref': FYNResolver("BNode"),
         'GraphRef.ref': FYNResolver("Graph"),
         'PredicateRef.ref': FYNResolver(["Property", "Attribute"]),
-        'ObjectRef.ref': FYNResolver(["Class", "Property", "Attribute", "Datatype", "Individual", "BNode", "Graph"])
+        'ObjectRef.ref': FYNResolver(["Class", "Property", "Attribute", "Datatype", "Individual", "Constant", "BNode", "Graph"])
     })
     mm.register_model_processor(variable_scope_check)
 

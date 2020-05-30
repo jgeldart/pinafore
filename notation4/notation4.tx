@@ -29,6 +29,7 @@ OntologyAssertion:
   | PropertyDecl
   | AttributeDecl
   | DatatypeDecl
+  | ConstantDecl
   | BNodeDecl
   | RuleDecl
   | GraphDecl
@@ -59,6 +60,7 @@ KeywordPragma:
   | KeywordPragmaAttribute
   | KeywordPragmaDatatype
   | KeywordPragmaIndividual
+  | KeywordPragmaConstant
 ;
 
 KeywordPragmaClass:
@@ -106,6 +108,16 @@ KeywordPragmaIndividual:
   KW_PRAGMA_KEYWORD
   KW_ENTITY_INDIVIDUAL
   entity=IndividualRef
+  KW_GENERIC_AS
+  name=KeywordName
+  END_OF_SUBJ
+;
+
+KeywordPragmaConstant:
+  is_exported?=KW_MODIFIER_EXPORTED
+  KW_PRAGMA_KEYWORD
+  KW_ENTITY_CONSTANT
+  entity=ConstantRef
   KW_GENERIC_AS
   name=KeywordName
   END_OF_SUBJ
@@ -384,6 +396,26 @@ DatatypeAxiomInstanceOf:
 
 
 
+////// Constants
+
+ConstantDecl:
+  is_exported?=KW_MODIFIER_EXPORTED
+  KW_ENTITY_CONSTANT
+  name=ConstantName
+  value=Literal
+  (
+    END_OF_PROP?
+    axioms+=ConstantAxiom[';']
+  )?
+  END_OF_SUBJ
+;
+
+ConstantAxiom:
+  Predicate
+;
+
+
+
 
 ////// Class expressions
 
@@ -596,6 +628,7 @@ PluralDistributive: op=KW_EXPRESSION_DISTRIBUTIVE;
 
 
 
+
 ////// Attribute expressions
 
 AttributeExpression:
@@ -718,6 +751,7 @@ DataFacetMatches: KW_OPERATOR_MATCHES value=StringLiteralExpression;
 
 
 
+
 ////// Value restrictions
 
 AttributeValueRestriction[skipws]:
@@ -749,6 +783,47 @@ NominalRestrictionLocal:
 
 
 
+
+////// Infix expressions
+
+InfixExpression:
+  InfixAdd
+;
+
+InfixAdd:
+    InfixAdditive
+  | InfixMult
+;
+
+InfixAdditive:
+  operands=InfixMult operator=KW_INFIX_ADDITIVE operands=InfixAdd
+;
+
+InfixMult:
+    InfixMultiplicative
+  | InfixExp
+;
+
+InfixMultiplicative:
+  operands=InfixExp operator=KW_INFIX_MULTIPLICATIVE operands=InfixMult
+;
+
+InfixExp:
+    InfixExponential
+  | InfixNumericAtom
+;
+
+InfixExponential:
+  operands=InfixNumericAtom operator=KW_INFIX_EXPONENTIAL operands=InfixExp
+;
+
+InfixNumericAtom:
+  AttributeValueUniversalVar | ConstantRef | NumericLiteralExpression | '(' InfixExpression ')' 
+;
+
+
+
+
 ////// Predicates
 
 Predicate:
@@ -761,6 +836,7 @@ PropertyObject:
   | GraphDecl
   | HeadedList
   | Collection
+  | InfixExpression
   | ObjectRef
   | Literal
 ;
@@ -779,6 +855,7 @@ HeadedListObject:
   | GraphDecl
   | HeadedList
   | Collection
+  | InfixExpression
   | ObjectRef
   | Literal
 ;
@@ -870,6 +947,12 @@ DatatypeRef:
   ref=[DatatypeDecl|IRI] | ref=[DatatypeDecl|QNAME] | universal_var=UNIVAR | existential_var=EXIVAR
 ;
 
+ConstantName: GeneralName;
+
+ConstantRef:
+  ref=[ConstantDecl|IRI] | ref=[ConstantDecl|QNAME]
+;
+
 
 
 
@@ -883,11 +966,13 @@ KW:
   | KW_MODIFIER
   | KW_OPERATOR
   | KW_EXPRESSION
+  | KW_INFIX
 ;
 
 KW_ENTITY:
     KW_ENTITY_ATTRIBUTE
   | KW_ENTITY_CLASS
+  | KW_ENTITY_CONSTANT
   | KW_ENTITY_DATATYPE
   | KW_ENTITY_INDIVIDUAL
   | KW_ENTITY_ONTOLOGY
@@ -896,6 +981,7 @@ KW_ENTITY:
 
 KW_ENTITY_ATTRIBUTE: 'attribute ';
 KW_ENTITY_CLASS: 'class ';
+KW_ENTITY_CONSTANT: 'constant ';
 KW_ENTITY_DATATYPE: 'datatype ';
 KW_ENTITY_INDIVIDUAL: 'individual ';
 KW_ENTITY_ONTOLOGY: 'ontology ';
@@ -1025,6 +1111,39 @@ KW_EXPRESSION_SOME: 'a ';
 KW_EXPRESSION_THAT: 'that '|'where ';
 KW_EXPRESSION_VALUE: 'value ';
 
+KW_INFIX:
+    KW_INFIX_ADDITIVE
+  | KW_INFIX_MULTIPLICATIVE
+  | KW_INFIX_EXPONENTIAL
+;
+
+KW_INFIX_ADDITIVE:
+  KW_INFIX_ADDITIVE_PLUS | KW_INFIX_ADDITIVE_MINUS
+;
+
+KW_INFIX_ADDITIVE_PLUS:
+  op='+'
+;
+
+KW_INFIX_ADDITIVE_MINUS:
+  op='-'
+;
+
+KW_INFIX_MULTIPLICATIVE:
+  KW_INFIX_MULTIPLICATIVE_TIMES | KW_INFIX_MULTIPLICATIVE_DIVIDE
+;
+
+KW_INFIX_MULTIPLICATIVE_TIMES:
+  op='*'
+;
+
+KW_INFIX_MULTIPLICATIVE_DIVIDE:
+  op='/'
+;
+
+KW_INFIX_EXPONENTIAL:
+  op='^'
+;
 
 
 
