@@ -393,59 +393,59 @@ ClassExpressionRestriction:
 ;
 
 ClassExpressionAttributeMaxCard[noskipws]:
-  /\s*/ role=RestrictedAttributeRole /\s+/ KW_EXPRESSION_AT /\s+/ KW_EXPRESSION_MAXCARD /\s+/ cardinality=INT /\s+/ restriction=RestrictedDataExpression
+  /\s*/ role=RestrictedAttributeRole /\s+/ KW_EXPRESSION_AT KW_EXPRESSION_MAXCARD cardinality=INT /\s+/ restriction=RestrictedDataExpression
 ;
 
 ClassExpressionPropertyMaxCard[noskipws]:
-  /\s*/ role=RestrictedPropertyRole /\s+/ KW_EXPRESSION_AT /\s+/ KW_EXPRESSION_MAXCARD /\s+/ cardinality=INT /\s+/ restriction=RestrictedClassExpression
+  /\s*/ role=RestrictedPropertyRole /\s+/ KW_EXPRESSION_AT KW_EXPRESSION_MAXCARD cardinality=INT /\s+/ restriction=RestrictedClassExpression
 ;
 
 ClassExpressionAttributeMinCard[noskipws]:
-  /\s*/ role=RestrictedAttributeRole /\s+/ KW_EXPRESSION_AT /\s+/ KW_EXPRESSION_MINCARD /\s+/ cardinality=INT /\s+/ restriction=RestrictedDataExpression
+  /\s*/ role=RestrictedAttributeRole /\s+/ KW_EXPRESSION_AT KW_EXPRESSION_MINCARD cardinality=INT /\s+/ restriction=RestrictedDataExpression
 ;
 
 ClassExpressionPropertyMinCard[noskipws]:
-  /\s*/ role=RestrictedPropertyRole /\s+/ KW_EXPRESSION_AT /\s+/ KW_EXPRESSION_MINCARD /\s+/ cardinality=INT /\s+/ restriction=RestrictedClassExpression
+  /\s*/ role=RestrictedPropertyRole /\s+/ KW_EXPRESSION_AT KW_EXPRESSION_MINCARD cardinality=INT /\s+/ restriction=RestrictedClassExpression
 ;
 
 ClassExpressionAttributeExactCard[noskipws]:
-  /\s*/ role=RestrictedAttributeRole /\s+/ KW_EXPRESSION_EXACTCARD /\s+/ cardinality=INT /\s+/ restriction=RestrictedDataExpression
+  /\s*/ role=RestrictedAttributeRole /\s+/ KW_EXPRESSION_EXACTCARD cardinality=INT /\s+/ restriction=RestrictedDataExpression
 ;
 
 ClassExpressionPropertyExactCard[noskipws]:
-  /\s*/ role=RestrictedPropertyRole /\s+/ KW_EXPRESSION_EXACTCARD /\s+/ cardinality=INT /\s+/ restriction=RestrictedClassExpression
+  /\s*/ role=RestrictedPropertyRole /\s+/ KW_EXPRESSION_EXACTCARD cardinality=INT /\s+/ restriction=RestrictedClassExpression
 ;
 
 ClassExpressionAttributeOnlySome[noskipws]:
-  /\s*/ role=RestrictedAttributeRole /\s+/ KW_EXPRESSION_ONLY /\s+/ KW_EXPRESSION_SOME /\s+/ restriction=RestrictedDataExpression
+  /\s*/ role=RestrictedAttributeRole /\s+/ KW_EXPRESSION_ONLY KW_EXPRESSION_SOME restriction=RestrictedDataExpression
 ;
 
 ClassExpressionPropertyOnlySome[noskipws]:
-  /\s*/ role=RestrictedPropertyRole /\s+/ KW_EXPRESSION_ONLY /\s+/ KW_EXPRESSION_SOME /\s+/ restriction=RestrictedClassExpression
+  /\s*/ role=RestrictedPropertyRole /\s+/ KW_EXPRESSION_ONLY KW_EXPRESSION_SOME restriction=RestrictedClassExpression
 ;
 
 ClassExpressionAttributeOnly[noskipws]:
-  /\s*/ role=RestrictedAttributeRole /\s+/ KW_EXPRESSION_ONLY /\s+/ restriction=RestrictedDataExpression
+  /\s*/ role=RestrictedAttributeRole /\s+/ KW_EXPRESSION_ONLY restriction=RestrictedDataExpression
 ;
 
 ClassExpressionPropertyOnly[noskipws]:
-  /\s*/ role=RestrictedPropertyRole /\s+/ KW_EXPRESSION_ONLY /\s+/ restriction=RestrictedClassExpression
+  /\s*/ role=RestrictedPropertyRole /\s+/ KW_EXPRESSION_ONLY restriction=RestrictedClassExpression
 ;
 
 ClassExpressionAttributeSome[noskipws]:
-  /\s*/ role=RestrictedAttributeRole /\s+/ KW_EXPRESSION_SOME /\s+/ restriction=RestrictedDataExpression
+  /\s*/ role=RestrictedAttributeRole /\s+/ KW_EXPRESSION_SOME restriction=RestrictedDataExpression
 ;
 
 ClassExpressionPropertySome[noskipws]:
-  /\s*/ role=RestrictedPropertyRole /\s+/ KW_EXPRESSION_SOME /\s+/ restriction=RestrictedClassExpression
+  /\s*/ role=RestrictedPropertyRole /\s+/ KW_EXPRESSION_SOME restriction=RestrictedClassExpression
 ;
 
 ClassExpressionAttributeValue[noskipws]:
-  /\s*/ role=RestrictedAttributeRole /\s+/ KW_EXPRESSION_IS /\s+/ restriction=AttributeValueRestriction
+  /\s*/ role=RestrictedAttributeRole /\s+/ KW_EXPRESSION_IS restriction=AttributeValueRestriction
 ;
 
 ClassExpressionPropertyValue[noskipws]:
-  /\s*/ role=RestrictedPropertyRole /\s+/ KW_EXPRESSION_IS /\s+/ restriction=PropertyValueRestriction
+  /\s*/ role=RestrictedPropertyRole /\s+/ KW_EXPRESSION_IS restriction=PropertyValueRestriction
 ;
 
 ClassExpressionSelf[noskipws]:
@@ -801,12 +801,12 @@ KW_ENTITY:
   | KW_ENTITY_PROPERTY
 ;
 
-KW_ENTITY_ATTRIBUTE: 'attribute';
-KW_ENTITY_CLASS: 'class';
-KW_ENTITY_DATATYPE: 'datatype';
-KW_ENTITY_INDIVIDUAL: 'individual';
-KW_ENTITY_ONTOLOGY: 'ontology';
-KW_ENTITY_PROPERTY: 'property';
+KW_ENTITY_ATTRIBUTE: 'attribute ';
+KW_ENTITY_CLASS: 'class ';
+KW_ENTITY_DATATYPE: 'datatype ';
+KW_ENTITY_INDIVIDUAL: 'individual ';
+KW_ENTITY_ONTOLOGY: 'ontology ';
+KW_ENTITY_PROPERTY: 'property ';
 
 
 KW_PRAGMA:
@@ -814,8 +814,8 @@ KW_PRAGMA:
   | KW_PRAGMA_KEYWORD
 ;
 
-KW_PRAGMA_IMPORT: 'import';
-KW_PRAGMA_KEYWORD: 'keyword';
+KW_PRAGMA_IMPORT: 'import ';
+KW_PRAGMA_KEYWORD: 'keyword ';
 
 
 KW_GENERIC:
@@ -828,13 +828,13 @@ KW_GENERIC:
   | KW_GENERIC_WITH
 ;
 
-KW_GENERIC_AS: 'as';
-KW_GENERIC_FROM: 'from';
-KW_GENERIC_IT: 'it';
-KW_GENERIC_OF: 'of';
-KW_GENERIC_THE: 'the';
-KW_GENERIC_TO: 'to';
-KW_GENERIC_WITH: 'with';
+KW_GENERIC_AS: 'as ';
+KW_GENERIC_FROM: 'from ';
+KW_GENERIC_IT: 'it ';
+KW_GENERIC_OF: 'of ';
+KW_GENERIC_THE: 'the ';
+KW_GENERIC_TO: 'to ';
+KW_GENERIC_WITH: 'with ';
 
 
 KW_MODIFIER:
@@ -845,11 +845,11 @@ KW_MODIFIER:
   | KW_MODIFIER_PRELUDE
 ;
 
-KW_MODIFIER_EXPORTED: 'exported';
-KW_MODIFIER_HIDDEN: 'hidden';
-KW_MODIFIER_LABEL: ':-';
-KW_MODIFIER_LANGUAGE: 'language';
-KW_MODIFIER_PRELUDE: 'prelude';
+KW_MODIFIER_EXPORTED: 'exported ';
+KW_MODIFIER_HIDDEN: 'hidden ';
+KW_MODIFIER_LABEL: ':- ';
+KW_MODIFIER_LANGUAGE: 'language ';
+KW_MODIFIER_PRELUDE: 'prelude ';
 
 
 KW_OPERATOR:
@@ -865,16 +865,16 @@ KW_OPERATOR:
   | KW_OPERATOR_MATCHES
 ;
 
-KW_OPERATOR_EQUIVALENCE: '~=';
-KW_OPERATOR_INSTANCEOF: 'a';
-KW_OPERATOR_SPECIALIZES: '<|';
-KW_OPERATOR_LTE: '<=';
-KW_OPERATOR_LT: '<';
-KW_OPERATOR_GTE: '>=';
-KW_OPERATOR_GT: '>';
-KW_OPERATOR_EQ: '=';
-KW_OPERATOR_LENGTH: 'length';
-KW_OPERATOR_MATCHES: 'matches';
+KW_OPERATOR_EQUIVALENCE: '~= ';
+KW_OPERATOR_INSTANCEOF: 'a ';
+KW_OPERATOR_SPECIALIZES: '<| ';
+KW_OPERATOR_LTE: '<= ';
+KW_OPERATOR_LT: '< ';
+KW_OPERATOR_GTE: '>= ';
+KW_OPERATOR_GT: '> ';
+KW_OPERATOR_EQ: '= ';
+KW_OPERATOR_LENGTH: 'length ';
+KW_OPERATOR_MATCHES: 'matches ';
 
 
 KW_EXPRESSION:
@@ -899,25 +899,25 @@ KW_EXPRESSION:
   | KW_EXPRESSION_VALUE
 ;
 
-KW_EXPRESSION_AT: 'at';
-KW_EXPRESSION_COMPLEMENT: 'not';
-KW_EXPRESSION_CONJUNCTION: 'and';
-KW_EXPRESSION_CUMULATIVE: 'variously';
-KW_EXPRESSION_DISJUNCTION: 'or';
-KW_EXPRESSION_DISTRIBUTIVE: 'separately';
-KW_EXPRESSION_EXACTCARD: 'exactly';
-KW_EXPRESSION_IF: 'if';
-KW_EXPRESSION_INVERSE: 'inverse';
-KW_EXPRESSION_IS: 'is';
-KW_EXPRESSION_MAXCARD: 'most';
-KW_EXPRESSION_MINCARD: 'least';
-KW_EXPRESSION_NOTHING: 'nothing';
-KW_EXPRESSION_ONLY: 'only';
-KW_EXPRESSION_SELF: 'itself';
-KW_EXPRESSION_SOMETHING: 'something';
-KW_EXPRESSION_SOME: 'a';
-KW_EXPRESSION_THAT: 'that'|'where';
-KW_EXPRESSION_VALUE: 'value';
+KW_EXPRESSION_AT: 'at ';
+KW_EXPRESSION_COMPLEMENT: 'not ';
+KW_EXPRESSION_CONJUNCTION: 'and ';
+KW_EXPRESSION_CUMULATIVE: 'variously ';
+KW_EXPRESSION_DISJUNCTION: 'or ';
+KW_EXPRESSION_DISTRIBUTIVE: 'separately ';
+KW_EXPRESSION_EXACTCARD: 'exactly ';
+KW_EXPRESSION_IF: 'if ';
+KW_EXPRESSION_INVERSE: 'inverse ';
+KW_EXPRESSION_IS: 'is ';
+KW_EXPRESSION_MAXCARD: 'most ';
+KW_EXPRESSION_MINCARD: 'least ';
+KW_EXPRESSION_NOTHING: 'nothing ';
+KW_EXPRESSION_ONLY: 'only ';
+KW_EXPRESSION_SELF: 'itself ';
+KW_EXPRESSION_SOMETHING: 'something ';
+KW_EXPRESSION_SOME: 'a ';
+KW_EXPRESSION_THAT: 'that '|'where ';
+KW_EXPRESSION_VALUE: 'value ';
 
 
 
