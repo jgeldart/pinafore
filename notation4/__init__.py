@@ -84,7 +84,7 @@ class OntologyResolver:
             return c
 
         base = str(ontology_iri)
-        ontology = _apply_attrs(metamodel['OntologyDecl'], name=base, prefix=None, no_prelude=None, prelude=None, default_language=None, pragmas=[], assertions=[])
+        ontology = _apply_attrs(metamodel['OntologyDecl'], name="<{}>".format(base), prefix=None, no_prelude=None, prelude=None, default_language=None, pragmas=[], assertions=[])
 
         classes = graph.query("""
                         SELECT DISTINCT ?cls WHERE {
@@ -144,7 +144,7 @@ class OntologyResolver:
     def __call__(self, obj, attr, obj_ref):
         model = get_model(obj)
         the_metamodel = get_metamodel(model)
-        ontology_iri = obj_ref.obj_name
+        ontology_iri = obj_ref.obj_name[1:-1]
 
         if hasattr(the_metamodel, "_ontologies") and ontology_iri in the_metamodel._ontologies.keys():
             return the_metamodel._ontologies[ontology_iri]
@@ -189,39 +189,84 @@ class OntologyResolver:
 
 class FYNResolver:
 
-    def __init__(self, ref_type):
-        self._keyword_class = "KeywordPragma{}".format(ref_type)
-        self._declaration_class = "{}Decl".format(ref_type)
+    def __init__(self, ref_types):
+        if not isinstance(ref_types, list):
+            ref_types = [ref_types]
 
-    def _possible_matches(self, obj, ref_name):
-        model = get_model(obj)
+        self._keyword_classes = ["KeywordPragma{}".format(ref_type) for ref_type in ref_types]
+        self._declaration_classes = ["{}Decl".format(ref_type) for ref_type in ref_types]
+
+    def _resolve_prefix(self, scope, prefix):
+        ontologies = [o.ontology.ref for o in get_children(lambda x: hasattr(x, "name") and x.name == prefix and x.__class__.__name__ == "ImportPragma", scope)]
+        if len(ontologies) > 0:
+            return ontologies[0]
+        else:
+            return scope
+
+    def _possible_keyword_matches(self, scope, ref_name):
+
+        def _decide_match(is_local=True):
+            def f(x):
+                return (
+                    hasattr(x, "name")
+                    and x.name == ref_name
+                    and x.__class__.__name__ in self._keyword_classes
+                    and hasattr(x, "is_exported")
+                    and (is_local or x.is_exported)
+                )
+            return f
+
+        potential_matches = get_children(_decide_match(), scope)
+        potential_matches += [k for o in [get_children(_decide_match(False), o.ontology.ref) for o in get_children_of_type("ImportPragma", scope)] for k in o]
+        return potential_matches
+
+    def _possible_qname_matches(self, scope, ref_name):
         if ":" in ref_name:
             prefix, ref_name = ref_name.split(":")
-            ontologies = [o.ontology.ref for o in get_children(
-                lambda x:
-                    hasattr(x, "name")
-                    and x.name == prefix
-                    and x.__class__.__name__ == "ImportPragma",
-                model
-                )]
-            if len(ontologies) > 0:
-                model = ontologies[0]
+            new_scope = self._resolve_prefix(scope, prefix)
+        else:
+            new_scope = scope
+
         return get_children(
             lambda x:
                 hasattr(x, "name")
                 and x.name == ref_name
                 and (
-                    x.__class__.__name__ == self._keyword_class
-                    or x.__class__.__name__ == self._declaration_class
-                    ),
-                model
+                    x.__class__.__name__ in self._keyword_classes
+                    or x.__class__.__name__ in self._declaration_classes
                 )
+                and (
+                    new_scope == scope or (hasattr(x, "is_exported") and x.is_exported)
+                ),
+            new_scope
+        )
+
+    def _possible_iri_matches(self, scope, ref_name):
+
+        def _decide_match(x):
+            return (hasattr(x, "name")
+                    and hasattr(x, "parent") and x.parent is not None
+                    and x.parent.__class__.__name__ == "OntologyDecl"
+                    and (x.parent.name[1:-1] + x.name == ref_name)
+                    and (
+                        x.__class__.__name__ in self._keyword_classes
+                        or x.__class__.__name__ in self._declaration_classes
+                    ))
+        potential_matches = [get_children(_decide_match, o.ontology.ref) for o in get_children_of_type("ImportPragma", scope)]
+        return [m for o in potential_matches for m in o]
+
+    def _possible_matches(self, obj, ref_name):
+        model = get_model(obj)
+        if ref_name.startswith("<") and ref_name.endswith(">"):
+            return self._possible_iri_matches(model, ref_name[1:-1])
+        else:
+            return self._possible_qname_matches(model, ref_name) + self._possible_keyword_matches(model, ref_name)
 
     def _resolve_ref(self, obj, ref_name):
         matches = self._possible_matches(obj, ref_name)
         if len(matches) > 0:
             match = matches[0]
-            if match.__class__.__name__ == self._keyword_class:
+            if match.__class__.__name__ in self._keyword_classes:
                 return match.entity.ref
             else:
                 return matches[0]
@@ -253,6 +298,8 @@ def notation4():
         'AttributeRef.ref': FYNResolver("Attribute"),
         'DatatypeRef.ref': FYNResolver("Datatype"),
         'IndividualRef.ref': FYNResolver("Individual"),
+        'PredicateRef.ref': FYNResolver(["Property", "Attribute"]),
+        'ObjectRef.ref': FYNResolver(["Class", "Property", "Attribute", "Datatype", "Individual"])
     })
 
     return mm
