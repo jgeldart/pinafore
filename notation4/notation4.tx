@@ -827,7 +827,7 @@ InfixNumericAtom:
 ////// Predicates
 
 Predicate:
-  property=PredicateRef
+  (property=BuiltinPredicate | property=PredicateRef)
   objects+=PropertyObject[',']
 ;
 
@@ -840,6 +840,36 @@ PropertyObject:
   | ObjectRef
   | Literal
 ;
+
+BuiltinPredicate:
+    LogicalIdenticalPredicate
+  | LogicalDifferentPredicate
+  | NumericEqualsPredicate
+  | NumericNotEqualsPredicate
+  | NumericLessThanEqualsPredicate
+  | NumericLessThanPredicate
+  | NumericGreaterThanEqualsPredicate
+  | NumericGreaterThanPredicate
+  | LogicalEqualsPredicate
+  | LogicalNotEqualsPredicate
+  | LogicalSemanticsPredicate
+  | LogicalConclusionsPredicate
+  | CollectionInclusionPredicate
+;
+
+LogicalEqualsPredicate: op='= ';
+LogicalNotEqualsPredicate: op='=/= ';
+NumericEqualsPredicate: op='== ';
+NumericNotEqualsPredicate: op='!= ';
+NumericLessThanEqualsPredicate: op='<= ';
+NumericLessThanPredicate: op='< ';
+NumericGreaterThanEqualsPredicate: op='>= ';
+NumericGreaterThanPredicate: op='> ';
+LogicalSemanticsPredicate: op='|- ';
+LogicalConclusionsPredicate: op='|= ';
+LogicalIdenticalPredicate: op='=== ';
+LogicalDifferentPredicate: op='!== ';
+CollectionInclusionPredicate: op='in ';
 
 
 
