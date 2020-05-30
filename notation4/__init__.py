@@ -84,7 +84,7 @@ class OntologyResolver:
             return c
 
         base = str(ontology_iri)
-        ontology = _apply_attrs(metamodel['OntologyDecl'], name="<{}>".format(base), prefix=None, no_prelude=None, prelude=None, default_language=None, pragmas=[], assertions=[])
+        ontology = _apply_attrs(metamodel['OntologyDecl'], name="<{}>".format(base), prefix=None, no_prelude=None, prelude=None, default_language=None, axioms=[], pragmas=[], assertions=[])
 
         classes = graph.query("""
                         SELECT DISTINCT ?cls WHERE {

@@ -15,6 +15,10 @@ OntologyDecl:
     (KW_GENERIC_WITH KW_MODIFIER_PRELUDE ((no_prelude=KW_MODIFIER_HIDDEN) | (prelude=OntologyRef)))?
     (KW_GENERIC_WITH KW_MODIFIER_LANGUAGE default_language=LANG)?
   )#
+  (
+    END_OF_PROP?
+    axioms+=Predicate[';']
+  )?
   END_OF_SUBJ
   pragmas*=Pragma
   assertions*=OntologyAssertions
@@ -113,7 +117,10 @@ IndividualDecl:
   is_exported?=KW_MODIFIER_EXPORTED
   KW_ENTITY_INDIVIDUAL?
   name=IndividualName
-  axioms*=IndividualAxiom[';']
+  (
+    END_OF_PROP?
+    axioms+=IndividualAxiom[';']
+  )?
   END_OF_SUBJ
 ;
 
@@ -130,7 +137,10 @@ ClassDecl:
   is_exported?=KW_MODIFIER_EXPORTED
   KW_ENTITY_CLASS
   name=ClassName
-  axioms*=ClassAxiom[';']
+  (
+    END_OF_PROP?
+    axioms+=ClassAxiom[';']
+  )?
   END_OF_SUBJ
 ;
 
@@ -165,7 +175,10 @@ PropertyDecl:
   is_exported?=KW_MODIFIER_EXPORTED
   KW_ENTITY_PROPERTY
   name=PropertyName
-  axioms*=PropertyAxiom[';']
+  (
+    END_OF_PROP?
+    axioms+=PropertyAxiom[';']
+  )?
   END_OF_SUBJ
 ;
 
@@ -200,7 +213,10 @@ AttributeDecl:
   is_exported?=KW_MODIFIER_EXPORTED
   KW_ENTITY_ATTRIBUTE
   name=AttributeName
-  axioms*=AttributeAxiom[';']
+  (
+    END_OF_PROP?
+    axioms+=AttributeAxiom[';']
+  )?
   END_OF_SUBJ
 ;
 
@@ -234,7 +250,10 @@ DatatypeDecl:
   is_exported?=KW_MODIFIER_EXPORTED
   KW_ENTITY_DATATYPE
   name=DatatypeName
-  axioms*=DatatypeAxiom[';']
+  (
+    END_OF_PROP?
+    axioms+=DatatypeAxiom[';']
+  )?
   END_OF_SUBJ
 ;
 
