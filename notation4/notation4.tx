@@ -374,8 +374,6 @@ DatatypeDecl:
 
 DatatypeAxiom:
     DatatypeAxiomSpecializes
-  | DatatypeAxiomEquivalence
-  | DatatypeAxiomInstanceOf
   | Predicate
 ;
 
@@ -384,15 +382,6 @@ DatatypeAxiomSpecializes:
   expression=DataExpression
 ;
 
-DatatypeAxiomEquivalence:
-  KW_OPERATOR_EQUIVALENCE
-  expression=DataExpression
-;
-
-DatatypeAxiomInstanceOf:
-  KW_OPERATOR_INSTANCEOF
-  expression=DataExpression
-;
 
 
 
