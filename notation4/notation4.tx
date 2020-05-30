@@ -30,6 +30,13 @@ OntologyAssertion:
   | AttributeDecl
   | DatatypeDecl
   | ConstantDecl
+  | ClassPatternDecl
+  | PropertyPatternDecl
+  | AttributePatternDecl
+  | DatatypePatternDecl
+  | IndividualPatternDecl
+  | RestrictionPatternDecl
+  | LiteralPatternDecl
   | BNodeDecl
   | RuleDecl
   | GraphDecl
@@ -125,12 +132,228 @@ KeywordPragmaConstant:
 
 
 
+////// Patterns
+
+ClassPatternDecl:
+  is_exported?=KW_MODIFIER_EXPORTED
+  KW_ENTITY_PATTERN
+  KW_ENTITY_CLASS
+  name=PatternName
+  args*=PatternArg
+  kwargs*=PatternKwarg
+  (
+    KW_MODIFIER_RETURNING
+    returns+=PatternReturn
+  )?
+  unifier=Formula
+  (repeater=Formula
+    ( KW_OPERATOR_BACKWARDCHAIN
+      antecedent=Formula
+    )?
+  )?
+  (
+    END_OF_PROP?
+    axioms+=ClassPatternAxiom[';']
+  )?
+  END_OF_SUBJ
+;
+
+ClassPatternAxiom:
+  Predicate
+;
+
+PropertyPatternDecl:
+  is_exported?=KW_MODIFIER_EXPORTED
+  KW_ENTITY_PATTERN
+  KW_ENTITY_PROPERTY
+  name=PatternName
+  args*=PatternArg
+  kwargs*=PatternKwarg
+  (
+    KW_MODIFIER_RETURNING
+    returns+=PatternReturn
+  )?
+  unifier=Formula
+  (repeater=Formula
+    ( KW_OPERATOR_BACKWARDCHAIN
+      antecedent=Formula
+    )?
+  )?
+  (
+    END_OF_PROP?
+    axioms+=PropertyPatternAxiom[';']
+  )?
+  END_OF_SUBJ
+;
+
+PropertyPatternAxiom:
+  Predicate
+;
+
+AttributePatternDecl:
+  is_exported?=KW_MODIFIER_EXPORTED
+  KW_ENTITY_PATTERN
+  KW_ENTITY_ATTRIBUTE
+  name=PatternName
+  args*=PatternArg
+  kwargs*=PatternKwarg
+  (
+    KW_MODIFIER_RETURNING
+    returns+=PatternReturn
+  )?
+  unifier=Formula
+  (repeater=Formula
+    ( KW_OPERATOR_BACKWARDCHAIN
+      antecedent=Formula
+    )?
+  )?
+  (
+    END_OF_PROP?
+    axioms+=AttributePatternAxiom[';']
+  )?
+  END_OF_SUBJ
+;
+
+AttributePatternAxiom:
+  Predicate
+;
+
+DatatypePatternDecl:
+  is_exported?=KW_MODIFIER_EXPORTED
+  KW_ENTITY_PATTERN
+  KW_ENTITY_DATATYPE
+  name=PatternName
+  args*=PatternArg
+  kwargs*=PatternKwarg
+  (
+    KW_MODIFIER_RETURNING
+    returns+=PatternReturn
+  )?
+  unifier=Formula
+  (repeater=Formula
+    ( KW_OPERATOR_BACKWARDCHAIN
+      antecedent=Formula
+    )?
+  )?
+  (
+    END_OF_PROP?
+    axioms+=DatatypePatternAxiom[';']
+  )?
+  END_OF_SUBJ
+;
+
+DatatypePatternAxiom:
+  Predicate
+;
+
+IndividualPatternDecl:
+  is_exported?=KW_MODIFIER_EXPORTED
+  KW_ENTITY_PATTERN
+  KW_ENTITY_INDIVIDUAL
+  name=PatternName
+  args*=PatternArg
+  kwargs*=PatternKwarg
+  (
+    KW_MODIFIER_RETURNING
+    returns+=PatternReturn
+  )?
+  unifier=Formula
+  (repeater=Formula
+    ( KW_OPERATOR_BACKWARDCHAIN
+      antecedent=Formula
+    )?
+  )?
+  (
+    END_OF_PROP?
+    axioms+=IndividualPatternAxiom[';']
+  )?
+  END_OF_SUBJ
+;
+
+IndividualPatternAxiom:
+  Predicate
+;
+
+RestrictionPatternDecl:
+  is_exported?=KW_MODIFIER_EXPORTED
+  KW_ENTITY_PATTERN
+  KW_ENTITY_RESTRICTION
+  name=PatternName
+  args*=PatternArg
+  kwargs*=PatternKwarg
+  (
+    KW_MODIFIER_RETURNING
+    returns+=PatternReturn
+  )?
+  unifier=Formula
+  (repeater=Formula
+    ( KW_OPERATOR_BACKWARDCHAIN
+      antecedent=Formula
+    )?
+  )?
+  (
+    END_OF_PROP?
+    axioms+=RestrictionPatternAxiom[';']
+  )?
+  END_OF_SUBJ
+;
+
+RestrictionPatternAxiom:
+  Predicate
+;
+
+LiteralPatternDecl:
+  is_exported?=KW_MODIFIER_EXPORTED
+  KW_ENTITY_PATTERN
+  KW_ENTITY_LITERAL
+  name=PatternName
+  args*=PatternArg
+  kwargs*=PatternKwarg
+  (
+    KW_MODIFIER_RETURNING
+    returns+=PatternReturn
+  )?
+  unifier=Formula
+  (repeater=Formula
+    ( KW_OPERATOR_BACKWARDCHAIN
+      antecedent=Formula
+    )?
+  )?
+  (
+    END_OF_PROP?
+    axioms+=LiteralPatternAxiom[';']
+  )?
+  END_OF_SUBJ
+;
+
+LiteralPatternAxiom:
+  Predicate
+;
+
+PatternArg:
+  name=UNIVAR
+;
+
+PatternKwarg:
+  KW_GENERIC_WITH name=UNIVAR
+;
+
+PatternKwargValue:
+  KW_GENERIC_WITH ref=LOCALNAME value=PropertyObject
+;
+
+PatternReturn:
+  (universal_var=UNIVAR) | (existential_var=EXIVAR)
+;
+
+
+
 
 ////// Individuals
 
 IndividualDecl:
   is_exported?=KW_MODIFIER_EXPORTED
-  KW_ENTITY_INDIVIDUAL?
+  (modifiers*=IndividualModifier KW_ENTITY_INDIVIDUAL)?
   name=IndividualName
   (
     END_OF_PROP?
@@ -139,8 +362,14 @@ IndividualDecl:
   END_OF_SUBJ
 ;
 
+IndividualModifier:
+  pattern=IndividualPatternRef
+  ('(' modifier_args+=PropertyObject[','] ')')?
+;
+
 IndividualAxiom:
     IndividualAxiomInstanceOf
+  | PatternKwargValue
   | Predicate
 ;
 
@@ -233,13 +462,13 @@ RuleDecl:
 
 ForwardRuleDecl:
   consequent=Formula
-  '<=='
+  KW_OPERATOR_FORWARDCHAIN
   antecedent=Formula
 ;
 
 BackwardRuleDecl:
   consequent=Formula
-  '<--'
+  KW_OPERATOR_BACKWARDCHAIN
   antecedent=Formula
 ;
 
@@ -250,6 +479,7 @@ BackwardRuleDecl:
 
 ClassDecl:
   is_exported?=KW_MODIFIER_EXPORTED
+  modifiers*=ClassModifier
   KW_ENTITY_CLASS
   name=ClassName
   (
@@ -259,10 +489,16 @@ ClassDecl:
   END_OF_SUBJ
 ;
 
+ClassModifier:
+  pattern=ClassPatternRef
+  ('(' modifier_args+=PropertyObject[','] ')')?
+;
+
 ClassAxiom:
     ClassAxiomSpecializes
   | ClassAxiomEquivalence
   | ClassAxiomInstanceOf
+  | PatternKwargValue
   | Predicate
 ;
 
@@ -288,6 +524,7 @@ ClassAxiomInstanceOf:
 
 PropertyDecl:
   is_exported?=KW_MODIFIER_EXPORTED
+  modifiers*=PropertyModifier
   KW_ENTITY_PROPERTY
   name=PropertyName
   (
@@ -297,10 +534,16 @@ PropertyDecl:
   END_OF_SUBJ
 ;
 
+PropertyModifier:
+  pattern=PropertyPatternRef
+  ('(' modifier_args+=PropertyObject[','] ')')?
+;
+
 PropertyAxiom:
     PropertyAxiomSpecializes
   | PropertyAxiomEquivalence
   | PropertyAxiomInstanceOf
+  | PatternKwargValue
   | Predicate
 ;
 
@@ -326,6 +569,7 @@ PropertyAxiomInstanceOf:
 
 AttributeDecl:
   is_exported?=KW_MODIFIER_EXPORTED
+  modifiers*=AttributeModifier
   KW_ENTITY_ATTRIBUTE
   name=AttributeName
   (
@@ -335,10 +579,16 @@ AttributeDecl:
   END_OF_SUBJ
 ;
 
+AttributeModifier:
+  pattern=AttributePatternRef
+  ('(' modifier_args+=PropertyObject[','] ')')?
+;
+
 AttributeAxiom:
     AttributeAxiomSpecializes
   | AttributeAxiomEquivalence
   | AttributeAxiomInstanceOf
+  | PatternKwargValue
   | Predicate
 ;
 
@@ -363,6 +613,7 @@ AttributeAxiomInstanceOf:
 
 DatatypeDecl:
   is_exported?=KW_MODIFIER_EXPORTED
+  modifiers*=DatatypeModifier
   KW_ENTITY_DATATYPE
   name=DatatypeName
   (
@@ -372,8 +623,14 @@ DatatypeDecl:
   END_OF_SUBJ
 ;
 
+DatatypeModifier:
+  pattern=DatatypePatternRef
+  ('(' modifier_args+=PropertyObject[','] ')')?
+;
+
 DatatypeAxiom:
     DatatypeAxiomSpecializes
+  | PatternKwargValue
   | Predicate
 ;
 
@@ -448,7 +705,7 @@ ClassExpressionComplement:
 ;
 
 ClassExpressionAtom:
-  ClassExpressionRestriction | ('(' ClassExpression ')') | ClassRef
+  ClassExpressionRestriction | ('(' ClassExpression ')') | UniversalVar | ExistentialVar | ClassRef
 ;
 
 ClassExpressionRestriction:
@@ -602,6 +859,8 @@ PropertyExpressionAtom:
   | PropertyExpressionProduct
   | PropertyExpressionInverse
   | ('(' PropertyExpression ')')
+  | UniversalVar
+  | ExistentialVar
   | PropertyRef
 ;
 
@@ -696,6 +955,7 @@ AttributeExpressionInverse:
 
 
 
+
 ////// Data expressions
 
 DataExpression:
@@ -748,16 +1008,26 @@ DataFacet:
   | DataFacetMatches
 ;
 
-DataFacetGTE: KW_OPERATOR_GTE value=NumericLiteralExpression;
-DataFacetGT: KW_OPERATOR_GT value=NumericLiteralExpression;
-DataFacetLTE: KW_OPERATOR_LTE value=NumericLiteralExpression;
-DataFacetLT: KW_OPERATOR_LT value=NumericLiteralExpression;
-DataFacetEq: KW_OPERATOR_EQ value=NumericLiteralExpression;
+DataFacetGTE: KW_OPERATOR_GTE value=NumericFacetExpression;
+DataFacetGT: KW_OPERATOR_GT value=NumericFacetExpression;
+DataFacetLTE: KW_OPERATOR_LTE value=NumericFacetExpression;
+DataFacetLT: KW_OPERATOR_LT value=NumericFacetExpression;
+DataFacetEq: KW_OPERATOR_EQ value=NumericFacetExpression;
 DataFacetMinLengthInclusive: KW_OPERATOR_LENGTH KW_OPERATOR_GTE value=INT;
 DataFacetMinLengthExclusive: KW_OPERATOR_LENGTH KW_OPERATOR_GT value=INT;
 DataFacetMaxLengthInclusive: KW_OPERATOR_LENGTH KW_OPERATOR_LTE value=INT;
 DataFacetMaxLengthExclusive: KW_OPERATOR_LENGTH KW_OPERATOR_LT value=INT;
-DataFacetMatches: KW_OPERATOR_MATCHES value=StringLiteralExpression;
+DataFacetMatches: KW_OPERATOR_MATCHES value=StringFacetExpression;
+
+NumericFacetExpression:
+    UniversalVar
+  | NumericLiteralExpression
+;
+
+StringFacetExpression:
+    UniversalVar
+  | StringLiteralExpression
+;
 
 
 
@@ -766,16 +1036,14 @@ DataFacetMatches: KW_OPERATOR_MATCHES value=StringLiteralExpression;
 
 AttributeValueRestriction[skipws]:
     NominalAttributeRestriction
-  | AttributeValueUniversalVar
+  | UniversalVar
   | LiteralExpression
-;
-
-AttributeValueUniversalVar:
-  universal_var=UNIVAR
 ;
 
 PropertyValueRestriction[skipws]:
     NominalPropertyRestriction
+  | UniversalVar
+  | ExistentialVar
   | IndividualRef
 ;
 
@@ -828,7 +1096,7 @@ InfixExponential:
 ;
 
 InfixNumericAtom:
-  AttributeValueUniversalVar | ConstantRef | NumericLiteralExpression | '(' InfixExpression ')' 
+  UniversalVar | ConstantRef | NumericLiteralExpression | '(' InfixExpression ')' 
 ;
 
 
@@ -846,8 +1114,8 @@ PropertyObject:
   | GraphDecl
   | HeadedList
   | Collection
-  | InfixExpression
   | ObjectRef
+  | InfixExpression
   | Literal
 ;
 
@@ -915,6 +1183,19 @@ CollectionTypeBag: type=KW_COLLECTIONTYPE_BAG;
 CollectionTypeSet: type=KW_COLLECTIONTYPE_SET;
 CollectionTypeAlts: type=KW_COLLECTIONTYPE_ALTS;
 CollectionTypeSeq: type=KW_COLLECTIONTYPE_SEQ;
+
+
+
+
+////// Variables
+
+UniversalVar:
+  universal_var=UNIVAR
+;
+
+ExistentialVar:
+  existential_var=EXIVAR
+;
 
 
 
@@ -993,6 +1274,36 @@ ConstantRef:
   ref=[ConstantDecl|IRI] | ref=[ConstantDecl|QNAME]
 ;
 
+PatternName: GeneralName;
+
+ClassPatternRef:
+  ref=[ClassPatternDecl|IRI] | ref=[ClassPatternDecl|QNAME]
+;
+
+PropertyPatternRef:
+  ref=[PropertyPatternDecl|IRI] | ref=[PropertyPatternDecl|QNAME]
+;
+
+AttributePatternRef:
+  ref=[AttributePatternDecl|IRI] | ref=[AttributePatternDecl|QNAME]
+;
+
+DatatypePatternRef:
+  ref=[DatatypePatternDecl|IRI] | ref=[DatatypePatternDecl|QNAME]
+;
+
+IndividualPatternRef:
+  ref=[IndividualPatternDecl|IRI] | ref=[IndividualPatternDecl|QNAME]
+;
+
+RestrictionPatternRef:
+  ref=[RestrictionPatternDecl|IRI] | ref=[RestrictionPatternDecl|QNAME]
+;
+
+LiteralPatternRef:
+  ref=[LiteralPatternDecl|IRI] | ref=[LiteralPatternDecl|QNAME]
+;
+
 
 
 
@@ -1015,8 +1326,11 @@ KW_ENTITY:
   | KW_ENTITY_CONSTANT
   | KW_ENTITY_DATATYPE
   | KW_ENTITY_INDIVIDUAL
+  | KW_ENTITY_LITERAL
   | KW_ENTITY_ONTOLOGY
+  | KW_ENTITY_PATTERN
   | KW_ENTITY_PROPERTY
+  | KW_ENTITY_RESTRICTION
 ;
 
 KW_ENTITY_ATTRIBUTE: 'attribute ';
@@ -1024,8 +1338,11 @@ KW_ENTITY_CLASS: 'class ';
 KW_ENTITY_CONSTANT: 'constant ';
 KW_ENTITY_DATATYPE: 'datatype ';
 KW_ENTITY_INDIVIDUAL: 'individual ';
+KW_ENTITY_LITERAL: 'literal ';
 KW_ENTITY_ONTOLOGY: 'ontology ';
+KW_ENTITY_PATTERN: 'pattern';
 KW_ENTITY_PROPERTY: 'property ';
+KW_ENTITY_RESTRICTION: 'restriction ';
 
 
 KW_PRAGMA:
@@ -1075,6 +1392,7 @@ KW_MODIFIER:
   | KW_MODIFIER_LABEL
   | KW_MODIFIER_LANGUAGE
   | KW_MODIFIER_PRELUDE
+  | KW_MODIFIER_RETURNING
 ;
 
 KW_MODIFIER_EXPORTED: 'exported ';
@@ -1082,10 +1400,13 @@ KW_MODIFIER_HIDDEN: 'hidden ';
 KW_MODIFIER_LABEL: ':- ';
 KW_MODIFIER_LANGUAGE: 'language ';
 KW_MODIFIER_PRELUDE: 'prelude ';
+KW_MODIFIER_RETURNING: 'returning ';
 
 
 KW_OPERATOR:
-    KW_OPERATOR_EQUIVALENCE
+    KW_OPERATOR_BACKWARDCHAIN
+  | KW_OPERATOR_EQUIVALENCE
+  | KW_OPERATOR_FORWARDCHAIN
   | KW_OPERATOR_INSTANCEOF
   | KW_OPERATOR_SPECIALIZES
   | KW_OPERATOR_LTE
@@ -1097,7 +1418,9 @@ KW_OPERATOR:
   | KW_OPERATOR_MATCHES
 ;
 
+KW_OPERATOR_BACKWARDCHAIN: '<-- ';
 KW_OPERATOR_EQUIVALENCE: '~= ';
+KW_OPERATOR_FORWARDCHAIN: '<==';
 KW_OPERATOR_INSTANCEOF: 'a ';
 KW_OPERATOR_SPECIALIZES: '<| ';
 KW_OPERATOR_LTE: '<= ';
@@ -1322,11 +1645,11 @@ LOCALNAME:
 ;
 
 UNIVAR:
-  /\?([A-Za-z_\-][A-Za-z0-9_\-]*)/
+  /(\?[A-Za-z_\-][A-Za-z0-9_\-]*)/
 ;
 
 EXIVAR:
-  /\!([A-Za-z_\-][A-Za-z0-9_\-]*)/
+  /(\![A-Za-z_\-][A-Za-z0-9_\-]*)/
 ;
 
 LANG:
