@@ -176,6 +176,7 @@ GraphAssertion:
   | AttributeDecl
   | DatatypeDecl
   | BNodeDecl
+  | GraphDecl
   | IndividualDecl
 ;
 
