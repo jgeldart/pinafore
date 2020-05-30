@@ -298,8 +298,9 @@ def notation4():
         'AttributeRef.ref': FYNResolver("Attribute"),
         'DatatypeRef.ref': FYNResolver("Datatype"),
         'IndividualRef.ref': FYNResolver("Individual"),
+        'BNodeRef.ref': FYNResolver("BNode"),
         'PredicateRef.ref': FYNResolver(["Property", "Attribute"]),
-        'ObjectRef.ref': FYNResolver(["Class", "Property", "Attribute", "Datatype", "Individual"])
+        'ObjectRef.ref': FYNResolver(["Class", "Property", "Attribute", "Datatype", "Individual", "BNode"])
     })
 
     return mm

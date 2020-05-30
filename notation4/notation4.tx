@@ -130,6 +130,23 @@ IndividualAxiom:
 
 
 
+////// BNodes
+
+BNodeDecl:
+  '['
+    (KW_MODIFIER_LABEL name=BNodeName)?
+    (
+      END_OF_PROP?
+      axioms+=BNodeAxiom[';']
+    )?
+  ']'
+;
+
+BNodeAxiom:
+  Predicate
+;
+
+
 
 ////// Classes
 
@@ -649,7 +666,8 @@ Predicate:
 ;
 
 PropertyObject:
-    ObjectRef
+    BNodeDecl
+  | ObjectRef
   | Literal
 ;
 
@@ -680,6 +698,18 @@ IndividualName: GeneralName;
 IndividualRef:
   ref=[IndividualDecl|IRI] | ref=[IndividualDecl|QNAME]
 ;
+
+BNodeName: GeneralName;
+
+BNodeRef:
+  ref=[BNodeDecl|IRI] | ref=[BNodeDecl|QNAME]
+;
+
+GraphName: GeneralName;
+
+//GraphRef:
+//  ref=[GraphDecl|IRI] | ref=[GraphDecl|QNAME]
+//;
 
 ClassName: GeneralName;
 
@@ -775,12 +805,14 @@ KW_GENERIC_WITH: 'with';
 KW_MODIFIER:
     KW_MODIFIER_EXPORTED
   | KW_MODIFIER_HIDDEN
+  | KW_MODIFIER_LABEL
   | KW_MODIFIER_LANGUAGE
   | KW_MODIFIER_PRELUDE
 ;
 
 KW_MODIFIER_EXPORTED: 'exported';
 KW_MODIFIER_HIDDEN: 'hidden';
+KW_MODIFIER_LABEL: ':-';
 KW_MODIFIER_LANGUAGE: 'language';
 KW_MODIFIER_PRELUDE: 'prelude';
 
