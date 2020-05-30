@@ -759,10 +759,45 @@ Predicate:
 PropertyObject:
     BNodeDecl
   | GraphDecl
+  | HeadedList
+  | Collection
   | ObjectRef
   | Literal
 ;
 
+
+
+
+////// Collections
+
+HeadedList:
+  head=PredicateRef '(' members*=HeadedListObject[','] ')'
+;
+
+HeadedListObject:
+    BNodeDecl
+  | GraphDecl
+  | HeadedList
+  | Collection
+  | ObjectRef
+  | Literal
+;
+
+Collection:
+  (collection_type=CollectionType)? '(' members+=PropertyObject[','] ')'
+;
+
+CollectionType:
+    CollectionTypeBag
+  | CollectionTypeSet
+  | CollectionTypeAlts
+  | CollectionTypeSeq
+;
+
+CollectionTypeBag: type=KW_COLLECTIONTYPE_BAG;
+CollectionTypeSet: type=KW_COLLECTIONTYPE_SET;
+CollectionTypeAlts: type=KW_COLLECTIONTYPE_ALTS;
+CollectionTypeSeq: type=KW_COLLECTIONTYPE_SEQ;
 
 
 
@@ -843,6 +878,7 @@ DatatypeRef:
 KW:
     KW_ENTITY
   | KW_PRAGMA
+  | KW_COLLECTIONTYPE
   | KW_GENERIC
   | KW_MODIFIER
   | KW_OPERATOR
@@ -873,6 +909,19 @@ KW_PRAGMA:
 
 KW_PRAGMA_IMPORT: 'import ';
 KW_PRAGMA_KEYWORD: 'keyword ';
+
+
+KW_COLLECTIONTYPE:
+    KW_COLLECTIONTYPE_ALTS
+  | KW_COLLECTIONTYPE_BAG
+  | KW_COLLECTIONTYPE_SEQ
+  | KW_COLLECTIONTYPE_SET
+;
+
+KW_COLLECTIONTYPE_ALTS: '@alts';
+KW_COLLECTIONTYPE_BAG: '@bag';
+KW_COLLECTIONTYPE_SEQ: '@seq';
+KW_COLLECTIONTYPE_SET: '@set';
 
 
 KW_GENERIC:

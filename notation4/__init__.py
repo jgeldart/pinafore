@@ -297,22 +297,31 @@ def variable_scope_check(model, metamodel):
             ((hasattr(x, "universal_var") and x.universal_var is not None) or (hasattr(x, "existential_var") and x.existential_var is not None))
             and get_parent_of_type("Formula", x) is None
         )
+        
+    def _headed_list_decider(x):
+        return (
+            x.__class__.__name__ == "HeadedList"
+            and get_parent_of_type("Formula", x) is None
+        )
 
     issues = get_children(_decl_decider, model)
     issues += get_children(_ref_decider, model)
+    issues += get_children(_headed_list_decider, model)
     if len(issues) > 0:
         first_error = issues[0]
         if hasattr(first_error, "name"):
-            var = first_error.name
+            var = "Variable '{}'".format(first_error.name)
         elif hasattr(first_error, "universal_var"):
-            var = first_error.universal_var
+            var = "Variable '?{}'".format(first_error.universal_var)
+        elif hasattr(first_error, "existential_var"):
+            var = "Variable '!{}'".format(first_error.existential_var)
         else:
-            var = first_error.existential_var
+            var = "Headed list '{}'".format(first_error.head.ref.name)
         parser = model._tx_parser
         line, col = parser.pos_to_linecol(
             first_error._tx_position
             )
-        message = "Variable '{}' used outside a formula in '{}'".format(
+        message = "{} used outside a formula in '{}'".format(
             var,
             str(first_error)
             )
