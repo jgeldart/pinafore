@@ -21,14 +21,16 @@ OntologyDecl:
   )?
   END_OF_SUBJ
   pragmas*=Pragma
-  assertions*=OntologyAssertions
+  assertions*=OntologyAssertion
 ;
 
-OntologyAssertions:
+OntologyAssertion:
     ClassDecl
   | PropertyDecl
   | AttributeDecl
   | DatatypeDecl
+  | BNodeDecl
+  | GraphDecl
   | IndividualDecl
 ;
 
@@ -136,7 +138,7 @@ BNodeDecl:
   '['
     (KW_MODIFIER_LABEL name=BNodeName)?
     (
-      END_OF_PROP?
+      END_OF_SUBJ
       axioms+=BNodeAxiom[';']
     )?
   ']'
@@ -144,6 +146,37 @@ BNodeDecl:
 
 BNodeAxiom:
   Predicate
+;
+
+
+
+////// Graphs
+
+GraphDecl:
+  '{'
+    (
+      KW_MODIFIER_LABEL name=GraphName
+      (
+        END_OF_PROP
+        axioms+=GraphAxiom[';']
+        END_OF_SUBJ
+      )?
+    )?
+    assertions*=GraphAssertion
+  '}'
+;
+
+GraphAxiom:
+  Predicate
+;
+
+GraphAssertion:
+    ClassDecl
+  | PropertyDecl
+  | AttributeDecl
+  | DatatypeDecl
+  | BNodeDecl
+  | IndividualDecl
 ;
 
 
@@ -667,6 +700,7 @@ Predicate:
 
 PropertyObject:
     BNodeDecl
+  | GraphDecl
   | ObjectRef
   | Literal
 ;
@@ -707,9 +741,9 @@ BNodeRef:
 
 GraphName: GeneralName;
 
-//GraphRef:
-//  ref=[GraphDecl|IRI] | ref=[GraphDecl|QNAME]
-//;
+GraphRef:
+  ref=[GraphDecl|IRI] | ref=[GraphDecl|QNAME]
+;
 
 ClassName: GeneralName;
 
