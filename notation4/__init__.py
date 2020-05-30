@@ -5,7 +5,7 @@ from urllib.parse import urldefrag, urlparse
 from rdflib import Graph
 from rdflib.util import guess_format
 import requests
-from textx import language, metamodel_from_file, get_model, get_metamodel, get_children, get_children_of_type, textx_isinstance, TextXSemanticError
+from textx import language, metamodel_from_file, get_model, get_metamodel, get_children, get_children_of_type, get_parent_of_type, textx_isinstance, TextXSemanticError
 
 from textx.const import RULE_COMMON, RULE_ABSTRACT
 from textx.model import ObjCrossRef
@@ -15,7 +15,7 @@ from textx.scoping.tools import get_parser
 def relative_url(base, url):
     if not str(url).startswith(base):
         return str(url)
-    
+
     first, frag = urldefrag(url)
     if frag != "":
         return str(frag)
@@ -284,6 +284,46 @@ class FYNResolver:
         return self._resolve_ref(obj, obj_ref.obj_name)
 
 
+def variable_scope_check(model, metamodel):
+    def _decl_decider(x):
+        return (
+            hasattr(x, "name") and x.name is not None
+            and (x.name.startswith("?") or x.name.startswith("!"))
+            and get_parent_of_type("Formula", x) is None
+        )
+
+    def _ref_decider(x):
+        return (
+            ((hasattr(x, "universal_var") and x.universal_var is not None) or (hasattr(x, "existential_var") and x.existential_var is not None))
+            and get_parent_of_type("Formula", x) is None
+        )
+
+    issues = get_children(_decl_decider, model)
+    issues += get_children(_ref_decider, model)
+    if len(issues) > 0:
+        first_error = issues[0]
+        if hasattr(first_error, "name"):
+            var = first_error.name
+        elif hasattr(first_error, "universal_var"):
+            var = first_error.universal_var
+        else:
+            var = first_error.existential_var
+        parser = model._tx_parser
+        line, col = parser.pos_to_linecol(
+            first_error._tx_position
+            )
+        message = "Variable '{}' used outside a formula in '{}'".format(
+            var,
+            str(first_error)
+            )
+        raise TextXSemanticError(
+            message,
+            line=line,
+            col=col,
+            filename=model._tx_filename
+            )
+
+
 @language("Notation4", "*.n4")
 def notation4():
     "A high-level ontology language."
@@ -303,5 +343,6 @@ def notation4():
         'PredicateRef.ref': FYNResolver(["Property", "Attribute"]),
         'ObjectRef.ref': FYNResolver(["Class", "Property", "Attribute", "Datatype", "Individual", "BNode", "Graph"])
     })
+    mm.register_model_processor(variable_scope_check)
 
     return mm

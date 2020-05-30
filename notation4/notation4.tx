@@ -30,6 +30,7 @@ OntologyAssertion:
   | AttributeDecl
   | DatatypeDecl
   | BNodeDecl
+  | RuleDecl
   | GraphDecl
   | IndividualDecl
 ;
@@ -127,7 +128,13 @@ IndividualDecl:
 ;
 
 IndividualAxiom:
-    Predicate
+    IndividualAxiomInstanceOf
+  | Predicate
+;
+
+IndividualAxiomInstanceOf:
+  KW_OPERATOR_INSTANCEOF
+  expression=ClassExpression
 ;
 
 
@@ -176,9 +183,54 @@ GraphAssertion:
   | AttributeDecl
   | DatatypeDecl
   | BNodeDecl
+  | RuleDecl
   | GraphDecl
   | IndividualDecl
 ;
+
+
+
+////// Formulas
+
+Formula:
+  '{'
+    assertions*=FormulaAssertion
+  '}'
+;
+
+FormulaAssertion:
+    ClassDecl
+  | PropertyDecl
+  | AttributeDecl
+  | DatatypeDecl
+  | BNodeDecl
+  | RuleDecl
+  | GraphDecl
+  | IndividualDecl
+;
+
+
+
+
+////// Rules
+
+RuleDecl:
+    ForwardRuleDecl
+  | BackwardRuleDecl
+;
+
+ForwardRuleDecl:
+  consequent=Formula
+  '<=='
+  antecedent=Formula
+;
+
+BackwardRuleDecl:
+  consequent=Formula
+  '<--'
+  antecedent=Formula
+;
+
 
 
 
@@ -670,7 +722,12 @@ DataFacetMatches: KW_OPERATOR_MATCHES value=StringLiteralExpression;
 
 AttributeValueRestriction[skipws]:
     NominalAttributeRestriction
+  | AttributeValueUniversalVar
   | LiteralExpression
+;
+
+AttributeValueUniversalVar:
+  universal_var=UNIVAR
 ;
 
 PropertyValueRestriction[skipws]:
@@ -712,7 +769,7 @@ PropertyObject:
 
 ////// References
 
-GeneralName: IRI | QNAME;
+GeneralName: IRI | QNAME | UNIVAR | EXIVAR;
 
 OntologyName:
   IRI
@@ -749,33 +806,33 @@ GraphRef:
 ClassName: GeneralName;
 
 ClassRef:
-  ref=[ClassDecl|IRI] | ref=[ClassDecl|QNAME]
+  ref=[ClassDecl|IRI] | ref=[ClassDecl|QNAME] | universal_var=UNIVAR | existential_var=EXIVAR
 ;
 
 PropertyName: GeneralName;
 
 PropertyRef:
-  ref=[PropertyDecl|IRI] | ref=[PropertyDecl|QNAME]
+  ref=[PropertyDecl|IRI] | ref=[PropertyDecl|QNAME] | universal_var=UNIVAR | existential_var=EXIVAR
 ;
 
 AttributeName: GeneralName;
 
 AttributeRef:
-  ref=[AttributeDecl|IRI] | ref=[AttributeDecl|QNAME]
+  ref=[AttributeDecl|IRI] | ref=[AttributeDecl|QNAME] | universal_var=UNIVAR | existential_var=EXIVAR
 ;
 
 PredicateRef:
-  ref=[PropertyDecl|IRI] | ref=[PropertyDecl|QNAME]
+  ref=[PropertyDecl|IRI] | ref=[PropertyDecl|QNAME] | universal_var=UNIVAR | existential_var=EXIVAR
 ;
 
 ObjectRef:
-  ref=[IndividualDecl|IRI] | ref=[IndividualDecl|QNAME]
+  ref=[IndividualDecl|IRI] | ref=[IndividualDecl|QNAME] | universal_var=UNIVAR | existential_var=EXIVAR
 ;
 
 DatatypeName: GeneralName;
 
 DatatypeRef:
-  ref=[DatatypeDecl|IRI] | ref=[DatatypeDecl|QNAME]
+  ref=[DatatypeDecl|IRI] | ref=[DatatypeDecl|QNAME] | universal_var=UNIVAR | existential_var=EXIVAR
 ;
 
 
@@ -1054,6 +1111,14 @@ PREFIX:
 
 LOCALNAME:
   /([A-Za-z_\-][A-Za-z0-9_\-]*)/
+;
+
+UNIVAR:
+  /\?([A-Za-z_\-][A-Za-z0-9_\-]*)/
+;
+
+EXIVAR:
+  /\!([A-Za-z_\-][A-Za-z0-9_\-]*)/
 ;
 
 LANG:
