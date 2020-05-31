@@ -681,7 +681,7 @@ ClassExpressionDisjunction:
 ClassExpressionConjoint:
     ClassExpressionBase
   | ClassExpressionConjunction
-  | ClassExpressionPrimary
+  | ClassExpressionTemporalDisjoint
 ;
 
 ClassExpressionBase:
@@ -692,7 +692,71 @@ ClassExpressionBase:
 ;
 
 ClassExpressionConjunction:
-  conjuncts=ClassExpressionPrimary KW_EXPRESSION_CONJUNCTION conjuncts+=ClassExpressionPrimary['and']
+  conjuncts=ClassExpressionTemporalDisjoint KW_EXPRESSION_CONJUNCTION conjuncts+=ClassExpressionTemporalDisjoint['and']
+;
+
+ClassExpressionTemporalDisjoint:
+    ClassExpressionTemporalDisjunction
+  | ClassExpressionTemporalConjoint
+;
+
+ClassExpressionTemporalDisjunction:
+  KW_EXPRESSION_TEMPORAL_DISJUNCTION disjuncts+=ClassExpressionTemporalConjoint['or']
+;
+
+ClassExpressionTemporalConjoint:
+    ClassExpressionTemporalConjunction
+  | ClassExpressionTime
+;
+
+ClassExpressionTemporalConjunction:
+  KW_EXPRESSION_TEMPORAL_CONJUNCTION conjuncts+=ClassExpressionTime['and']
+;
+
+ClassExpressionTime:
+    ClassExpressionTemporalChain
+  | ClassExpressionPrimary
+;
+
+ClassExpressionTemporalChain:
+  steps+=ClassExpressionTemporal
+;
+
+ClassExpressionTemporal:
+    ClassExpressionFutureGlobal
+  | ClassExpressionFutureLeadsTo
+  | ClassExpressionFutureNext
+  | ClassExpressionFutureRelease
+  | ClassExpressionFutureUnless
+  | ClassExpressionFutureUntil
+  | ClassExpressionPastGlobal
+  | ClassExpressionPastLeadsTo
+  | ClassExpressionPastNext
+  | ClassExpressionPastUntil
+  | ClassExpressionPastEventual
+  | ClassExpressionFutureEventual
+;
+
+ClassExpressionFutureGlobal: KW_OPERATOR_STEP KW_EXPRESSION_FUTURE_GLOBAL expression=ClassExpressionPrimary (condition=TemporalCondition)?;
+ClassExpressionFutureLeadsTo: KW_OPERATOR_STEP expression=ClassExpressionPrimary KW_EXPRESSION_FUTURE_LEADSTO trigger=ClassExpressionPrimary (condition=TemporalCondition)?;
+ClassExpressionFutureNext: KW_OPERATOR_STEP KW_EXPRESSION_FUTURE_NEXT expression=ClassExpressionPrimary (condition=TemporalCondition)?;
+ClassExpressionFutureRelease: KW_OPERATOR_STEP trigger=ClassExpressionPrimary KW_EXPRESSION_FUTURE_RELEASE expression=ClassExpressionPrimary (condition=TemporalCondition)?;
+ClassExpressionFutureUnless: KW_OPERATOR_STEP expression=ClassExpressionPrimary KW_EXPRESSION_FUTURE_UNLESS trigger=ClassExpressionPrimary (condition=TemporalCondition)?;
+ClassExpressionFutureUntil: KW_OPERATOR_STEP expression=ClassExpressionPrimary KW_EXPRESSION_FUTURE_UNTIL trigger=ClassExpressionPrimary (condition=TemporalCondition)?;
+ClassExpressionPastGlobal: KW_OPERATOR_STEP KW_EXPRESSION_PAST_GLOBAL expression=ClassExpressionPrimary (condition=TemporalCondition)?;
+ClassExpressionPastNext: KW_OPERATOR_STEP KW_EXPRESSION_PAST_NEXT expression=ClassExpressionPrimary (condition=TemporalCondition)?;
+ClassExpressionPastUntil: KW_OPERATOR_STEP expression=ClassExpressionPrimary KW_EXPRESSION_PAST_UNTIL trigger=ClassExpressionPrimary (condition=TemporalCondition)?;
+ClassExpressionPastLeadsTo: KW_OPERATOR_STEP expression=ClassExpressionPrimary KW_EXPRESSION_PAST_LEADSTO trigger=ClassExpressionPrimary (condition=TemporalCondition)?;
+ClassExpressionPastEventual: KW_OPERATOR_STEP KW_EXPRESSION_PAST_EVENTUAL expression=ClassExpressionPrimary (condition=TemporalCondition)?;
+ClassExpressionFutureEventual: KW_OPERATOR_STEP KW_EXPRESSION_FUTURE_EVENTUAL? expression=ClassExpressionPrimary (condition=TemporalCondition)?;
+
+TemporalCondition:
+  ((KW_EXPRESSION_AFTER after=TemporalRestriction)? (KW_EXPRESSION_BEFORE before=TemporalRestriction)?)#
+;
+
+TemporalRestriction:
+    TemporalLiteralExpression
+  | NominalAttributeRestriction
 ;
 
 ClassExpressionPrimary:
@@ -705,11 +769,24 @@ ClassExpressionComplement:
 ;
 
 ClassExpressionAtom:
-  ClassExpressionRestriction | ('(' ClassExpression ')') | UniversalVar | ExistentialVar | ClassRef
+  ClassExpressionRestriction | ('(' ClassExpression ')') | UniversalVar | ExistentialVar | ClassExpressionTop | ClassExpressionBottom | ClassExpressionRecursion | ClassRef
 ;
 
+ClassExpressionTop: expression=KW_EXPRESSION_SOMETHING;
+ClassExpressionBottom: expression=KW_EXPRESSION_NOTHING;
+ClassExpressionRecursion: expression=KW_EXPRESSION_RECURSION;
+
 ClassExpressionRestriction:
-    ClassExpressionAttributeMaxCard
+    ClassExpressionModalNecessity
+  | ClassExpressionModalPossibility
+  | ClassExpressionModalInevitable
+  | ClassExpressionModalOnce
+  | ClassExpressionModalNever
+  | ClassExpressionModalRepeat
+  | ClassExpressionModalAssumed
+  | ClassExpressionModalProven
+  | ClassExpressionModalClaimed
+  | ClassExpressionAttributeMaxCard
   | ClassExpressionPropertyMaxCard
   | ClassExpressionAttributeMinCard
   | ClassExpressionPropertyMinCard
@@ -724,6 +801,12 @@ ClassExpressionRestriction:
   | ClassExpressionAttributeValue
   | ClassExpressionPropertyValue
   | ClassExpressionSelf
+  | ClassExpressionModalSTIT
+  | ClassExpressionModalObligation
+  | ClassExpressionModalPermission
+  | ClassExpressionModalProhibition
+  | ClassExpressionModalOmission
+  | ClassExpressionModalOption
 ;
 
 ClassExpressionAttributeMaxCard[noskipws]:
@@ -786,12 +869,100 @@ ClassExpressionSelf[noskipws]:
   /\s*/ role=RestrictedPropertyRole /\s+/ KW_EXPRESSION_SELF
 ;
 
+ClassExpressionModalSTIT:
+  agent=RestrictedAgentRole KW_EXPRESSION_MODAL_STIT restriction=RestrictedClassExpression (KW_EXPRESSION_WHEN condition=RestrictedClassExpression)?
+;
+
+ClassExpressionModalObligation:
+  agent=RestrictedAgentRole KW_EXPRESSION_MODAL_OBLIGATION restriction=RestrictedClassExpression (KW_EXPRESSION_WHEN condition=RestrictedClassExpression)?
+;
+
+ClassExpressionModalPermission:
+  agent=RestrictedAgentRole KW_EXPRESSION_MODAL_PERMISSION restriction=RestrictedClassExpression (KW_EXPRESSION_WHEN condition=RestrictedClassExpression)?
+;
+
+ClassExpressionModalProhibition:
+  agent=RestrictedAgentRole KW_EXPRESSION_MODAL_PROHIBITION restriction=RestrictedClassExpression (KW_EXPRESSION_WHEN condition=RestrictedClassExpression)?
+;
+
+ClassExpressionModalOmission:
+  agent=RestrictedAgentRole KW_EXPRESSION_MODAL_OMISSION restriction=RestrictedClassExpression (KW_EXPRESSION_WHEN condition=RestrictedClassExpression)?
+;
+
+ClassExpressionModalOption:
+  agent=RestrictedAgentRole KW_EXPRESSION_MODAL_OPTION restriction=RestrictedClassExpression (KW_EXPRESSION_WHEN condition=RestrictedClassExpression)?
+;
+
+ClassExpressionModalNecessity:
+  KW_EXPRESSION_MODAL_NECESSITY restriction=RestrictedClassExpression (KW_EXPRESSION_WHEN condition=RestrictedClassExpression)?
+;
+
+ClassExpressionModalPossibility:
+  KW_EXPRESSION_MODAL_POSSIBILITY restriction=RestrictedClassExpression (KW_EXPRESSION_WHEN condition=RestrictedClassExpression)?
+;
+
+ClassExpressionModalAssumed:
+  KW_EXPRESSION_MODAL_ASSUMPTION restriction=RestrictedClassExpression
+;
+
+ClassExpressionModalProven:
+  KW_EXPRESSION_MODAL_PROVEN restriction=RestrictedClassExpression
+;
+
+ClassExpressionModalClaimed:
+  KW_EXPRESSION_MODAL_CLAIMED restriction=RestrictedClassExpression
+;
+
+ClassExpressionModalRepeat:
+  KW_EXPRESSION_MODAL_REPEAT restriction=RestrictedClassExpression (KW_EXPRESSION_WHEN condition=RestrictedClassExpression)?
+;
+
+ClassExpressionModalNever:
+  KW_EXPRESSION_MODAL_NEVER restriction=RestrictedClassExpression (KW_EXPRESSION_WHEN condition=RestrictedClassExpression)?
+;
+
+ClassExpressionModalInevitable:
+  KW_EXPRESSION_MODAL_INEVITABLE restriction=RestrictedClassExpression (KW_EXPRESSION_WHEN condition=RestrictedClassExpression)?
+;
+
+ClassExpressionModalOnce:
+  KW_EXPRESSION_MODAL_ONCE restriction=RestrictedClassExpression (KW_EXPRESSION_WHEN condition=RestrictedClassExpression)?
+;
+
 RestrictedAttributeRole[skipws]:
   AttributeExpression
 ;
 
 RestrictedPropertyRole[skipws]:
   PropertyExpression
+;
+
+RestrictedAgentRole[skipws]:
+    AgentComplement
+  | RestrictedAgentExpression
+;
+
+AgentComplement:
+  KW_EXPRESSION_EXCEPT expression=RestrictedAgentExpression
+;
+
+RestrictedAgentExpression:
+    RestrictedAgentTop
+  | RestrictedAgentBottom
+  | RestrictedAgentSelf
+  | PropertyValueRestriction
+;
+
+RestrictedAgentTop:
+  op=KW_EXPRESSION_EVERYONE
+;
+
+RestrictedAgentBottom:
+  op=KW_EXPRESSION_NOONE
+;
+
+RestrictedAgentSelf:
+  op=KW_EXPRESSION_THEY
 ;
 
 RestrictedClassExpression[skipws]:
@@ -1333,16 +1504,16 @@ KW_ENTITY:
   | KW_ENTITY_RESTRICTION
 ;
 
-KW_ENTITY_ATTRIBUTE: 'attribute ';
-KW_ENTITY_CLASS: 'class ';
-KW_ENTITY_CONSTANT: 'constant ';
-KW_ENTITY_DATATYPE: 'datatype ';
-KW_ENTITY_INDIVIDUAL: 'individual ';
-KW_ENTITY_LITERAL: 'literal ';
-KW_ENTITY_ONTOLOGY: 'ontology ';
+KW_ENTITY_ATTRIBUTE: 'attribute';
+KW_ENTITY_CLASS: 'class';
+KW_ENTITY_CONSTANT: 'constant';
+KW_ENTITY_DATATYPE: 'datatype';
+KW_ENTITY_INDIVIDUAL: 'individual';
+KW_ENTITY_LITERAL: 'literal';
+KW_ENTITY_ONTOLOGY: 'ontology';
 KW_ENTITY_PATTERN: 'pattern';
-KW_ENTITY_PROPERTY: 'property ';
-KW_ENTITY_RESTRICTION: 'restriction ';
+KW_ENTITY_PROPERTY: 'property';
+KW_ENTITY_RESTRICTION: 'restriction';
 
 
 KW_PRAGMA:
@@ -1350,8 +1521,8 @@ KW_PRAGMA:
   | KW_PRAGMA_KEYWORD
 ;
 
-KW_PRAGMA_IMPORT: 'import ';
-KW_PRAGMA_KEYWORD: 'keyword ';
+KW_PRAGMA_IMPORT: 'import';
+KW_PRAGMA_KEYWORD: 'keyword';
 
 
 KW_COLLECTIONTYPE:
@@ -1377,13 +1548,13 @@ KW_GENERIC:
   | KW_GENERIC_WITH
 ;
 
-KW_GENERIC_AS: 'as ';
-KW_GENERIC_FROM: 'from ';
-KW_GENERIC_IT: 'it ';
-KW_GENERIC_OF: 'of ';
-KW_GENERIC_THE: 'the ';
-KW_GENERIC_TO: 'to ';
-KW_GENERIC_WITH: 'with ';
+KW_GENERIC_AS: 'as';
+KW_GENERIC_FROM: 'from';
+KW_GENERIC_IT: 'it';
+KW_GENERIC_OF: 'of';
+KW_GENERIC_THE: 'the';
+KW_GENERIC_TO: 'to';
+KW_GENERIC_WITH: 'with';
 
 
 KW_MODIFIER:
@@ -1395,12 +1566,12 @@ KW_MODIFIER:
   | KW_MODIFIER_RETURNING
 ;
 
-KW_MODIFIER_EXPORTED: 'exported ';
-KW_MODIFIER_HIDDEN: 'hidden ';
-KW_MODIFIER_LABEL: ':- ';
-KW_MODIFIER_LANGUAGE: 'language ';
-KW_MODIFIER_PRELUDE: 'prelude ';
-KW_MODIFIER_RETURNING: 'returning ';
+KW_MODIFIER_EXPORTED: 'exported';
+KW_MODIFIER_HIDDEN: 'hidden';
+KW_MODIFIER_LABEL: ':-';
+KW_MODIFIER_LANGUAGE: 'language';
+KW_MODIFIER_PRELUDE: 'prelude';
+KW_MODIFIER_RETURNING: 'returning';
 
 
 KW_OPERATOR:
@@ -1416,63 +1587,139 @@ KW_OPERATOR:
   | KW_OPERATOR_EQ
   | KW_OPERATOR_LENGTH
   | KW_OPERATOR_MATCHES
+  | KW_OPERATOR_STEP
 ;
 
-KW_OPERATOR_BACKWARDCHAIN: '<-- ';
-KW_OPERATOR_EQUIVALENCE: '~= ';
+KW_OPERATOR_BACKWARDCHAIN: '<--';
+KW_OPERATOR_EQUIVALENCE: '~=';
 KW_OPERATOR_FORWARDCHAIN: '<==';
-KW_OPERATOR_INSTANCEOF: 'a ';
-KW_OPERATOR_SPECIALIZES: '<| ';
-KW_OPERATOR_LTE: '<= ';
-KW_OPERATOR_LT: '< ';
-KW_OPERATOR_GTE: '>= ';
-KW_OPERATOR_GT: '> ';
-KW_OPERATOR_EQ: '= ';
-KW_OPERATOR_LENGTH: 'length ';
-KW_OPERATOR_MATCHES: 'matches ';
+KW_OPERATOR_INSTANCEOF: 'a';
+KW_OPERATOR_SPECIALIZES: '<|';
+KW_OPERATOR_LTE: '<=';
+KW_OPERATOR_LT: '<';
+KW_OPERATOR_GTE: '>=';
+KW_OPERATOR_GT: '>';
+KW_OPERATOR_EQ: '=';
+KW_OPERATOR_LENGTH: 'length';
+KW_OPERATOR_MATCHES: 'matches';
+KW_OPERATOR_STEP: '*';
 
 
 KW_EXPRESSION:
-    KW_EXPRESSION_AT
+    KW_EXPRESSION_AFTER
+  | KW_EXPRESSION_AT
+  | KW_EXPRESSION_BEFORE
   | KW_EXPRESSION_COMPLEMENT
   | KW_EXPRESSION_CONJUNCTION
   | KW_EXPRESSION_CUMULATIVE
   | KW_EXPRESSION_DISJUNCTION
   | KW_EXPRESSION_DISTRIBUTIVE
+  | KW_EXPRESSION_EVERYONE
   | KW_EXPRESSION_EXACTCARD
+  | KW_EXPRESSION_EXCEPT
+  | KW_EXPRESSION_FUTURE_EVENTUAL
+  | KW_EXPRESSION_FUTURE_GLOBAL
+  | KW_EXPRESSION_FUTURE_LEADSTO
+  | KW_EXPRESSION_FUTURE_NEXT
+  | KW_EXPRESSION_FUTURE_RELEASE
+  | KW_EXPRESSION_FUTURE_UNLESS
+  | KW_EXPRESSION_FUTURE_UNTIL
   | KW_EXPRESSION_IF
   | KW_EXPRESSION_INVERSE
   | KW_EXPRESSION_IS
   | KW_EXPRESSION_MAXCARD
   | KW_EXPRESSION_MINCARD
+  | KW_EXPRESSION_MODAL_ASSUMPTION
+  | KW_EXPRESSION_MODAL_CLAIMED
+  | KW_EXPRESSION_MODAL_INEVITABLE
+  | KW_EXPRESSION_MODAL_NECESSITY
+  | KW_EXPRESSION_MODAL_NEVER
+  | KW_EXPRESSION_MODAL_OBLIGATION
+  | KW_EXPRESSION_MODAL_OMISSION
+  | KW_EXPRESSION_MODAL_ONCE
+  | KW_EXPRESSION_MODAL_OPTION
+  | KW_EXPRESSION_MODAL_PERMISSION
+  | KW_EXPRESSION_MODAL_POSSIBILITY
+  | KW_EXPRESSION_MODAL_PROHIBITION
+  | KW_EXPRESSION_MODAL_PROVEN
+  | KW_EXPRESSION_MODAL_REPEAT
+  | KW_EXPRESSION_MODAL_STIT
+  | KW_EXPRESSION_NOONE
   | KW_EXPRESSION_NOTHING
   | KW_EXPRESSION_ONLY
+  | KW_EXPRESSION_PAST_EVENTUAL
+  | KW_EXPRESSION_PAST_GLOBAL
+  | KW_EXPRESSION_PAST_LEADSTO
+  | KW_EXPRESSION_PAST_NEXT
+  | KW_EXPRESSION_PAST_UNTIL
+  | KW_EXPRESSION_RECURSION
   | KW_EXPRESSION_SELF
   | KW_EXPRESSION_SOMETHING
   | KW_EXPRESSION_SOME
+  | KW_EXPRESSION_TEMPORAL_CONJUNCTION
+  | KW_EXPRESSION_TEMPORAL_DISJUNCTION
   | KW_EXPRESSION_THAT
+  | KW_EXPRESSION_THEY
   | KW_EXPRESSION_VALUE
+  | KW_EXPRESSION_WHEN
 ;
 
-KW_EXPRESSION_AT: 'at ';
-KW_EXPRESSION_COMPLEMENT: 'not ';
-KW_EXPRESSION_CONJUNCTION: 'and ';
-KW_EXPRESSION_CUMULATIVE: 'variously ';
-KW_EXPRESSION_DISJUNCTION: 'or ';
-KW_EXPRESSION_DISTRIBUTIVE: 'separately ';
-KW_EXPRESSION_EXACTCARD: 'exactly ';
-KW_EXPRESSION_IF: 'if ';
-KW_EXPRESSION_INVERSE: 'inverse ';
-KW_EXPRESSION_IS: 'is ';
-KW_EXPRESSION_MAXCARD: 'most ';
-KW_EXPRESSION_MINCARD: 'least ';
-KW_EXPRESSION_NOTHING: 'nothing ';
-KW_EXPRESSION_ONLY: 'only ';
-KW_EXPRESSION_SELF: 'itself ';
-KW_EXPRESSION_SOMETHING: 'something ';
-KW_EXPRESSION_SOME: 'a ';
-KW_EXPRESSION_THAT: 'that '|'where ';
-KW_EXPRESSION_VALUE: 'value ';
+KW_EXPRESSION_AFTER: 'after';
+KW_EXPRESSION_AT: 'at';
+KW_EXPRESSION_BEFORE: 'before';
+KW_EXPRESSION_COMPLEMENT: 'not';
+KW_EXPRESSION_CONJUNCTION: 'and';
+KW_EXPRESSION_CUMULATIVE: 'variously';
+KW_EXPRESSION_DISJUNCTION: 'or';
+KW_EXPRESSION_DISTRIBUTIVE: 'separately';
+KW_EXPRESSION_EVERYONE: 'everyone';
+KW_EXPRESSION_EXACTCARD: 'exactly';
+KW_EXPRESSION_EXCEPT: 'except';
+KW_EXPRESSION_FUTURE_EVENTUAL: 'eventually';
+KW_EXPRESSION_FUTURE_GLOBAL: 'always';
+KW_EXPRESSION_FUTURE_LEADSTO: 'were';
+KW_EXPRESSION_FUTURE_NEXT: 'next';
+KW_EXPRESSION_FUTURE_RELEASE: 'whereupon';
+KW_EXPRESSION_FUTURE_UNLESS: 'unless';
+KW_EXPRESSION_FUTURE_UNTIL: 'until';
+KW_EXPRESSION_IF: 'if';
+KW_EXPRESSION_INVERSE: 'inverse';
+KW_EXPRESSION_IS: 'is';
+KW_EXPRESSION_MAXCARD: 'most';
+KW_EXPRESSION_MINCARD: 'least';
+KW_EXPRESSION_MODAL_ASSUMPTION: 'presumably';
+KW_EXPRESSION_MODAL_CLAIMED: 'purportedly';
+KW_EXPRESSION_MODAL_INEVITABLE: 'inevitably';
+KW_EXPRESSION_MODAL_NECESSITY: 'necessarily';
+KW_EXPRESSION_MODAL_NEVER: 'never';
+KW_EXPRESSION_MODAL_OBLIGATION: 'must_ensure';
+KW_EXPRESSION_MODAL_OMISSION: 'might_not_ensure';
+KW_EXPRESSION_MODAL_ONCE: 'once';
+KW_EXPRESSION_MODAL_OPTION: 'could_ensure';
+KW_EXPRESSION_MODAL_PERMISSION: 'may_ensure';
+KW_EXPRESSION_MODAL_POSSIBILITY: 'possibly';
+KW_EXPRESSION_MODAL_PROHIBITION: 'cannot_ensure';
+KW_EXPRESSION_MODAL_PROVEN: 'provably';
+KW_EXPRESSION_MODAL_REPEAT: 'repeatedly';
+KW_EXPRESSION_MODAL_STIT: 'ensure';
+KW_EXPRESSION_NOONE: 'noone';
+KW_EXPRESSION_NOTHING: 'nothing';
+KW_EXPRESSION_PAST_EVENTUAL: 'was';
+KW_EXPRESSION_PAST_GLOBAL: 'historically';
+KW_EXPRESSION_PAST_LEADSTO: 'because';
+KW_EXPRESSION_PAST_NEXT: 'just';
+KW_EXPRESSION_PAST_UNTIL: 'since';
+KW_EXPRESSION_ONLY: 'only';
+KW_EXPRESSION_RECURSION: 'again';
+KW_EXPRESSION_SELF: 'itself';
+KW_EXPRESSION_SOMETHING: 'something';
+KW_EXPRESSION_SOME: 'a';
+KW_EXPRESSION_TEMPORAL_CONJUNCTION: 'together';
+KW_EXPRESSION_TEMPORAL_DISJUNCTION: 'either';
+KW_EXPRESSION_THAT: 'that'|'where';
+KW_EXPRESSION_THEY: 'they'|'them';
+KW_EXPRESSION_VALUE: 'value';
+KW_EXPRESSION_WHEN: 'when';
 
 KW_INFIX:
     KW_INFIX_ADDITIVE

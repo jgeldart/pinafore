@@ -362,12 +362,37 @@ def variable_scope_check(model, metamodel):
             )
 
 
+def temporal_recursion_checker(model, metamodel):
+    def _decider(x):
+        return (x.__class__.__name__ == "ClassExpressionRecursion"
+                and get_parent_of_type("ClassExpressionModalRepeat", x)
+                is None)
+    issues = get_children(_decider, model)
+    if len(issues) > 0:
+        first_error = issues[0]
+        parser = model._tx_parser
+        line, col = parser.pos_to_linecol(
+            first_error._tx_position
+            )
+        message = "'again' used outside a recursion '{}'".format(
+            str(first_error)
+            )
+        raise TextXSemanticError(
+            message,
+            line=line,
+            col=col,
+            filename=model._tx_filename
+            )
+
+
 @language("Notation4", "*.n4")
 def notation4():
     "A high-level ontology language."
     mm = metamodel_from_file(
         join(dirname(__file__),
              "notation4.tx"),
+        autokwd=True,
+        memoization=True,
         use_regexp_group=True)
     mm.register_scope_providers({
         'OntologyRef.ref': OntologyResolver(),
@@ -383,5 +408,6 @@ def notation4():
         'ObjectRef.ref': FYNResolver(["Class", "Property", "Attribute", "Datatype", "Individual", "Constant", "BNode", "Graph"])
     })
     mm.register_model_processor(variable_scope_check)
+    mm.register_model_processor(temporal_recursion_checker)
 
     return mm
