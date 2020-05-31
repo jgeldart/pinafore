@@ -354,7 +354,7 @@ PatternReturn:
 IndividualDecl:
   is_exported?=KW_MODIFIER_EXPORTED
   (modifiers*=IndividualModifier KW_ENTITY_INDIVIDUAL)?
-  name=IndividualName
+  (name=IndividualName | subject=IndividualComplexSubject)
   (
     END_OF_PROP?
     axioms+=IndividualAxiom[';']
@@ -376,6 +376,16 @@ IndividualAxiom:
 IndividualAxiomInstanceOf:
   KW_OPERATOR_INSTANCEOF
   expression=ClassExpression
+;
+
+IndividualComplexSubject:
+    BNodeDecl
+  | GraphDecl
+  | HeadedList
+  | Collection
+  | ObjectRef
+  | InfixExpression
+  | Literal
 ;
 
 
