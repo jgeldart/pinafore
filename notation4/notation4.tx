@@ -481,7 +481,7 @@ ClassDecl:
   is_exported?=KW_MODIFIER_EXPORTED
   modifiers*=ClassModifier
   KW_ENTITY_CLASS
-  name=ClassName
+  (name=ClassName | ('(' expression=ClassExpression ')'))
   (
     END_OF_PROP?
     axioms+=ClassAxiom[';']
@@ -526,7 +526,7 @@ PropertyDecl:
   is_exported?=KW_MODIFIER_EXPORTED
   modifiers*=PropertyModifier
   KW_ENTITY_PROPERTY
-  name=PropertyName
+  (name=PropertyName | ('(' expression=PropertyExpressionDisjoint ')'))
   (
     END_OF_PROP?
     axioms+=PropertyAxiom[';']
@@ -571,7 +571,7 @@ AttributeDecl:
   is_exported?=KW_MODIFIER_EXPORTED
   modifiers*=AttributeModifier
   KW_ENTITY_ATTRIBUTE
-  name=AttributeName
+  (name=AttributeName | ('(' expression=AttributeExpressionDisjoint ')'))
   (
     END_OF_PROP?
     axioms+=AttributeAxiom[';']
