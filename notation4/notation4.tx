@@ -1142,6 +1142,7 @@ PropertyExpressionAtom:
   | ('(' PropertyExpression ')')
   | UniversalVar
   | ExistentialVar
+  | QualifiedPropertyRef
   | PropertyRef
 ;
 
@@ -1160,6 +1161,11 @@ PropertyExpressionProduct:
 PropertyExpressionInverse:
   KW_EXPRESSION_INVERSE KW_GENERIC_OF expression=PropertyExpressionAtom
 ;
+
+QualifiedPropertyRef:
+  expression=PropertyRef KW_GENERIC_WHICH qualification=ClassRef
+;
+
 
 
 
@@ -1674,6 +1680,7 @@ KW_GENERIC:
   | KW_GENERIC_OF
   | KW_GENERIC_THE
   | KW_GENERIC_TO
+  | KW_GENERIC_WHICH
   | KW_GENERIC_WITH
 ;
 
@@ -1683,6 +1690,7 @@ KW_GENERIC_IT: 'it';
 KW_GENERIC_OF: 'of';
 KW_GENERIC_THE: 'the';
 KW_GENERIC_TO: 'to';
+KW_GENERIC_WHICH: 'which';
 KW_GENERIC_WITH: 'with';
 
 
