@@ -35,8 +35,10 @@ OntologyAssertion:
   | AttributePatternDecl
   | DatatypePatternDecl
   | IndividualPatternDecl
-  | RestrictionPatternDecl
+  | ModalPatternDecl
   | LiteralPatternDecl
+  | PropertyRestrictionPatternDecl
+  | AttributeRestrictionPatternDecl
   | BNodeDecl
   | RuleDecl
   | GraphDecl
@@ -274,23 +276,31 @@ IndividualPatternAxiom:
   Predicate
 ;
 
-RestrictionPatternDecl:
+PropertyRestrictionPatternDecl:
   is_exported?=KW_MODIFIER_EXPORTED
   KW_ENTITY_PATTERN
-  KW_ENTITY_RESTRICTION
+  KW_ENTITY_PROPERTY_RESTRICTION
   name=PatternName
   args*=PatternArg
   kwargs*=PatternKwarg
+  KW_OPERATOR_EQUIVALENCE
+  expression=ClassExpression
   (
-    KW_MODIFIER_RETURNING
-    returns+=PatternReturn
+    END_OF_PROP?
+    axioms+=RestrictionPatternAxiom[';']
   )?
-  unifier=Formula
-  (repeater=Formula
-    ( KW_OPERATOR_BACKWARDCHAIN
-      antecedent=Formula
-    )?
-  )?
+  END_OF_SUBJ
+;
+
+AttributeRestrictionPatternDecl:
+  is_exported?=KW_MODIFIER_EXPORTED
+  KW_ENTITY_PATTERN
+  KW_ENTITY_ATTRIBUTE_RESTRICTION
+  name=PatternName
+  args*=PatternArg
+  kwargs*=PatternKwarg
+  KW_OPERATOR_EQUIVALENCE
+  expression=ClassExpression
   (
     END_OF_PROP?
     axioms+=RestrictionPatternAxiom[';']
@@ -299,6 +309,26 @@ RestrictionPatternDecl:
 ;
 
 RestrictionPatternAxiom:
+  Predicate
+;
+
+ModalPatternDecl:
+  is_exported?=KW_MODIFIER_EXPORTED
+  KW_ENTITY_PATTERN
+  KW_ENTITY_MODAL
+  name=PatternName
+  args*=PatternArg
+  kwargs*=PatternKwarg
+  KW_OPERATOR_EQUIVALENCE
+  expression=ClassExpression
+  (
+    END_OF_PROP?
+    axioms+=ModalPatternAxiom[';']
+  )?
+  END_OF_SUBJ
+;
+
+ModalPatternAxiom:
   Predicate
 ;
 
@@ -676,7 +706,32 @@ ConstantAxiom:
 ////// Class expressions
 
 ClassExpression:
-  ClassExpressionDisjoint
+  ClassExpressionModified
+;
+
+ClassExpressionModified:
+    ClassExpressionModifier
+  | ClassExpressionDisjoint
+;
+
+ClassExpressionModifier:
+    ClassExpressionModalNecessity
+  | ClassExpressionModalPossibility
+  | ClassExpressionModalInevitable
+  | ClassExpressionFuzzyModifier
+  | ClassExpressionModalOnce
+  | ClassExpressionModalNever
+  | ClassExpressionModalRepeat
+  | ClassExpressionModalAssumed
+  | ClassExpressionModalProven
+  | ClassExpressionModalClaimed
+  | ClassExpressionModalSTIT
+  | ClassExpressionModalObligation
+  | ClassExpressionModalPermission
+  | ClassExpressionModalProhibition
+  | ClassExpressionModalOmission
+  | ClassExpressionModalOption
+  | ClassExpressionModalPattern
 ;
 
 ClassExpressionDisjoint:
@@ -725,7 +780,7 @@ ClassExpressionTemporalConjunction:
 
 ClassExpressionTime:
     ClassExpressionTemporalChain
-  | ClassExpressionPrimary
+  | ClassExpressionFuzz
 ;
 
 ClassExpressionTemporalChain:
@@ -747,26 +802,17 @@ ClassExpressionTemporal:
   | ClassExpressionFutureEventual
 ;
 
-ClassExpressionFutureGlobal: KW_OPERATOR_STEP KW_EXPRESSION_FUTURE_GLOBAL expression=ClassExpressionPrimary (condition=TemporalCondition)?;
-ClassExpressionFutureLeadsTo: KW_OPERATOR_STEP expression=ClassExpressionPrimary KW_EXPRESSION_FUTURE_LEADSTO trigger=ClassExpressionPrimary (condition=TemporalCondition)?;
-ClassExpressionFutureNext: KW_OPERATOR_STEP KW_EXPRESSION_FUTURE_NEXT expression=ClassExpressionPrimary (condition=TemporalCondition)?;
-ClassExpressionFutureRelease: KW_OPERATOR_STEP trigger=ClassExpressionPrimary KW_EXPRESSION_FUTURE_RELEASE expression=ClassExpressionPrimary (condition=TemporalCondition)?;
-ClassExpressionFutureUnless: KW_OPERATOR_STEP expression=ClassExpressionPrimary KW_EXPRESSION_FUTURE_UNLESS trigger=ClassExpressionPrimary (condition=TemporalCondition)?;
-ClassExpressionFutureUntil: KW_OPERATOR_STEP expression=ClassExpressionPrimary KW_EXPRESSION_FUTURE_UNTIL trigger=ClassExpressionPrimary (condition=TemporalCondition)?;
-ClassExpressionPastGlobal: KW_OPERATOR_STEP KW_EXPRESSION_PAST_GLOBAL expression=ClassExpressionPrimary (condition=TemporalCondition)?;
-ClassExpressionPastNext: KW_OPERATOR_STEP KW_EXPRESSION_PAST_NEXT expression=ClassExpressionPrimary (condition=TemporalCondition)?;
-ClassExpressionPastUntil: KW_OPERATOR_STEP expression=ClassExpressionPrimary KW_EXPRESSION_PAST_UNTIL trigger=ClassExpressionPrimary (condition=TemporalCondition)?;
-ClassExpressionPastLeadsTo: KW_OPERATOR_STEP expression=ClassExpressionPrimary KW_EXPRESSION_PAST_LEADSTO trigger=ClassExpressionPrimary (condition=TemporalCondition)?;
-ClassExpressionPastEventual: KW_OPERATOR_STEP KW_EXPRESSION_PAST_EVENTUAL expression=ClassExpressionPrimary (condition=TemporalCondition)?;
-ClassExpressionFutureEventual: KW_OPERATOR_STEP KW_EXPRESSION_FUTURE_EVENTUAL? expression=ClassExpressionPrimary (condition=TemporalCondition)?;
-
-TemporalCondition:
-  ((KW_EXPRESSION_AFTER after=TemporalRestriction)? (KW_EXPRESSION_BEFORE before=TemporalRestriction)?)#
+ClassExpressionFuzz:
+    ClassExpressionWeightedSum
+  | ClassExpressionPrimary
 ;
 
-TemporalRestriction:
-    TemporalLiteralExpression
-  | NominalAttributeRestriction
+ClassExpressionWeightedSum:
+  summands=ClassExpressionWeightedSummand '+' summands+=ClassExpressionWeightedSummand['+']
+;
+
+ClassExpressionWeightedSummand:
+  weight=INT expression=ClassExpressionPrimary
 ;
 
 ClassExpressionPrimary:
@@ -779,24 +825,29 @@ ClassExpressionComplement:
 ;
 
 ClassExpressionAtom:
-  ClassExpressionRestriction | ('(' ClassExpression ')') | UniversalVar | ExistentialVar | ClassExpressionTop | ClassExpressionBottom | ClassExpressionRecursion | ClassRef
+  ClassExpressionRestriction | ('(' ClassExpression ')') | UniversalVar | ExistentialVar | ClassExpressionTop | ClassExpressionBottom | ClassExpressionRecursion | ClassExpressionConfidence | ClassRef
 ;
 
 ClassExpressionTop: expression=KW_EXPRESSION_SOMETHING;
 ClassExpressionBottom: expression=KW_EXPRESSION_NOTHING;
 ClassExpressionRecursion: expression=KW_EXPRESSION_RECURSION;
 
+ClassExpressionConfidence:
+    ClassExpressionConfidenceAtLeast
+  | ClassExpressionConfidenceAtMost
+;
+
+ClassExpressionConfidenceAtLeast:
+  KW_EXPRESSION_CONFIDENCE KW_EXPRESSION_AT KW_EXPRESSION_MIN degree=FUZZY_DEGREE expression=ClassExpressionAtom
+;
+
+ClassExpressionConfidenceAtMost:
+  KW_EXPRESSION_CONFIDENCE KW_EXPRESSION_AT KW_EXPRESSION_MAX degree=FUZZY_DEGREE expression=ClassExpressionAtom
+;
+
+
 ClassExpressionRestriction:
-    ClassExpressionModalNecessity
-  | ClassExpressionModalPossibility
-  | ClassExpressionModalInevitable
-  | ClassExpressionModalOnce
-  | ClassExpressionModalNever
-  | ClassExpressionModalRepeat
-  | ClassExpressionModalAssumed
-  | ClassExpressionModalProven
-  | ClassExpressionModalClaimed
-  | ClassExpressionAttributeMaxCard
+    ClassExpressionAttributeMaxCard
   | ClassExpressionPropertyMaxCard
   | ClassExpressionAttributeMinCard
   | ClassExpressionPropertyMinCard
@@ -810,133 +861,82 @@ ClassExpressionRestriction:
   | ClassExpressionPropertySome
   | ClassExpressionAttributeValue
   | ClassExpressionPropertyValue
+  | ClassExpressionAttributeFuzzy
   | ClassExpressionSelf
-  | ClassExpressionModalSTIT
-  | ClassExpressionModalObligation
-  | ClassExpressionModalPermission
-  | ClassExpressionModalProhibition
-  | ClassExpressionModalOmission
-  | ClassExpressionModalOption
+  | ClassExpressionAttributePatternRestriction
+  | ClassExpressionPropertyPatternRestriction
 ;
 
-ClassExpressionAttributeMaxCard[noskipws]:
-  /\s*/ role=RestrictedAttributeRole /\s+/ KW_EXPRESSION_AT KW_EXPRESSION_MAXCARD cardinality=INT /\s+/ restriction=RestrictedDataExpression
+ClassExpressionAttributeMaxCard:
+  role=RestrictedAttributeRole KW_EXPRESSION_AT KW_EXPRESSION_MAX cardinality=INT restriction=RestrictedDataExpression
 ;
 
-ClassExpressionPropertyMaxCard[noskipws]:
-  /\s*/ role=RestrictedPropertyRole /\s+/ KW_EXPRESSION_AT KW_EXPRESSION_MAXCARD cardinality=INT /\s+/ restriction=RestrictedClassExpression
+ClassExpressionPropertyMaxCard:
+  role=RestrictedPropertyRole KW_EXPRESSION_AT KW_EXPRESSION_MAX cardinality=INT restriction=RestrictedClassExpression
 ;
 
-ClassExpressionAttributeMinCard[noskipws]:
-  /\s*/ role=RestrictedAttributeRole /\s+/ KW_EXPRESSION_AT KW_EXPRESSION_MINCARD cardinality=INT /\s+/ restriction=RestrictedDataExpression
+ClassExpressionAttributeMinCard:
+  role=RestrictedAttributeRole KW_EXPRESSION_AT KW_EXPRESSION_MIN cardinality=INT restriction=RestrictedDataExpression
 ;
 
-ClassExpressionPropertyMinCard[noskipws]:
-  /\s*/ role=RestrictedPropertyRole /\s+/ KW_EXPRESSION_AT KW_EXPRESSION_MINCARD cardinality=INT /\s+/ restriction=RestrictedClassExpression
+ClassExpressionPropertyMinCard:
+  role=RestrictedPropertyRole KW_EXPRESSION_AT KW_EXPRESSION_MIN cardinality=INT restriction=RestrictedClassExpression
 ;
 
-ClassExpressionAttributeExactCard[noskipws]:
-  /\s*/ role=RestrictedAttributeRole /\s+/ KW_EXPRESSION_EXACTCARD cardinality=INT /\s+/ restriction=RestrictedDataExpression
+ClassExpressionAttributeExactCard:
+  role=RestrictedAttributeRole KW_EXPRESSION_EXACTCARD cardinality=INT restriction=RestrictedDataExpression
 ;
 
-ClassExpressionPropertyExactCard[noskipws]:
-  /\s*/ role=RestrictedPropertyRole /\s+/ KW_EXPRESSION_EXACTCARD cardinality=INT /\s+/ restriction=RestrictedClassExpression
+ClassExpressionPropertyExactCard:
+  role=RestrictedPropertyRole KW_EXPRESSION_EXACTCARD cardinality=INT restriction=RestrictedClassExpression
 ;
 
-ClassExpressionAttributeOnlySome[noskipws]:
-  /\s*/ role=RestrictedAttributeRole /\s+/ KW_EXPRESSION_ONLY KW_EXPRESSION_SOME restriction=RestrictedDataExpression
+ClassExpressionAttributeOnlySome:
+  role=RestrictedAttributeRole KW_EXPRESSION_ONLY KW_EXPRESSION_SOME restriction=RestrictedDataExpression
 ;
 
-ClassExpressionPropertyOnlySome[noskipws]:
-  /\s*/ role=RestrictedPropertyRole /\s+/ KW_EXPRESSION_ONLY KW_EXPRESSION_SOME restriction=RestrictedClassExpression
+ClassExpressionPropertyOnlySome:
+  role=RestrictedPropertyRole KW_EXPRESSION_ONLY KW_EXPRESSION_SOME restriction=RestrictedClassExpression
 ;
 
-ClassExpressionAttributeOnly[noskipws]:
-  /\s*/ role=RestrictedAttributeRole /\s+/ KW_EXPRESSION_ONLY restriction=RestrictedDataExpression
+ClassExpressionAttributeOnly:
+  role=RestrictedAttributeRole KW_EXPRESSION_ONLY restriction=RestrictedDataExpression
 ;
 
-ClassExpressionPropertyOnly[noskipws]:
-  /\s*/ role=RestrictedPropertyRole /\s+/ KW_EXPRESSION_ONLY restriction=RestrictedClassExpression
+ClassExpressionPropertyOnly:
+  role=RestrictedPropertyRole KW_EXPRESSION_ONLY restriction=RestrictedClassExpression
 ;
 
-ClassExpressionAttributeSome[noskipws]:
-  /\s*/ role=RestrictedAttributeRole /\s+/ KW_EXPRESSION_SOME restriction=RestrictedDataExpression
+ClassExpressionAttributeSome:
+  role=RestrictedAttributeRole KW_EXPRESSION_SOME restriction=RestrictedDataExpression
 ;
 
-ClassExpressionPropertySome[noskipws]:
-  /\s*/ role=RestrictedPropertyRole /\s+/ KW_EXPRESSION_SOME restriction=RestrictedClassExpression
+ClassExpressionPropertySome:
+  role=RestrictedPropertyRole KW_EXPRESSION_SOME restriction=RestrictedClassExpression
 ;
 
-ClassExpressionAttributeValue[noskipws]:
-  /\s*/ role=RestrictedAttributeRole /\s+/ KW_EXPRESSION_IS restriction=AttributeValueRestriction
+ClassExpressionAttributeValue:
+  role=RestrictedAttributeRole KW_EXPRESSION_IS restriction=AttributeValueRestriction
 ;
 
-ClassExpressionPropertyValue[noskipws]:
-  /\s*/ role=RestrictedPropertyRole /\s+/ KW_EXPRESSION_IS restriction=PropertyValueRestriction
+ClassExpressionPropertyValue:
+  role=RestrictedPropertyRole KW_EXPRESSION_IS restriction=PropertyValueRestriction
 ;
 
-ClassExpressionSelf[noskipws]:
-  /\s*/ role=RestrictedPropertyRole /\s+/ KW_EXPRESSION_SELF
+ClassExpressionAttributeFuzzy:
+  role=RestrictedAttributeRole KW_EXPRESSION_APPROXIMATE ((low=AttributeNumericValueRestriction high=AttributeNumericValueRestriction)|(range=AttributeNumericValueRestriction))
 ;
 
-ClassExpressionModalSTIT:
-  agent=RestrictedAgentRole KW_EXPRESSION_MODAL_STIT restriction=RestrictedClassExpression (KW_EXPRESSION_WHEN condition=RestrictedClassExpression)?
+ClassExpressionSelf:
+  role=RestrictedPropertyRole KW_EXPRESSION_SELF
 ;
 
-ClassExpressionModalObligation:
-  agent=RestrictedAgentRole KW_EXPRESSION_MODAL_OBLIGATION restriction=RestrictedClassExpression (KW_EXPRESSION_WHEN condition=RestrictedClassExpression)?
+ClassExpressionAttributePatternRestriction:
+  role=RestrictedAttributeRole pattern=AttributeRestrictionPatternRef args*=PropertyObject kwargs*=PatternKwarg
 ;
 
-ClassExpressionModalPermission:
-  agent=RestrictedAgentRole KW_EXPRESSION_MODAL_PERMISSION restriction=RestrictedClassExpression (KW_EXPRESSION_WHEN condition=RestrictedClassExpression)?
-;
-
-ClassExpressionModalProhibition:
-  agent=RestrictedAgentRole KW_EXPRESSION_MODAL_PROHIBITION restriction=RestrictedClassExpression (KW_EXPRESSION_WHEN condition=RestrictedClassExpression)?
-;
-
-ClassExpressionModalOmission:
-  agent=RestrictedAgentRole KW_EXPRESSION_MODAL_OMISSION restriction=RestrictedClassExpression (KW_EXPRESSION_WHEN condition=RestrictedClassExpression)?
-;
-
-ClassExpressionModalOption:
-  agent=RestrictedAgentRole KW_EXPRESSION_MODAL_OPTION restriction=RestrictedClassExpression (KW_EXPRESSION_WHEN condition=RestrictedClassExpression)?
-;
-
-ClassExpressionModalNecessity:
-  KW_EXPRESSION_MODAL_NECESSITY restriction=RestrictedClassExpression (KW_EXPRESSION_WHEN condition=RestrictedClassExpression)?
-;
-
-ClassExpressionModalPossibility:
-  KW_EXPRESSION_MODAL_POSSIBILITY restriction=RestrictedClassExpression (KW_EXPRESSION_WHEN condition=RestrictedClassExpression)?
-;
-
-ClassExpressionModalAssumed:
-  KW_EXPRESSION_MODAL_ASSUMPTION restriction=RestrictedClassExpression
-;
-
-ClassExpressionModalProven:
-  KW_EXPRESSION_MODAL_PROVEN restriction=RestrictedClassExpression
-;
-
-ClassExpressionModalClaimed:
-  KW_EXPRESSION_MODAL_CLAIMED restriction=RestrictedClassExpression
-;
-
-ClassExpressionModalRepeat:
-  KW_EXPRESSION_MODAL_REPEAT restriction=RestrictedClassExpression (KW_EXPRESSION_WHEN condition=RestrictedClassExpression)?
-;
-
-ClassExpressionModalNever:
-  KW_EXPRESSION_MODAL_NEVER restriction=RestrictedClassExpression (KW_EXPRESSION_WHEN condition=RestrictedClassExpression)?
-;
-
-ClassExpressionModalInevitable:
-  KW_EXPRESSION_MODAL_INEVITABLE restriction=RestrictedClassExpression (KW_EXPRESSION_WHEN condition=RestrictedClassExpression)?
-;
-
-ClassExpressionModalOnce:
-  KW_EXPRESSION_MODAL_ONCE restriction=RestrictedClassExpression (KW_EXPRESSION_WHEN condition=RestrictedClassExpression)?
+ClassExpressionPropertyPatternRestriction:
+  role=RestrictedPropertyRole pattern=PropertyRestrictionPatternRef args*=PropertyObject kwargs*=PatternKwarg
 ;
 
 RestrictedAttributeRole[skipws]:
@@ -950,6 +950,87 @@ RestrictedPropertyRole[skipws]:
 RestrictedAgentRole[skipws]:
     AgentComplement
   | RestrictedAgentExpression
+;
+
+RestrictedClassExpression[skipws]:
+  ClassExpressionAtom
+;
+
+RestrictedDataExpression[skipws]:
+  DataExpressionAtom
+;
+
+
+
+
+////// Class modals
+
+ClassExpressionModalNecessity:
+  KW_EXPRESSION_MODAL_NECESSITY expression=RestrictedClassExpression (KW_EXPRESSION_WHEN condition=RestrictedClassExpression)?
+;
+
+ClassExpressionModalPossibility:
+  KW_EXPRESSION_MODAL_POSSIBILITY expression=RestrictedClassExpression (KW_EXPRESSION_WHEN condition=RestrictedClassExpression)?
+;
+
+ClassExpressionModalAssumed:
+  KW_EXPRESSION_MODAL_ASSUMPTION expression=RestrictedClassExpression
+;
+
+ClassExpressionModalProven:
+  KW_EXPRESSION_MODAL_PROVEN expression=RestrictedClassExpression
+;
+
+ClassExpressionModalClaimed:
+  KW_EXPRESSION_MODAL_CLAIMED expression=RestrictedClassExpression
+;
+
+ClassExpressionModalRepeat:
+  KW_EXPRESSION_MODAL_REPEAT expression=RestrictedClassExpression (KW_EXPRESSION_WHEN condition=RestrictedClassExpression)?
+;
+
+ClassExpressionModalNever:
+  KW_EXPRESSION_MODAL_NEVER expression=RestrictedClassExpression (KW_EXPRESSION_WHEN condition=RestrictedClassExpression)?
+;
+
+ClassExpressionModalInevitable:
+  KW_EXPRESSION_MODAL_INEVITABLE expression=RestrictedClassExpression (KW_EXPRESSION_WHEN condition=RestrictedClassExpression)?
+;
+
+ClassExpressionModalOnce:
+  KW_EXPRESSION_MODAL_ONCE expression=RestrictedClassExpression (KW_EXPRESSION_WHEN condition=RestrictedClassExpression)?
+;
+
+ClassExpressionFuzzyModifier:
+  KW_EXPRESSION_FUZZY_MODIFIER a=FLOAT (b=FLOAT c=FLOAT)? expression=RestrictedClassExpression
+;
+
+ClassExpressionModalSTIT:
+  agent=RestrictedAgentRole KW_EXPRESSION_MODAL_STIT expression=RestrictedClassExpression (KW_EXPRESSION_WHEN condition=RestrictedClassExpression)?
+;
+
+ClassExpressionModalObligation:
+  agent=RestrictedAgentRole KW_EXPRESSION_MODAL_OBLIGATION expression=RestrictedClassExpression (KW_EXPRESSION_WHEN condition=RestrictedClassExpression)?
+;
+
+ClassExpressionModalPermission:
+  agent=RestrictedAgentRole KW_EXPRESSION_MODAL_PERMISSION expression=RestrictedClassExpression (KW_EXPRESSION_WHEN condition=RestrictedClassExpression)?
+;
+
+ClassExpressionModalProhibition:
+  agent=RestrictedAgentRole KW_EXPRESSION_MODAL_PROHIBITION expression=RestrictedClassExpression (KW_EXPRESSION_WHEN condition=RestrictedClassExpression)?
+;
+
+ClassExpressionModalOmission:
+  agent=RestrictedAgentRole KW_EXPRESSION_MODAL_OMISSION expression=RestrictedClassExpression (KW_EXPRESSION_WHEN condition=RestrictedClassExpression)?
+;
+
+ClassExpressionModalOption:
+  agent=RestrictedAgentRole KW_EXPRESSION_MODAL_OPTION expression=RestrictedClassExpression (KW_EXPRESSION_WHEN condition=RestrictedClassExpression)?
+;
+
+ClassExpressionModalPattern:
+  pattern=ModalPatternRef expression=ClassExpressionAtom args*=PropertyObject kwargs*=PatternKwargValue
 ;
 
 AgentComplement:
@@ -975,12 +1056,31 @@ RestrictedAgentSelf:
   op=KW_EXPRESSION_THEY
 ;
 
-RestrictedClassExpression[skipws]:
-  ClassExpressionAtom
+
+
+
+////// Temporal connectives
+
+ClassExpressionFutureGlobal: KW_OPERATOR_STEP KW_EXPRESSION_FUTURE_GLOBAL expression=ClassExpressionFuzz (condition=TemporalCondition)?;
+ClassExpressionFutureLeadsTo: KW_OPERATOR_STEP expression=ClassExpressionFuzz KW_EXPRESSION_FUTURE_LEADSTO trigger=ClassExpressionFuzz (condition=TemporalCondition)?;
+ClassExpressionFutureNext: KW_OPERATOR_STEP KW_EXPRESSION_FUTURE_NEXT expression=ClassExpressionFuzz (condition=TemporalCondition)?;
+ClassExpressionFutureRelease: KW_OPERATOR_STEP trigger=ClassExpressionFuzz KW_EXPRESSION_FUTURE_RELEASE expression=ClassExpressionFuzz (condition=TemporalCondition)?;
+ClassExpressionFutureUnless: KW_OPERATOR_STEP expression=ClassExpressionFuzz KW_EXPRESSION_FUTURE_UNLESS trigger=ClassExpressionFuzz (condition=TemporalCondition)?;
+ClassExpressionFutureUntil: KW_OPERATOR_STEP expression=ClassExpressionFuzz KW_EXPRESSION_FUTURE_UNTIL trigger=ClassExpressionFuzz (condition=TemporalCondition)?;
+ClassExpressionPastGlobal: KW_OPERATOR_STEP KW_EXPRESSION_PAST_GLOBAL expression=ClassExpressionFuzz (condition=TemporalCondition)?;
+ClassExpressionPastNext: KW_OPERATOR_STEP KW_EXPRESSION_PAST_NEXT expression=ClassExpressionFuzz (condition=TemporalCondition)?;
+ClassExpressionPastUntil: KW_OPERATOR_STEP expression=ClassExpressionFuzz KW_EXPRESSION_PAST_UNTIL trigger=ClassExpressionFuzz (condition=TemporalCondition)?;
+ClassExpressionPastLeadsTo: KW_OPERATOR_STEP expression=ClassExpressionFuzz KW_EXPRESSION_PAST_LEADSTO trigger=ClassExpressionFuzz (condition=TemporalCondition)?;
+ClassExpressionPastEventual: KW_OPERATOR_STEP KW_EXPRESSION_PAST_EVENTUAL expression=ClassExpressionFuzz (condition=TemporalCondition)?;
+ClassExpressionFutureEventual: KW_OPERATOR_STEP KW_EXPRESSION_FUTURE_EVENTUAL? expression=ClassExpressionFuzz (condition=TemporalCondition)?;
+
+TemporalCondition:
+  ((KW_EXPRESSION_AFTER after=TemporalRestriction)? (KW_EXPRESSION_BEFORE before=TemporalRestriction)?)#
 ;
 
-RestrictedDataExpression[skipws]:
-  DataExpressionAtom
+TemporalRestriction:
+    TemporalLiteralExpression
+  | NominalAttributeRestriction
 ;
 
 
@@ -1219,6 +1319,13 @@ AttributeValueRestriction[skipws]:
     NominalAttributeRestriction
   | UniversalVar
   | LiteralExpression
+;
+
+AttributeNumericValueRestriction[skipws]:
+    NominalAttributeRestriction
+  | UniversalVar
+  | RangeExpression
+  | NumericLiteralExpression
 ;
 
 PropertyValueRestriction[skipws]:
@@ -1477,8 +1584,16 @@ IndividualPatternRef:
   ref=[IndividualPatternDecl|IRI] | ref=[IndividualPatternDecl|QNAME]
 ;
 
-RestrictionPatternRef:
-  ref=[RestrictionPatternDecl|IRI] | ref=[RestrictionPatternDecl|QNAME]
+PropertyRestrictionPatternRef:
+  ref=[PropertyRestrictionPatternDecl|IRI] | ref=[PropertyRestrictionPatternDecl|QNAME]
+;
+
+AttributeRestrictionPatternRef:
+  ref=[AttributeRestrictionPatternDecl|IRI] | ref=[AttributeRestrictionPatternDecl|QNAME]
+;
+
+ModalPatternRef:
+  ref=[ModalPatternDecl|IRI] | ref=[ModalPatternDecl|QNAME]
 ;
 
 LiteralPatternRef:
@@ -1503,27 +1618,31 @@ KW:
 
 KW_ENTITY:
     KW_ENTITY_ATTRIBUTE
+  | KW_ENTITY_ATTRIBUTE_RESTRICTION
   | KW_ENTITY_CLASS
   | KW_ENTITY_CONSTANT
   | KW_ENTITY_DATATYPE
   | KW_ENTITY_INDIVIDUAL
   | KW_ENTITY_LITERAL
+  | KW_ENTITY_MODAL
   | KW_ENTITY_ONTOLOGY
   | KW_ENTITY_PATTERN
   | KW_ENTITY_PROPERTY
-  | KW_ENTITY_RESTRICTION
+  | KW_ENTITY_PROPERTY_RESTRICTION
 ;
 
 KW_ENTITY_ATTRIBUTE: 'attribute';
+KW_ENTITY_ATTRIBUTE_RESTRICTION: 'attribute_restriction';
 KW_ENTITY_CLASS: 'class';
 KW_ENTITY_CONSTANT: 'constant';
 KW_ENTITY_DATATYPE: 'datatype';
 KW_ENTITY_INDIVIDUAL: 'individual';
 KW_ENTITY_LITERAL: 'literal';
+KW_ENTITY_MODAL: 'modal';
 KW_ENTITY_ONTOLOGY: 'ontology';
 KW_ENTITY_PATTERN: 'pattern';
 KW_ENTITY_PROPERTY: 'property';
-KW_ENTITY_RESTRICTION: 'restriction';
+KW_ENTITY_PROPERTY_RESTRICTION: 'property_restriction';
 
 
 KW_PRAGMA:
@@ -1617,9 +1736,11 @@ KW_OPERATOR_STEP: '*';
 
 KW_EXPRESSION:
     KW_EXPRESSION_AFTER
+  | KW_EXPRESSION_APPROXIMATE
   | KW_EXPRESSION_AT
   | KW_EXPRESSION_BEFORE
   | KW_EXPRESSION_COMPLEMENT
+  | KW_EXPRESSION_CONFIDENCE
   | KW_EXPRESSION_CONJUNCTION
   | KW_EXPRESSION_CUMULATIVE
   | KW_EXPRESSION_DISJUNCTION
@@ -1634,11 +1755,12 @@ KW_EXPRESSION:
   | KW_EXPRESSION_FUTURE_RELEASE
   | KW_EXPRESSION_FUTURE_UNLESS
   | KW_EXPRESSION_FUTURE_UNTIL
+  | KW_EXPRESSION_FUZZY_MODIFIER
   | KW_EXPRESSION_IF
   | KW_EXPRESSION_INVERSE
   | KW_EXPRESSION_IS
-  | KW_EXPRESSION_MAXCARD
-  | KW_EXPRESSION_MINCARD
+  | KW_EXPRESSION_MAX
+  | KW_EXPRESSION_MIN
   | KW_EXPRESSION_MODAL_ASSUMPTION
   | KW_EXPRESSION_MODAL_CLAIMED
   | KW_EXPRESSION_MODAL_INEVITABLE
@@ -1675,9 +1797,11 @@ KW_EXPRESSION:
 ;
 
 KW_EXPRESSION_AFTER: 'after';
+KW_EXPRESSION_APPROXIMATE: 'approximately';
 KW_EXPRESSION_AT: 'at';
 KW_EXPRESSION_BEFORE: 'before';
 KW_EXPRESSION_COMPLEMENT: 'not';
+KW_EXPRESSION_CONFIDENCE: 'confidently';
 KW_EXPRESSION_CONJUNCTION: 'and';
 KW_EXPRESSION_CUMULATIVE: 'variously';
 KW_EXPRESSION_DISJUNCTION: 'or';
@@ -1692,11 +1816,12 @@ KW_EXPRESSION_FUTURE_NEXT: 'next';
 KW_EXPRESSION_FUTURE_RELEASE: 'whereupon';
 KW_EXPRESSION_FUTURE_UNLESS: 'unless';
 KW_EXPRESSION_FUTURE_UNTIL: 'until';
+KW_EXPRESSION_FUZZY_MODIFIER: 'graded';
 KW_EXPRESSION_IF: 'if';
 KW_EXPRESSION_INVERSE: 'inverse';
 KW_EXPRESSION_IS: 'is';
-KW_EXPRESSION_MAXCARD: 'most';
-KW_EXPRESSION_MINCARD: 'least';
+KW_EXPRESSION_MAX: 'most';
+KW_EXPRESSION_MIN: 'least';
 KW_EXPRESSION_MODAL_ASSUMPTION: 'presumably';
 KW_EXPRESSION_MODAL_CLAIMED: 'purportedly';
 KW_EXPRESSION_MODAL_INEVITABLE: 'inevitably';
@@ -1774,7 +1899,8 @@ Literal:
 ;
 
 NumericLiteralExpression:
-    DateTimeExpression
+    NoneLiteral
+  | DateTimeExpression
   | DurationExpression
   | DecimalExpression
   | RationalExpression
@@ -1782,18 +1908,21 @@ NumericLiteralExpression:
 ;
 
 NumberLiteralExpression:
-    DecimalExpression
+    NoneLiteral
+  | DecimalExpression
   | RationalExpression
   | IntegerExpression
 ;
 
 TemporalLiteralExpression:
-    DateTimeExpression
+    NoneLiteral
+  | DateTimeExpression
   | DurationExpression
 ;
 
 LiteralExpression:
-    DateTimeExpression
+    NoneLiteral
+  | DateTimeExpression
   | DurationExpression
   | DecimalExpression
   | RationalExpression
@@ -1832,6 +1961,8 @@ RangeExpressionRational:
 RangeExpressionInteger:
   (lowerOpen='(' | lowerClosed='[') lower=IntegerExpression? '..' higher=IntegerExpression? (higherOpen=')' | higherClosed=']')
 ;
+
+NoneLiteral: BLANK;
 
 DecimalExpression:
   value=STRICTFLOAT
@@ -1911,6 +2042,14 @@ EXIVAR:
 
 LANG:
   /\w{2,3}(-\w{2,3}(-\w{2,3})?)?/
+;
+
+FUZZY_DEGREE:
+  /(0(\.\d+)?|1(\.0+)?)/
+;
+
+BLANK:
+  '_'
 ;
 
 END_OF_OBJ:

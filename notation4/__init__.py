@@ -296,7 +296,9 @@ def variable_scope_check(model, metamodel):
                 and get_parent_of_type("AttributePatternDecl", x) is None
                 and get_parent_of_type("DatatypePatternDecl", x) is None
                 and get_parent_of_type("IndividualPatternDecl", x) is None
-                and get_parent_of_type("RestrictionPatternDecl", x) is None
+                and get_parent_of_type("PropertyRestrictionPatternDecl", x) is None
+                and get_parent_of_type("AttributeRestrictionPatternDecl", x) is None
+                and get_parent_of_type("ModalPatternDecl", x) is None
                 and get_parent_of_type("LiteralPatternDecl", x) is None
             )
         )
@@ -311,7 +313,9 @@ def variable_scope_check(model, metamodel):
                 and get_parent_of_type("AttributePatternDecl", x) is None
                 and get_parent_of_type("DatatypePatternDecl", x) is None
                 and get_parent_of_type("IndividualPatternDecl", x) is None
-                and get_parent_of_type("RestrictionPatternDecl", x) is None
+                and get_parent_of_type("PropertyRestrictionPatternDecl", x) is None
+                and get_parent_of_type("AttributeRestrictionPatternDecl", x) is None
+                and get_parent_of_type("ModalPatternDecl", x) is None
                 and get_parent_of_type("LiteralPatternDecl", x) is None
             )
         )
@@ -326,7 +330,9 @@ def variable_scope_check(model, metamodel):
                 and get_parent_of_type("AttributePatternDecl", x) is None
                 and get_parent_of_type("DatatypePatternDecl", x) is None
                 and get_parent_of_type("IndividualPatternDecl", x) is None
-                and get_parent_of_type("RestrictionPatternDecl", x) is None
+                and get_parent_of_type("PropertyRestrictionPatternDecl", x) is None
+                and get_parent_of_type("AttributeRestrictionPatternDecl", x) is None
+                and get_parent_of_type("ModalPatternDecl", x) is None
                 and get_parent_of_type("LiteralPatternDecl", x) is None
             )
         )
