@@ -1,0 +1,43 @@
+ontology <https://jgeldart.github.io/pinafore/prelude/ufo/endurants#> as ufoa.
+
+class Entity.
+
+class Particular <| Entity.
+
+class AbstractParticular <| Particular.
+
+class QualityStructure <| AbstractParticular.
+
+class Proposition <| AbstractParticular.
+
+class Quale <| AbstractParticular.
+
+class ConcreteParticular <| Particular.
+
+class Endurant <| ConcreteParticular.
+
+class Substantial <| Endurant.
+
+class Moment <| Endurant.
+
+class IntrinsicMoment <| Moment.
+
+class ExternallyDependentMoment <| IntrinsicMoment.
+
+class Relator <| Moment.
+
+class Situation <| Endurant.
+
+class Universal <| Entity.
+
+class MonadicUniversal <| Universal.
+
+class MomentUniversal <| MonadicUniversal.
+
+class SubstantialUniversal <| MonadicUniversal.
+
+class Relation <| Universal.
+
+class FormalRelation <| Relation.
+
+class MaterialRelation <| Relation.

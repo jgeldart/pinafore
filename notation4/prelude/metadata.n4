@@ -1,0 +1,84 @@
+ontology <https://jgeldart.github.io/pinafore/prelude/metadata#> as n4meta;
+  title "Notation4 metadata vocabulary";
+  abstract """
+    This vocabulary provides terms that can be used to provide descriptive
+    information about other terms.
+  """.
+
+import <http://purl.org/ontology/bibo/> from "imports/bibo.rdf" as bibo.
+import <http://web.resource.org/cc/> from "imports/cc.rdf" as cc.
+import <http://purl.org/dc/terms/> from "imports/dcterms.rdf" as dct.
+import <http://www.w3.org/ns/odrl/2/> from "imports/odrl.rdf" as odrl.
+import <http://www.w3.org/2002/07/owl#> from "imports/owl.rdf" as owl.
+import <http://www.w3.org/2000/01/rdf-schema#> from "imports/rdfs.rdf" as rdfs.
+import <http://www.w3.org/2004/02/skos/core#> from "imports/skos.rdf" as skos.
+import <http://www.linkedmodel.org/schema/vaem#> from "imports/vaem.rdf" as vaem.
+import <http://purl.org/vocab/vann/> from "imports/vann.rdf" as vann.
+
+exported keyword dct:title as title.
+exported keyword dct:description as description.
+exported keyword dct:abstract as abstract.
+exported keyword dct:creator as creator.
+exported keyword rdfs:label as label.
+exported keyword skos:prefLabel as pref_label.
+exported keyword skos:altLabel as alt_label.
+exported keyword bibo:status as status.
+exported keyword owl:versionInfo as version.
+exported keyword skos:definition as definition.
+exported keyword skos:example as example.
+exported keyword dct:license as license.
+exported keyword dct:creator as creator.
+exported keyword dct:publisher as publisher.
+exported keyword dct:created as created_at.
+exported keyword dct:modified as modified_at.
+exported keyword skos:note as note.
+exported keyword vaem:todo as todo.
+exported keyword rdfs:seeAlso as see_also.
+exported keyword dct:contributor as contributor.
+exported keyword vaem:withAttributionTo as attribution.
+exported keyword skos:scopeNote as scope.
+exported keyword vann:termGroup as term_group.
+
+
+class Ontology ~= owl:Ontology.
+class ConceptScheme ~= skos:ConceptScheme.
+
+class Vocabulary ~= Ontology or ConceptScheme.
+
+class OWLTerm ~= owl:Class 
+  or owl:ObjectProperty
+  or owl:DatatypeProperty
+  or owl:AnnotationProperty
+  or owl:NamedIndividual
+  or rdfs:Datatype.
+
+class SKOSTerm ~= skos:Concept.
+
+class RDFSTerm ~= rdfs:Class.
+
+class Term ~= OWLTerm or SKOSTerm or RDFSTerm.
+
+exported class VocabularyStatus <| bibo:DocumentStatus where inverse of status a Vocabulary;
+  pref_label "vocabulary status";
+  definition """
+    A document status that applies to vocabularies.
+  """;
+  example "final draft", "published", "withdrawn"
+.
+
+exported class TermStatus <| bibo:DocumentStatus where inverse of status a Term;
+  pref_label "term status";
+  definition """
+    A document status that applies to a term.
+  """;
+  example "testing", "unstable", "stable"
+.
+
+exported class TermGroup;
+  pref_label "term group";
+  definition """
+    A collection of terms that form a conceptual cluster (for example, by being 
+    frequently used together).
+  """;
+  example "health indicators", "financial instruments", "species"
+.

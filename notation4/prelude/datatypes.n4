@@ -1,0 +1,85 @@
+ontology <https://jgeldart.github.io/pinafore/prelude/datatype#>.
+
+# We can't import here, so let's just remmember this base IRI:
+#  <http://www.w3.org/2001/XMLSchema#> as xsd.
+
+exported datatype <http://www.w3.org/2001/XMLSchema#anyType>.
+
+exported datatype <http://www.w3.org/2001/XMLSchema#anySimpleType> <| <http://www.w3.org/2001/XMLSchema#anyType>.
+
+exported datatype temporalType <| <http://www.w3.org/2001/XMLSchema#anysimpleType>.
+
+exported datatype <http://www.w3.org/2001/XMLSchema#duration> <| temporalType.
+
+exported datatype <http://www.w3.org/2001/XMLSchema#dateTime> <| temporalType.
+
+exported datatype <http://www.w3.org/2001/XMLSchema#time> <| temporalType.
+
+exported datatype <http://www.w3.org/2001/XMLSchema#date> <| temporalType.
+
+exported datatype <http://www.w3.org/2001/XMLSchema#gYearMonth> <| temporalType.
+
+exported datatype <http://www.w3.org/2001/XMLSchema#gYear> <| temporalType.
+
+exported datatype <http://www.w3.org/2001/XMLSchema#gMonthDay> <| temporalType.
+
+exported datatype <http://www.w3.org/2001/XMLSchema#gDay> <| temporalType.
+
+exported datatype <http://www.w3.org/2001/XMLSchema#gMonth> <| temporalType.
+
+exported datatype numberType <| <http://www.w3.org/2001/XMLSchema#anySimpleType>.
+
+exported datatype <http://www.w3.org/2001/XMLSchema#base64Binary> <| numberType.
+
+exported datatype <http://www.w3.org/2001/XMLSchema#hexBinary> <| numberType.
+
+exported datatype <http://www.w3.org/2001/XMLSchema#float> <| numberType.
+
+exported datatype <http://www.w3.org/2001/XMLSchema#decimal> <| numberType.
+
+exported datatype <http://www.w3.org/2001/XMLSchema#integer> <| <http://www.w3.org/2001/XMLSchema#decimal>.
+
+exported datatype <http://www.w3.org/2001/XMLSchema#nonPositiveInteger> <| <http://www.w3.org/2001/XMLSchema#integer>.
+exported datatype <http://www.w3.org/2001/XMLSchema#negativeInteger> <| <http://www.w3.org/2001/XMLSchema#nonPositiveInteger>.
+
+exported datatype <http://www.w3.org/2001/XMLSchema#long> <| <http://www.w3.org/2001/XMLSchema#integer>.
+exported datatype <http://www.w3.org/2001/XMLSchema#int> <| <http://www.w3.org/2001/XMLSchema#long>.
+exported datatype <http://www.w3.org/2001/XMLSchema#short> <| <http://www.w3.org/2001/XMLSchema#int>.
+exported datatype <http://www.w3.org/2001/XMLSchema#byte> <| <http://www.w3.org/2001/XMLSchema#short>.
+
+exported datatype <http://www.w3.org/2001/XMLSchema#nonNegativeInteger> <| <http://www.w3.org/2001/XMLSchema#integer>.
+
+exported datatype <http://www.w3.org/2001/XMLSchema#unsignedLong> <| <http://www.w3.org/2001/XMLSchema#nonNegativeInteger>.
+exported datatype <http://www.w3.org/2001/XMLSchema#unsignedInt> <| <http://www.w3.org/2001/XMLSchema#unsignedInt>.
+exported datatype <http://www.w3.org/2001/XMLSchema#unsignedShort> <| <http://www.w3.org/2001/XMLSchema#int>.
+exported datatype <http://www.w3.org/2001/XMLSchema#unsignedByte> <| <http://www.w3.org/2001/XMLSchema#unsignedShort>.
+
+exported datatype <http://www.w3.org/2001/XMLSchema#double> <| numberType.
+
+
+exported datatype stringyType <| <http://www.w3.org/2001/XMLSchema#anySimpleType>.
+
+exported datatype <http://www.w3.org/2001/XMLSchema#string> <| stringyType.
+
+exported datatype <http://www.w3.org/2001/XMLSchema#normalizedString> <| <http://www.w3.org/2001/XMLSchema#string>.
+
+exported datatype <http://www.w3.org/2001/XMLSchema#token> <| <http://www.w3.org/2001/XMLSchema#normalizedString>.
+
+exported datatype <http://www.w3.org/2001/XMLSchema#language> <| <http://www.w3.org/2001/XMLSchema#token>.
+
+exported datatype <http://www.w3.org/2001/XMLSchema#Name> <| <http://www.w3.org/2001/XMLSchema#token>.
+exported datatype <http://www.w3.org/2001/XMLSchema#NCName> <| <http://www.w3.org/2001/XMLSchema#Name>.
+
+exported datatype <http://www.w3.org/2001/XMLSchema#ID> <| <http://www.w3.org/2001/XMLSchema#NCName>.
+exported datatype <http://www.w3.org/2001/XMLSchema#IDREF> <| <http://www.w3.org/2001/XMLSchema#NCName>.
+exported datatype <http://www.w3.org/2001/XMLSchema#ENTITY> <| <http://www.w3.org/2001/XMLSchema#NCName>.
+
+exported datatype <http://www.w3.org/2001/XMLSchema#NMTOKEN> <| <http://www.w3.org/2001/XMLSchema#token>.
+
+exported datatype <http://www.w3.org/2001/XMLSchema#anyURI> <| stringyType.
+exported datatype <http://www.w3.org/2001/XMLSchema#QName> <| stringyType.
+exported datatype <http://www.w3.org/2001/XMLSchema#NOTATION> <| stringyType.
+
+exported datatype truthyType <| <http://www.w3.org/2001/XMLSchema#anySimpleType>.
+
+exported datatype <http://www.w3.org/2001/XMLSchema#boolean> <| truthyType.
