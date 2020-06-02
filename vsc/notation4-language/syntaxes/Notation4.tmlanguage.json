@@ -1,0 +1,484 @@
+{
+	"$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+	"name": "Notation4",
+    "scopeName": "source.notation4",
+    "fileTypes": ["notation4"],
+	"patterns": [        {
+            "include": "#comment"
+        },        {
+            "include": "#string"
+        },
+        {
+            "include": "#number"
+        },
+        {
+            "include": "#language_keyword"
+        },
+        {
+            "include": "#language_operation"
+        },
+        {
+            "include": "#regular_expression"
+        }
+    ],
+    "repository": {        "comment": {
+            "patterns": [                {
+                    "match": "#.*$",
+                    "name": "comment.line.number-sign"
+                }]
+        },        "string": {
+            "patterns": [
+                {
+                    "name": "string.quoted.single",
+                    "begin": "'",
+                    "end": "'"
+                },
+                {
+                    "name": "string.quoted.double",
+                    "begin": "\"",
+                    "end": "\""
+                },
+                {
+                    "name": "string.quoted.triple",
+                    "begin": "\"{3}",
+                    "end": "\"{3}"
+                },
+                {
+                    "match": "\\b/.*/",
+                    "name": "string.regexp"
+                },
+                {
+                    "match": "<[^\\x20-\\x20<>\"{}|^`\\\\]*>",
+                    "name": "entity.name.type.iriref"
+                }
+                
+            ]
+        },
+        "regular_expression": {
+            "patterns": [            
+                {
+                    "name": "constant.complex.qname",
+                    "match": "(\\w*:)(\\w*)",
+                    "captures": {
+                        "1": {
+                            "name": "support.constant"
+                        },
+                        "2": {
+                            "name": "support.variable"
+                        }
+                    }
+                },
+                {
+                    "name": "support.variable",
+                    "match": "\\w+"
+                },
+                {
+                    "match": "(\\?[A-Za-z_\\-][A-Za-z0-9_\\-]*)",
+                    "name": "variable.parameter.universal"
+                },
+                {
+                    "match": "(\\![A-Za-z_\\-][A-Za-z0-9_\\-]*)",
+                    "name": "variable.parameter.existential"
+                },
+                {
+                    "match": "\\@?\\w{2,3}(-\\w{2,3}(-\\w{2,3})?)?",
+                    "name": "entity.name.class"
+                }
+            ]
+        },
+        "number": {
+            "patterns": [
+                {
+                    "match": "\\b(?:[\\+\\-]?\\d{4}(?!\\d{2}\\b))(?:(-?)(?:(?:0[1-9]|1[0-2])(?:\\1(?:[12]\\d|0[1-9]|3[01]))?|W(?:[0-4]\\d|5[0-2])(?:-?[1-7])?|(?:00[1-9]|0[1-9]\\d|[12]\\d{2}|3(?:[0-5]\\d|6[1-6])))(?:[T\\s](?:(?:(?:[01]\\d|2[0-3])(?:(:?)[0-5]\\d)?|24\\:?00)(?:[\\.,]\\d+(?!:))?)?(?:\\2[0-5]\\d(?:[\\.,]\\d+)?)?(?:[zZ]|(?:[\\+-])(?:[01]\\d|2[0-3]):?(?:[0-5]\\d)?)?)?)?",
+                    "name": "constant.numeric.datetime"
+                },
+                {
+                    "match": "\\b(-?)P(?=\\d|T\\d)(?:(\\d+)Y)?(?:(\\d+)M)?(?:(\\d+)([DW]))?(?:T(?:(\\d+)H)?(?:(\\d+)M)?(?:(\\d+(?:\\.\\d+)?)S)?)?",
+                    "name": "constant.numeric.duration"
+                },
+                {
+                    "match": "\\b[0-9]+\\b\\.{0,1}(\\b|\\.)",
+                    "name": "constant.numeric"
+                },
+                {
+                    "match": "\\b\\d+/\\d+",
+                    "name": "constant.numeric"
+                },
+                {
+                    "match": "\\b(true|false)\\b",
+                    "name": "constant.language.boolean"
+                },
+                {
+                    "match": "\\b_\\b",
+                    "name": "constant.language.none"
+                },
+                {
+                    "match": "\\b\\.\\.\\b",
+                    "name": "constant.language.range"
+                }
+            ]
+        },
+        "language_keyword": {
+            "patterns": [
+                {
+                    "match": "\\bor\\b",
+                    "name": "keyword.operator.expression"
+                },                {
+                    "match": "\\band\\b",
+                    "name": "keyword.operator.expression"
+                },                {
+                    "match": "\\+",
+                    "name": "keyword.operator"
+                },                {
+                    "match": "\\bof\\b",
+                    "name": "keyword.operator.expression.property"
+                },                {
+                    "match": "\\<\\-\\-",
+                    "name": "support.function.rule"
+                },                {
+                    "match": "\\~\\=",
+                    "name": "keyword.operator.axiom"
+                },                {
+                    "match": "\\<\\=\\=",
+                    "name": "support.function.rule"
+                },                {
+                    "match": "\\ba\\b",
+                    "name": "keyword.operator.axiom"
+                },                {
+                    "match": "<\\|",
+                    "name": "keyword.operator.axiom"
+                },                {
+                    "match": "\\=",
+                    "name": "keyword.operator.predicate"
+                },                {
+                    "match": "\\=\\/\\=",
+                    "name": "keyword.operator.predicate"
+                },                {
+                    "match": "\\=\\=",
+                    "name": "keyword.operator.predicate"
+                },                {
+                    "match": "\\!\\=",
+                    "name": "keyword.operator.predicate"
+                },                {
+                    "match": "<\\=",
+                    "name": "keyword.operator.predicate"
+                },                {
+                    "match": "<",
+                    "name": "keyword.operator.predicate"
+                },                {
+                    "match": ">\\=",
+                    "name": "keyword.operator.predicate"
+                },                {
+                    "match": ">",
+                    "name": "keyword.operator.predicate"
+                },                {
+                    "match": "\\|\\-",
+                    "name": "keyword.operator.predicate"
+                },                {
+                    "match": "\\|\\=",
+                    "name": "keyword.operator.predicate"
+                },                {
+                    "match": "\\=\\=\\=",
+                    "name": "keyword.operator.predicate"
+                },                {
+                    "match": "\\!\\=\\=",
+                    "name": "keyword.operator.predicate"
+                },                {
+                    "match": "\\bin\\b",
+                    "name": "keyword.operator.predicate"
+                },                {
+                    "match": "\\battribute\\b",
+                    "name": "storage.type.declaration"
+                },                {
+                    "match": "\\battribute\\_restriction\\b",
+                    "name": "storage.type.pattern"
+                },                {
+                    "match": "\\bclass\\b",
+                    "name": "storage.type.declaration"
+                },                {
+                    "match": "\\bconstant\\b",
+                    "name": "storage.type.declaration"
+                },                {
+                    "match": "\\bdatatype\\b",
+                    "name": "storage.type.declaration"
+                },                {
+                    "match": "\\bindividual\\b",
+                    "name": "storage.type.declaration"
+                },                {
+                    "match": "\\bliteral\\b",
+                    "name": "storage.type.pattern"
+                },                {
+                    "match": "\\bmodal\\b",
+                    "name": "storage.type.pattern"
+                },                {
+                    "match": "\\bontology\\b",
+                    "name": "storage.type.vocabulary"
+                },                {
+                    "match": "\\bpattern\\b",
+                    "name": "storage.type.pattern"
+                },                {
+                    "match": "\\bproperty\\b",
+                    "name": "storage.type.declaration"
+                },                {
+                    "match": "\\bproperty\\_restriction\\b",
+                    "name": "storage.type.pattern"
+                },                {
+                    "match": "\\bimport\\b",
+                    "name": "keyword.other.pragma"
+                },                {
+                    "match": "\\bkeyword\\b",
+                    "name": "keyword.other.pragma"
+                },                {
+                    "match": "\\@alts",
+                    "name": "storage.modifier.collection"
+                },                {
+                    "match": "\\@bag",
+                    "name": "storage.modifier.collection"
+                },                {
+                    "match": "\\@seq",
+                    "name": "storage.modifier.collection"
+                },                {
+                    "match": "\\@set",
+                    "name": "storage.modifier.collection"
+                },                {
+                    "match": "\\bas\\b",
+                    "name": "keyword.other.pragma.modifier"
+                },                {
+                    "match": "\\bfrom\\b",
+                    "name": "keyword.other.pragma.modifier"
+                },                {
+                    "match": "\\bit\\b",
+                    "name": "keyword.operator.expression.property"
+                },                {
+                    "match": "\\bthe\\b",
+                    "name": "keyword.operator.expression.property"
+                },                {
+                    "match": "\\bto\\b",
+                    "name": "keyword.operator.expression.property"
+                },                {
+                    "match": "\\bwhich\\b",
+                    "name": "keyword.operator.expression.property"
+                },                {
+                    "match": "\\bwith\\b",
+                    "name": "keyword.other.kwarg"
+                },                {
+                    "match": "\\bexported\\b",
+                    "name": "storage.modifier"
+                },                {
+                    "match": "\\bhidden\\b",
+                    "name": "keyword.other"
+                },                {
+                    "match": "\\:\\-",
+                    "name": "keyword.operator.label"
+                },                {
+                    "match": "\\blanguage\\b",
+                    "name": "keyword.other"
+                },                {
+                    "match": "\\bprelude\\b",
+                    "name": "keyword.other"
+                },                {
+                    "match": "\\breturning\\b",
+                    "name": "keyword.modifier.pattern"
+                },                {
+                    "match": "\\blength\\b",
+                    "name": "keyword.operator.expression.datatype"
+                },                {
+                    "match": "\\bmatches\\b",
+                    "name": "keyword.operator.expression.datatype"
+                },                {
+                    "match": "\\*",
+                    "name": "keyword.operator"
+                },                {
+                    "match": "\\bafter\\b",
+                    "name": "keyword.control.expression.class"
+                },                {
+                    "match": "\\bapproximately\\b",
+                    "name": "keyword.operator.expression.class"
+                },                {
+                    "match": "\\bat\\b",
+                    "name": "keyword.operator.expression.class"
+                },                {
+                    "match": "\\bbefore\\b",
+                    "name": "keyword.control.expression.class"
+                },                {
+                    "match": "\\bnot\\b",
+                    "name": "keyword.operator.expression"
+                },                {
+                    "match": "\\bconfidently\\b",
+                    "name": "keyword.operator.expression.class"
+                },                {
+                    "match": "\\bvariously\\b",
+                    "name": "keyword.operator.expression.property"
+                },                {
+                    "match": "\\bseparately\\b",
+                    "name": "keyword.operator.expression.property"
+                },                {
+                    "match": "\\beveryone\\b",
+                    "name": "keyword.control.expression.class"
+                },                {
+                    "match": "\\bexactly\\b",
+                    "name": "keyword.operator.expression.class"
+                },                {
+                    "match": "\\bexcept\\b",
+                    "name": "keyword.control.expression.class"
+                },                {
+                    "match": "\\beventually\\b",
+                    "name": "keyword.control.expression.class"
+                },                {
+                    "match": "\\balways\\b",
+                    "name": "keyword.control.expression.class"
+                },                {
+                    "match": "\\bwere\\b",
+                    "name": "keyword.control.expression.class"
+                },                {
+                    "match": "\\bnext\\b",
+                    "name": "keyword.control.expression.class"
+                },                {
+                    "match": "\\bwhereupon\\b",
+                    "name": "keyword.control.expression.class"
+                },                {
+                    "match": "\\bunless\\b",
+                    "name": "keyword.control.expression.class"
+                },                {
+                    "match": "\\buntil\\b",
+                    "name": "keyword.control.expression.class"
+                },                {
+                    "match": "\\bgraded\\b",
+                    "name": "keyword.operator.expression.class"
+                },                {
+                    "match": "\\bif\\b",
+                    "name": "keyword.control.expression.class"
+                },                {
+                    "match": "\\binverse\\b",
+                    "name": "keyword.operator.expression.property"
+                },                {
+                    "match": "\\bis\\b",
+                    "name": "keyword.operator.expression.class"
+                },                {
+                    "match": "\\bmost\\b",
+                    "name": "keyword.operator.expression.class"
+                },                {
+                    "match": "\\bleast\\b",
+                    "name": "keyword.operator.expression.class"
+                },                {
+                    "match": "\\bpresumably\\b",
+                    "name": "keyword.control.expression.class"
+                },                {
+                    "match": "\\bpurportedly\\b",
+                    "name": "keyword.control.expression.class"
+                },                {
+                    "match": "\\binevitably\\b",
+                    "name": "keyword.control.expression.class"
+                },                {
+                    "match": "\\bnecessarily\\b",
+                    "name": "keyword.control.expression.class"
+                },                {
+                    "match": "\\bnever\\b",
+                    "name": "keyword.control.expression.class"
+                },                {
+                    "match": "\\bmust\\_ensure\\b",
+                    "name": "keyword.control.expression.class"
+                },                {
+                    "match": "\\bmight\\_not\\_ensure\\b",
+                    "name": "keyword.control.expression.class"
+                },                {
+                    "match": "\\bonce\\b",
+                    "name": "keyword.control.expression.class"
+                },                {
+                    "match": "\\bcould\\_ensure\\b",
+                    "name": "keyword.control.expression.class"
+                },                {
+                    "match": "\\bmay\\_ensure\\b",
+                    "name": "keyword.control.expression.class"
+                },                {
+                    "match": "\\bpossibly\\b",
+                    "name": "keyword.control.expression.class"
+                },                {
+                    "match": "\\bcannot\\_ensure\\b",
+                    "name": "keyword.control.expression.class"
+                },                {
+                    "match": "\\bprovably\\b",
+                    "name": "keyword.control.expression.class"
+                },                {
+                    "match": "\\brepeatedly\\b",
+                    "name": "keyword.control.expression.class"
+                },                {
+                    "match": "\\bensure\\b",
+                    "name": "keyword.control.expression.class"
+                },                {
+                    "match": "\\bnoone\\b",
+                    "name": "keyword.control.expression.class"
+                },                {
+                    "match": "\\bnothing\\b",
+                    "name": "keyword.operator.expression"
+                },                {
+                    "match": "\\bwas\\b",
+                    "name": "keyword.control.expression.class"
+                },                {
+                    "match": "\\bhistorically\\b",
+                    "name": "keyword.control.expression.class"
+                },                {
+                    "match": "\\bbecause\\b",
+                    "name": "keyword.control.expression.class"
+                },                {
+                    "match": "\\bjust\\b",
+                    "name": "keyword.control.expression.class"
+                },                {
+                    "match": "\\bsince\\b",
+                    "name": "keyword.control.expression.class"
+                },                {
+                    "match": "\\bonly\\b",
+                    "name": "keyword.operator.expression.class"
+                },                {
+                    "match": "\\bagain\\b",
+                    "name": "keyword.control.expression.class"
+                },                {
+                    "match": "\\bitself\\b",
+                    "name": "keyword.operator.expression.class"
+                },                {
+                    "match": "\\bsomething\\b",
+                    "name": "keyword.operator.expression"
+                },                {
+                    "match": "\\btogether\\b",
+                    "name": "keyword.control.expression.class"
+                },                {
+                    "match": "\\beither\\b",
+                    "name": "keyword.control.expression.class"
+                },                {
+                    "match": "\\bthat\\b",
+                    "name": "keyword.operator.expression.class"
+                },                {
+                    "match": "\\bwhere\\b",
+                    "name": "keyword.operator.expression.class"
+                },                {
+                    "match": "\\bthey\\b",
+                    "name": "constant.control.expression.class"
+                },                {
+                    "match": "\\bthem\\b",
+                    "name": "constant.control.expression.class"
+                },                {
+                    "match": "\\bvalue\\b",
+                    "name": "keyword.operator.expression.attribute"
+                },                {
+                    "match": "\\bwhen\\b",
+                    "name": "keyword.control.expression.class"
+                },                {
+                    "match": "\\-",
+                    "name": "keyword.operator.infix.arithmetic"
+                },                {
+                    "match": "\\/",
+                    "name": "keyword.operator.infix.arithmetic"
+                },                {
+                    "match": "\\^",
+                    "name": "keyword.operator.infix.arithmetic"
+                },                {
+                    "match": "\\^\\^",
+                    "name": "keyword.operator.literal.datatype"
+                }            ]
+        },
+        "language_operation": {
+            "patterns": [            ]
+        }
+        
+    }
+}

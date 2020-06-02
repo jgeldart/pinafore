@@ -1,0 +1,25 @@
+{
+    "name": "notation4",
+    "displayName": "notation4-syntax",
+    "description": "",
+    "version": "0.0.1",
+    "engines": {
+        "vscode": "^1.45.0"
+    },
+    "categories": [
+        "Programming Languages"
+    ],
+    "contributes": {
+        "languages": [{
+            "id": "notation4",
+            "aliases": ["Notation4", "notation4"],
+            "extensions": [".n4"],
+            "configuration": "./language-configuration.json"
+        }],
+        "grammars": [{
+            "language": "notation4",
+            "scopeName": "source.notation4",
+            "path": "./syntaxes/Notation4.tmlanguage.json"
+        }]
+    }
+}
