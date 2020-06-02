@@ -241,6 +241,9 @@
                     "match": "\\@set",
                     "name": "storage.modifier.collection"
                 },                {
+                    "match": "fail",
+                    "name": "constant.language"
+                },                {
                     "match": "\\bas\\b",
                     "name": "keyword.other.pragma.modifier"
                 },                {

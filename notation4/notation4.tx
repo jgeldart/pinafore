@@ -507,9 +507,18 @@ ForwardRuleDecl:
 ;
 
 BackwardRuleDecl:
-  consequent=Formula
+  consequent=Consequent
   KW_OPERATOR_BACKWARDCHAIN
   antecedent=Formula
+;
+
+Consequent:
+    Formula
+  | Fail
+;
+
+Fail:
+  op=KW_GENERIC_FAILURE
 ;
 
 
@@ -825,12 +834,21 @@ ClassExpressionComplement:
 ;
 
 ClassExpressionAtom:
-  ClassExpressionRestriction | ('(' ClassExpression ')') | UniversalVar | ExistentialVar | ClassExpressionTop | ClassExpressionBottom | ClassExpressionRecursion | ClassExpressionConfidence | ClassRef
+  ClassExpressionRestriction | ('(' ClassExpression ')') | UniversalVar | ExistentialVar | ClassExpressionTop | ClassExpressionBottom | ClassExpressionRecursion | ClassExpressionConfidence | ClassExpressionEnumeration | ClassRef
 ;
 
 ClassExpressionTop: expression=KW_EXPRESSION_SOMETHING;
 ClassExpressionBottom: expression=KW_EXPRESSION_NOTHING;
 ClassExpressionRecursion: expression=KW_EXPRESSION_RECURSION;
+ClassExpressionEnumeration: '{' elements*=ClassExpressionEnumerationElement[','] '}';
+
+ClassExpressionEnumerationElement:
+    NominalVariable
+  | NominalPropertyRestriction
+  | ExistentialVar
+  | UniversalVar
+  | IndividualRef
+;
 
 ClassExpressionConfidence:
     ClassExpressionConfidenceAtLeast
@@ -892,11 +910,11 @@ ClassExpressionPropertyExactCard:
 ;
 
 ClassExpressionAttributeOnlySome:
-  role=RestrictedAttributeRole KW_EXPRESSION_ONLY KW_EXPRESSION_SOME restriction=RestrictedDataExpression
+  role=RestrictedAttributeRole KW_EXPRESSION_ONLY KW_EXPRESSION_SOME restriction=RestrictedDataExpression ('[' nominal=NominalVariable ']')?
 ;
 
 ClassExpressionPropertyOnlySome:
-  role=RestrictedPropertyRole KW_EXPRESSION_ONLY KW_EXPRESSION_SOME restriction=RestrictedClassExpression
+  role=RestrictedPropertyRole KW_EXPRESSION_ONLY KW_EXPRESSION_SOME restriction=RestrictedClassExpression ('[' nominal=NominalVariable ']')?
 ;
 
 ClassExpressionAttributeOnly:
@@ -908,11 +926,11 @@ ClassExpressionPropertyOnly:
 ;
 
 ClassExpressionAttributeSome:
-  role=RestrictedAttributeRole KW_EXPRESSION_SOME restriction=RestrictedDataExpression
+  role=RestrictedAttributeRole KW_EXPRESSION_SOME restriction=RestrictedDataExpression ('[' nominal=NominalVariable ']')?
 ;
 
 ClassExpressionPropertySome:
-  role=RestrictedPropertyRole KW_EXPRESSION_SOME restriction=RestrictedClassExpression
+  role=RestrictedPropertyRole KW_EXPRESSION_SOME restriction=RestrictedClassExpression ('[' nominal=NominalVariable ']')?
 ;
 
 ClassExpressionAttributeValue:
@@ -924,7 +942,7 @@ ClassExpressionPropertyValue:
 ;
 
 ClassExpressionAttributeFuzzy:
-  role=RestrictedAttributeRole KW_EXPRESSION_APPROXIMATE ((low=AttributeNumericValueRestriction high=AttributeNumericValueRestriction)|(range=AttributeNumericValueRestriction))
+  role=RestrictedAttributeRole KW_EXPRESSION_APPROXIMATE ((low=AttributeNumericValueRestriction high=AttributeNumericValueRestriction)|(range=AttributeNumericValueRestriction))  ('[' nominal=NominalVariable ']')?
 ;
 
 ClassExpressionSelf:
@@ -932,11 +950,11 @@ ClassExpressionSelf:
 ;
 
 ClassExpressionAttributePatternRestriction:
-  role=RestrictedAttributeRole pattern=AttributeRestrictionPatternRef args*=PropertyObject kwargs*=PatternKwarg
+  role=RestrictedAttributeRole pattern=AttributeRestrictionPatternRef args*=PropertyObject kwargs*=PatternKwarg ('[' nominal=NominalVariable ']')?
 ;
 
 ClassExpressionPropertyPatternRestriction:
-  role=RestrictedPropertyRole pattern=PropertyRestrictionPatternRef args*=PropertyObject kwargs*=PatternKwarg
+  role=RestrictedPropertyRole pattern=PropertyRestrictionPatternRef args*=PropertyObject kwargs*=PatternKwarg ('[' nominal=NominalVariable ']')?
 ;
 
 RestrictedAttributeRole[skipws]:
@@ -1491,6 +1509,10 @@ ExistentialVar:
   existential_var=EXIVAR
 ;
 
+NominalVariable:
+  nominal_var=NOMVAR
+;
+
 
 
 
@@ -1675,6 +1697,7 @@ KW_COLLECTIONTYPE_SET: '@set';
 
 KW_GENERIC:
     KW_GENERIC_AS
+  | KW_GENERIC_FAILURE
   | KW_GENERIC_FROM
   | KW_GENERIC_IT
   | KW_GENERIC_OF
@@ -1685,6 +1708,7 @@ KW_GENERIC:
 ;
 
 KW_GENERIC_AS: 'as';
+KW_GENERIC_FAILURE: 'fail';
 KW_GENERIC_FROM: 'from';
 KW_GENERIC_IT: 'it';
 KW_GENERIC_OF: 'of';
@@ -2046,6 +2070,10 @@ UNIVAR:
 
 EXIVAR:
   /(\![A-Za-z_\-][A-Za-z0-9_\-]*)/
+;
+
+NOMVAR:
+  /the\s+\'(.+)\'/
 ;
 
 LANG:
