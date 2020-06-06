@@ -36,7 +36,7 @@ setup(
     packages=find_packages(
         exclude=["*.tests", "*.tests.*", "tests.*", "tests"]),
     package_data={"notation4": ["*.tx", "*.n4"], "notation4.prelude": ["*.n4"], "notation4.prelude.imports": ["*.n4", "*.rdf", "*.ttl", "*.nt"]},
-    install_requires=["textX>=2.0.0", "rdflib>=4.2.0", "html5lib", "textx_ls_core", "requests"],
+    install_requires=["textX>=2.0.0", "rdflib>=5.0.0", "html5lib", "textx_ls_core", "requests", "mako"],
     setup_requires=[
         'pytest-runner',
     ],
@@ -48,6 +48,7 @@ setup(
             'pin4 = pinafore.commands.pin4:main'
         ],
         'textx_languages': ["notation4 = notation4:notation4"],
+        'textx_generators': ["notation4_n3 = pinafore.generators.n3:n3_generator"]
     },
     keywords="parser notation4 rdf semantic-web ontology",
     classifiers=[

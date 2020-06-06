@@ -13,15 +13,23 @@ def iri_rewriter(element):
         setattr(element, "full_iri", ontology.name[1:-1] + element.name)
 
 
-@language("Notation4", "*.n4")
-def notation4():
-    "A high-level ontology language."
-    mm = metamodel_from_file(
-        join(dirname(__file__),
-             "notation4.tx"),
-        autokwd=True,
-        memoization=True,
-        use_regexp_group=True)
+def metamodel(classes=None):
+    if classes is None:
+        mm = metamodel_from_file(
+            join(dirname(__file__),
+                 "notation4.tx"),
+            autokwd=True,
+            memoization=True,
+            use_regexp_group=True)
+    else:
+        mm = metamodel_from_file(
+            join(dirname(__file__),
+                 "notation4.tx"),
+            classes=classes,
+            autokwd=True,
+            memoization=True,
+            use_regexp_group=True)
+
     mm.register_scope_providers({
         'OntologyRef.ref': OntologyResolver(),
         'ClassRef.ref': TermResolver("Class"),
@@ -44,6 +52,15 @@ def notation4():
         'DatatypeDecl': iri_rewriter,
         'IndividualDecl': iri_rewriter,
         'ConstantDecl': iri_rewriter,
+        'BNodeDecl': iri_rewriter,
+        'GraphDecl': iri_rewriter,
     })
 
+    return mm
+
+
+@language("Notation4", "*.n4")
+def notation4(classes=None):
+    "A high-level ontology language."
+    mm = metamodel(classes=classes)
     return mm

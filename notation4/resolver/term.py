@@ -86,6 +86,8 @@ class TermResolver:
             'DatatypeDecl': iri_rewriter,
             'IndividualDecl': iri_rewriter,
             'ConstantDecl': iri_rewriter,
+            'BNodeDecl': iri_rewriter,
+            'GraphDecl': iri_rewriter,
         })
         return mm
 
@@ -182,4 +184,5 @@ class TermResolver:
             #     print(ref_name, "__")
             return matches[0]
         else:
+            print(referenced_ontology, prefix, local_name)
             return None

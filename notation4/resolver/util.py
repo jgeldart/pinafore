@@ -6,8 +6,8 @@ from textx import get_children, get_model
 PREFIX_MAP_ATTR = "_n4_prefix_map"
 
 
-def prefix_mapping(ontology):
-    if hasattr(ontology, PREFIX_MAP_ATTR) and getattr(ontology, PREFIX_MAP_ATTR) is not None:
+def prefix_mapping(ontology, rebuild=False):
+    if (not rebuild) and (hasattr(ontology, PREFIX_MAP_ATTR) and getattr(ontology, PREFIX_MAP_ATTR) is not None):
         prefix_map = getattr(ontology, PREFIX_MAP_ATTR)
     else:
         prefix_map = OrderedDict()
@@ -37,6 +37,9 @@ def resolve_prefix(ontology, prefix):
     if prefix in prefix_map.keys():
         return prefix_map[prefix]
     else:
+        prefix_map = prefix_mapping(ontology, rebuild=True)
+        if prefix in prefix_map.keys():
+            return prefix_map[prefix]
         return None
 
 
