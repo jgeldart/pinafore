@@ -743,6 +743,18 @@ ClassExpressionModifier:
   | ClassExpressionModalPattern
 ;
 
+// TODO: Fuzzy antonyms?
+// TODO: Fuzzy integrals (Choquet and Quasi Sugno)
+// TODO: Fuzzy OWAs and q-OWAs
+// TODO: Fuzzy rough sets (upper and lower approximations): really, definitely, rather, roughly
+// TODO: Power modifiers (f(x) = x^alpha)
+// TODO: Alpha cuts for property expressions (>= only)
+// TODO: Fuzzy 'a' and '<|' assertions (typically a, typically)
+// TODO: Argument modals: support, conflict
+// IDEA: Rename 'confidently' to 'perhaps'?
+// IDEA: ontology graph metadata
+// IDEA: predicate patterns? As repl. for literal patterns
+
 ClassExpressionDisjoint:
     ClassExpressionDisjunction
   | ClassExpressionConjoint

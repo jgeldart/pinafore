@@ -1,43 +1,43 @@
-ontology <https://jgeldart.github.io/pinafore/prelude/metadata#> as n4meta;
-  title "Notation4 metadata vocabulary";
-  abstract """
-    This vocabulary provides terms that can be used to provide descriptive
-    information about other terms.
-  """.
+ontology <https://jgeldart.github.io/pinafore/prelude/metadata#> with prelude hidden.
+  # title "Notation4 metadata vocabulary";
+  # abstract """
+  #   This vocabulary provides terms that can be used to provide descriptive
+  #   information about other terms.
+  # """.
 
-import <http://purl.org/ontology/bibo/> from "imports/bibo.rdf" as bibo.
-import <http://web.resource.org/cc/> from "imports/cc.rdf" as cc.
-import <http://purl.org/dc/terms/> from "imports/dcterms.rdf" as dct.
-import <http://www.w3.org/ns/odrl/2/> from "imports/odrl.rdf" as odrl.
-import <http://www.w3.org/2002/07/owl#> from "imports/owl.rdf" as owl.
-import <http://www.w3.org/2000/01/rdf-schema#> from "imports/rdfs.rdf" as rdfs.
-import <http://www.w3.org/2004/02/skos/core#> from "imports/skos.rdf" as skos.
-import <http://www.linkedmodel.org/schema/vaem#> from "imports/vaem.rdf" as vaem.
-import <http://purl.org/vocab/vann/> from "imports/vann.rdf" as vann.
+import <http://purl.org/ontology/bibo/> from "./imports/bibo.rdf" as bibo.
+import <http://purl.org/dc/terms/> from "./imports/dcterms.rdf" as dct.
+import <http://www.w3.org/2002/07/owl#> from "./imports/owl.ttl" as owl.
+import <http://www.w3.org/2000/01/rdf-schema#> from "./imports/rdfs.ttl" as rdfs.
+import <http://www.w3.org/2004/02/skos/core#> from "./imports/skos.rdf" as skos.
+import <http://www.linkedmodel.org/schema/vaem#> from "./imports/vaem.rdf" as vaem.
+import <http://purl.org/vocab/vann/> from "./imports/vann.nt" as vann.
 
-exported keyword dct:title as title.
-exported keyword dct:description as description.
-exported keyword dct:abstract as abstract.
-exported keyword dct:creator as creator.
-exported keyword rdfs:label as label.
-exported keyword skos:prefLabel as pref_label.
-exported keyword skos:altLabel as alt_label.
-exported keyword bibo:status as status.
-exported keyword owl:versionInfo as version.
-exported keyword skos:definition as definition.
-exported keyword skos:example as example.
-exported keyword dct:license as license.
-exported keyword dct:creator as creator.
-exported keyword dct:publisher as publisher.
-exported keyword dct:created as created_at.
-exported keyword dct:modified as modified_at.
-exported keyword skos:note as note.
-exported keyword vaem:todo as todo.
-exported keyword rdfs:seeAlso as see_also.
-exported keyword dct:contributor as contributor.
-exported keyword vaem:withAttributionTo as attribution.
-exported keyword skos:scopeNote as scope.
-exported keyword vann:termGroup as term_group.
+exported keyword attribute dct:title as title.
+exported keyword attribute dct:description as description.
+exported keyword attribute dct:abstract as abstract.
+exported keyword property dct:creator as creator.
+exported keyword attribute rdfs:label as label.
+exported keyword attribute skos:prefLabel as pref_label.
+exported keyword attribute skos:altLabel as alt_label.
+exported keyword property bibo:status as status.
+exported keyword attribute owl:versionInfo as version.
+exported keyword attribute skos:definition as definition.
+exported keyword attribute skos:example as example.
+exported keyword property dct:license as license.
+exported keyword property dct:publisher as publisher.
+exported keyword attribute dct:created as created_at.
+exported keyword attribute dct:modified as modified_at.
+exported keyword attribute skos:note as note.
+exported keyword attribute vaem:todo as todo.
+exported keyword property rdfs:seeAlso as see_also.
+exported keyword property dct:contributor as contributor.
+exported keyword property vaem:withAttributionTo as attribution.
+exported keyword attribute skos:scopeNote as scope.
+exported keyword property vann:termGroup as term_group.
+exported keyword class VocabularyStatus as Vocabulary_Status.
+exported keyword class TermStatus as Term_Status.
+exported keyword class TermGroup as Term_Group.
 
 
 class Ontology ~= owl:Ontology.

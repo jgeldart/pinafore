@@ -1,5 +1,10 @@
-from textx import get_model, get_children
-from .util import prefixes, resolve_prefix, defrag
+from os.path import join, dirname
+from textx import get_model, get_metamodel, get_children, metamodel_from_file, get_parent_of_type
+from .util import prefixes, resolve_prefix, defrag, cache_ontology
+from .ontology import OntologyResolver
+
+
+PRELUDE = None
 
 
 class TermResolver:
@@ -38,6 +43,52 @@ class TermResolver:
             for ref_type
             in kinds]
 
+        # Set up default prelude
+
+    def _prelude(self):
+        global PRELUDE
+        if PRELUDE is None:
+            metamodel = self._metamodel()
+            filename = join(dirname(__file__), "../prelude.n4")
+            model = metamodel.model_from_file(filename)
+            PRELUDE = model
+        return PRELUDE
+
+    def _metamodel(self):
+        def iri_rewriter(element):
+            ontology = get_parent_of_type("OntologyDecl", element)
+            if hasattr(element, "name") and element.name.startswith("<") and element.name.endswith(">"):
+                setattr(element, "full_iri", element.name[1:-1])
+            elif hasattr(element, "name"):
+                setattr(element, "full_iri", ontology.name[1:-1] + element.name)
+        mm = metamodel_from_file(join(dirname(__file__),
+                                 "../notation4.tx"),
+                                 autokwd=True,
+                                 memoization=True,
+                                 use_regexp_group=True)
+        mm.register_scope_providers({
+            'OntologyRef.ref': OntologyResolver(),
+            'ClassRef.ref': TermResolver("Class"),
+            'PropertyRef.ref': TermResolver("Property"),
+            'AttributeRef.ref': TermResolver("Attribute"),
+            'DatatypeRef.ref': TermResolver("Datatype"),
+            'IndividualRef.ref': TermResolver("Individual"),
+            'ConstantRef.ref': TermResolver("Constant"),
+            'BNodeRef.ref': TermResolver("BNode"),
+            'GraphRef.ref': TermResolver("Graph"),
+            'PredicateRef.ref': TermResolver(["Property", "Attribute"]),
+            'ObjectRef.ref': TermResolver(["Class", "Property", "Attribute", "Datatype", "Individual", "Constant", "BNode", "Graph"])
+        })
+        mm.register_obj_processors({
+            'ClassDecl': iri_rewriter,
+            'PropertyDecl': iri_rewriter,
+            'AttributeDecl': iri_rewriter,
+            'DatatypeDecl': iri_rewriter,
+            'IndividualDecl': iri_rewriter,
+            'ConstantDecl': iri_rewriter,
+        })
+        return mm
+
     def _scopes(self, obj):
         def _follow(scope):
             for ontology in prefixes(scope, as_reversed=True):
@@ -56,9 +107,13 @@ class TermResolver:
         # 3rd scope: the prelude if defined
         if current_ontology.prelude is not None:
             prelude = current_ontology.prelude.ref
+        elif current_ontology.no_prelude is None:
+            prelude = self._prelude()
             yield prelude
             for o in _follow(prelude):
                 yield o
+        else:
+            pass
 
     def _match(self, scope, ref_name, classes, search_all=True):
 
@@ -121,6 +176,10 @@ class TermResolver:
                        )
                   ]
         if len(matches) > 0:
+            # if hasattr(matches[0], "full_iri"):
+            #     print(ref_name, matches[0].full_iri)
+            # else:
+            #     print(ref_name, "__")
             return matches[0]
         else:
             return None

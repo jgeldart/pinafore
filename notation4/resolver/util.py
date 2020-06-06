@@ -18,12 +18,13 @@ def prefix_mapping(ontology):
         )
         for i in imports:
             o = i.ontology.ref
-            if hasattr(i, "is_exported") and i.is_exported:
-                setattr(o, "is_exported", True)
-            if i.name is not None:
-                prefix_map[i.name] = o
-            else:
-                prefix_map[i.ontology.ref.prefix] = o
+            if o is not None:
+                if hasattr(i, "is_exported") and i.is_exported:
+                    setattr(o, "is_exported", True)
+                if i.name is not None:
+                    prefix_map[i.name] = o
+                else:
+                    prefix_map[i.ontology.ref.prefix] = o
         setattr(ontology, PREFIX_MAP_ATTR, prefix_map)
     return prefix_map
 
@@ -52,7 +53,7 @@ def prefixes(ontology, as_reversed=False):
 
 def defrag(ref_name):
     if ref_name.startswith("<") and ref_name.endswith(">"):
-        return None, ref_name[1:-1]
+        return None, ref_name
     else:
         if ":" in ref_name:
             return ref_name.split(":")
@@ -91,6 +92,27 @@ def cache_ontology(metamodel, ontology):
     cache = getattr(metamodel, ONTOLOGY_CACHE_ATTR)
     cache[ontology.name] = ontology
     return ontology
+
+
+IRI_CACHE_ATTR = '_n4_iri_cache'
+
+
+def resolve_iri(metamodel, iri):
+    if not hasattr(metamodel, IRI_CACHE_ATTR):
+        setattr(metamodel, IRI_CACHE_ATTR, {})
+    cache = getattr(metamodel, IRI_CACHE_ATTR)
+    if iri in cache.keys():
+        return cache[iri]
+    else:
+        return None
+
+
+def cache_iri(metamodel, iri, val):
+    if not hasattr(metamodel, IRI_CACHE_ATTR):
+        setattr(metamodel, IRI_CACHE_ATTR, {})
+    cache = getattr(metamodel, IRI_CACHE_ATTR)
+    cache[iri] = val
+    return val
 
 
 def error_for_object(msg, obj):

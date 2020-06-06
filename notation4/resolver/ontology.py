@@ -3,10 +3,10 @@ from io import StringIO
 from pathlib import Path
 import requests
 from urllib.parse import urldefrag
-from rdflib import Graph
+from rdflib import Graph, BNode
 from rdflib.util import guess_format
 from textx import TextXSemanticError, get_model, get_metamodel
-from .util import resolve_ontology, cache_ontology, error_for_object
+from .util import resolve_ontology, cache_ontology, error_for_object, resolve_iri, cache_iri
 
 
 ACCEPTED_RDF_FILE_FORMATS = [
@@ -39,25 +39,43 @@ class Extractor:
         return self._apply_attrs(cstr,
                                  name=match['name'],
                                  expression=None,
+                                 subject=None,
                                  is_exported=True,
                                  modifiers=[],
                                  axioms=[])
 
     def converted_matches(self, graph):
         for m in self.matches(graph):
-            yield self.convert(m)
+            try:
+                yield self.convert(m)
+            except Exception:
+                yield resolve_iri(self._meta, m['name'])
 
     def _apply_attrs(self, cstr, **kwargs):
         c = cstr()
         for key, value in kwargs.items():
             if key == "name":
                 value = self._relative_url(self._ontology_iri, value)
+                if value.startswith("<") and value.endswith(">"):
+                    iri = value[1:-1]
+                    cache_iri(self._meta, iri, c)
+                    setattr(c, "full_iri", iri)
+                else:
+                    iri = self._ontology_iri + value
+                    cache_iri(self._meta, iri, c)
+                    setattr(c, "full_iri", iri)
             setattr(c, key, value)
         return c
 
     def _relative_url(self, base, url):
+        if resolve_iri(self._meta, url) is not None:
+            raise Exception
+
         if not str(url).startswith(base):
-            return str(url)
+            if not isinstance(url, BNode):
+                return "<{}>".format(str(url))
+            else:
+                return "tag:pinafore.github.io,2020-06-05:bnodes#{}".format(str(url))
 
         first, frag = urldefrag(url)
         if frag != "":
@@ -91,6 +109,10 @@ class PropertyExtractor(Extractor):
             { ?name a <http://www.w3.org/2002/07/owl#ObjectProperty>. }
             UNION
             { ?name a <http://www.w3.org/2000/01/rdf-schema#Property>. }
+            UNION
+            { ?name a <http://www.w3.org/1999/02/22-rdf-syntax-ns#Property>. }
+            UNION
+            { ?name a <http://www.w3.org/2002/07/owl#AnnotationProperty>. }
         }
         """
 
@@ -103,7 +125,13 @@ class AttributeExtractor(Extractor):
     def query(self):
         return """
         SELECT DISTINCT ?name WHERE {
-            ?name a <http://www.w3.org/2002/07/owl#DatatypeProperty>.
+            { ?name a <http://www.w3.org/2002/07/owl#DatatypeProperty>. }
+            UNION
+            { ?name a <http://www.w3.org/2000/01/rdf-schema#Property>. }
+            UNION
+            { ?name a <http://www.w3.org/1999/02/22-rdf-syntax-ns#Property>. }
+            UNION
+            { ?name a <http://www.w3.org/2002/07/owl#AnnotationProperty>. }
         }
         """
 
@@ -128,8 +156,8 @@ class IndividualExtractor(Extractor):
 
     def query(self):
         return """
-        SELECT DISTINCT ?indiv WHERE {
-            ?indiv a <http://www.w3.org/2002/07/owl#NamedIndividual>.
+        SELECT DISTINCT ?name WHERE {
+            ?name a <http://www.w3.org/2002/07/owl#NamedIndividual>.
         }
         """
 

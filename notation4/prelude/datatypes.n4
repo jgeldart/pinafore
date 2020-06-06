@@ -1,13 +1,27 @@
-ontology <https://jgeldart.github.io/pinafore/prelude/datatype#>.
+ontology <https://jgeldart.github.io/pinafore/prelude/datatypes#> with prelude hidden.
 
 # We can't import here, so let's just remmember this base IRI:
 #  <http://www.w3.org/2001/XMLSchema#> as xsd.
+
+exported keyword datatype <http://www.w3.org/2001/XMLSchema#duration> as Duration.
+exported keyword datatype <http://www.w3.org/2001/XMLSchema#dateTime> as Datetime.
+exported keyword datatype <http://www.w3.org/2001/XMLSchema#date> as Date.
+exported keyword datatype <http://www.w3.org/2001/XMLSchema#time> as Time.
+exported keyword datatype <http://www.w3.org/2001/XMLSchema#float> as Float.
+exported keyword datatype <http://www.w3.org/2001/XMLSchema#double> as Double.
+exported keyword datatype <http://www.w3.org/2001/XMLSchema#decimal> as Decimal.
+exported keyword datatype <http://www.w3.org/2001/XMLSchema#integer> as Integer.
+exported keyword datatype <http://www.w3.org/2001/XMLSchema#nonNegativeInteger> as Nonnegative_Integer.
+exported keyword datatype <http://www.w3.org/2001/XMLSchema#nonPositiveInteger> as Nonpositive_Integer.
+exported keyword datatype <http://www.w3.org/2001/XMLSchema#string> as String.
+exported keyword datatype <http://www.w3.org/2001/XMLSchema#token> as Token.
+exported keyword datatype <http://www.w3.org/2001/XMLSchema#boolean> as Boolean.
 
 exported datatype <http://www.w3.org/2001/XMLSchema#anyType>.
 
 exported datatype <http://www.w3.org/2001/XMLSchema#anySimpleType> <| <http://www.w3.org/2001/XMLSchema#anyType>.
 
-exported datatype temporalType <| <http://www.w3.org/2001/XMLSchema#anysimpleType>.
+exported datatype temporalType <| <http://www.w3.org/2001/XMLSchema#anySimpleType>.
 
 exported datatype <http://www.w3.org/2001/XMLSchema#duration> <| temporalType.
 

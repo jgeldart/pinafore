@@ -1,112 +1,116 @@
-ontology <>;
-  title "Notation4 Prelude";
-  description "Easy names for commonly used IRIs."
-.
+ontology <https://jgeldart.github.io/pinafore/prelude#> with prelude hidden.
+# ;
+#   title "Notation4 Prelude";
+#   description "Default terms and keywords to speed up development of ontologies."
+# .
 
-exported keyword <http://purl.obolibrary.org/obo/BFO_0000030> as Object.
-exported keyword <http://purl.obolibrary.org/obo/BFO_0000027> as Aggregate.
-exported keyword <http://purl.obolibrary.org/obo/BFO_0000024> as Part.
-exported keyword <> as Portion.
-exported keyword <http://www.ontologyrepository.com/CommonCoreOntologies/Agent> as Agent.
-exported keyword <http://www.ontologyrepository.com/CommonCoreOntologies/Person> as Person.
-exported keyword <http://www.ontologyrepository.com/CommonCoreOntologies/Organization> as Organization.
-exported keyword <http://purl.obolibrary.org/obo/BFO_0000006> as Region.
-exported keyword <http://purl.obolibrary.org/obo/BFO_0000018> as Point.
-exported keyword <http://purl.obolibrary.org/obo/BFO_0000026> as Line.
-exported keyword <http://purl.obolibrary.org/obo/BFO_0000009> as Area.
-exported keyword <http://purl.obolibrary.org/obo/BFO_0000028> as Volume.
-exported keyword <http://purl.obolibrary.org/obo/BFO_0000140> as Boundary.
-exported keyword <http://purl.obolibrary.org/obo/BFO_0000147> as BoundaryPoint.
-exported keyword <http://purl.obolibrary.org/obo/BFO_0000142> as Border.
-exported keyword <http://purl.obolibrary.org/obo/BFO_0000146> as Surface.
-exported keyword <http://purl.obolibrary.org/obo/BFO_0000029> as Site.
-exported keyword <http://purl.obolibrary.org/obo/BFO_0000019> as Quality.
-exported keyword <http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity> as Quantity.
-exported keyword <http://purl.obolibrary.org/obo/BFO_0000023> as Role.
-exported keyword <http://purl.obolibrary.org/obo/BFO_0000016> as Disposition.
-exported keyword <http://purl.obolibrary.org/obo/BFO_0000034> as Function.
-exported keyword <http://www.ontologyrepository.com/CommonCoreOntologies/AgentCapability> as Capability.
-exported keyword <http://www.ontologyrepository.com/CommonCoreOntologies/Affordance> as Affordance.
-exported keyword <http://www.ontologyrepository.com/CommonCoreOntologies/DescriptiveInformationContentEntity> as Description.
-exported keyword <http://www.ontologyrepository.com/CommonCoreOntologies/PrescriptiveInformationContentEntity> as Prescription.
-exported keyword <http://www.ontologyrepository.com/CommonCoreOntologies/DesignativeInformationContentEntity> as Designation.
-exported keyword <http://www.ontology-of-units-of-measure.org/resource/om-2/Unit> as Unit.
-exported keyword <http://www.ontology-of-units-of-measure.org/resource/om-2/Dimension> as Dimension.
-exported keyword <http://purl.obolibrary.org/obo/BFO_0000015> as Process.
-exported keyword <http://purl.obolibrary.org/obo/BFO_0000144> as Profile.
-exported keyword <http://www.ontologyrepository.com/CommonCoreOntologies/ProcessHistory> as History.
-exported keyword <http://purl.obolibrary.org/obo/BFO_0000008> as Period.
-exported keyword <http://www.ontologyrepository.com/CommonCoreOntologies/ProcessRecurrenceAggregate> as Recurrence.
-exported keyword <http://purl.obolibrary.org/obo/BFO_0000035> as Instant.
-exported keyword <http://purl.obolibrary.org/obo/BFO_0000011> as Interval.
-exported keyword <http://www.ontologyrepository.com/CommonCoreOntologies/ProcessAggregate> as Procedure.
-exported keyword <http://www.ontologyrepository.com/CommonCoreOntologies/agent_in> as do.
-exported keyword <http://www.ontologyrepository.com/CommonCoreOntologies/has_agent> as done_by.
-exported keyword <http://purl.obolibrary.org/obo/BFO_0000051> as has_part.
-exported keyword <http://purl.obolibrary.org/obo/BFO_0000050> as part_of.
-exported keyword <http://www.ontologyrepository.com/CommonCoreOntologies/described_by> as described_by.
-exported keyword <http://www.ontologyrepository.com/CommonCoreOntologies/prescribed_by> as prescribed_by.
-exported keyword <http://www.ontologyrepository.com/CommonCoreOntologies/designated_by> as designated_by.
-exported keyword <http://purl.obolibrary.org/obo/RO_0000057> as has_participant.
-exported keyword <> as uses.
-exported keyword <http://www.ontologyrepository.com/CommonCoreOntologies/spatial_part_of> as contained_by.
-exported keyword <http://purl.obolibrary.org/obo/RO_0001025> as located_in.
-exported keyword <http://www.ontologyrepository.com/CommonCoreOntologies/is_site_of> as located_at.
-exported keyword <http://www.ontologyrepository.com/CommonCoreOntologies/occurs_on> as occurs_on.
-exported keyword <http://www.ontologyrepository.com/CommonCoreOntologies/affects> as affects.
-exported keyword <> as hasOrigin.
-exported keyword <> as hasDestination.
-exported keyword <http://www.ontologyrepository.com/CommonCoreOntologies/has_accomplice> as assisted_by.
-exported keyword <http://www.ontologyrepository.com/CommonCoreOntologies/has_accessory> as involves.
-exported keyword <> as has_trajectory.
-exported keyword <http://www.ontologyrepository.com/CommonCoreOntologies/has_recipient> as has_recipient.
-exported keyword <http://www.ontologyrepository.com/CommonCoreOntologies/has_sender> as has_sender.
-exported keyword <> as has_resource.
-exported keyword <http://www.ontologyrepository.com/CommonCoreOntologies/has_input> as has_input.
-exported keyword <http://www.ontologyrepository.com/CommonCoreOntologies/has_output> as has_output.
-exported keyword <http://www.ontologyrepository.com/CommonCoreOntologies/has_object> as achieves.
-exported keyword <http://www.ontologyrepository.com/CommonCoreOntologies/is_cause_of> as causes.
-exported keyword <http://purl.obolibrary.org/obo/RO_0001000> as derived_from.
-exported keyword <http://purl.obolibrary.org/obo/RO_0000086> as has_quality.
-exported keyword <http://www.ontologyrepository.com/CommonCoreOntologies/is_made_of> as made_from.
-exported keyword <http://www.ontologyrepository.com/CommonCoreOntologies/is_material_of> as material_of.
-exported keyword <> as has_context.
-exported keyword <http://purl.obolibrary.org/obo/RO_0000091> as disposed_to.
-exported keyword <http://purl.obolibrary.org/obo/RO_0000087> as plays.
-exported keyword <http://purl.obolibrary.org/obo/RO_0000081> as played_by.
-exported keyword <http://www.ontologyrepository.com/CommonCoreOntologies/has_capability> as capable_of.
-exported keyword <http://purl.obolibrary.org/obo/RO_0002351> as has_member.
-exported keyword <http://purl.obolibrary.org/obo/BFO_0000055> as realizes.
-exported keyword <http://www.ontologyrepository.com/CommonCoreOntologies/delimits> as delimits.
-exported keyword <http://purl.obolibrary.org/obo/RO_0000059> as concretizes.
-exported keyword <http://www.w3.org/2006/time#intervalOverlaps> as overlaps_with.
-exported keyword <http://www.w3.org/2006/time#intervalStartedBy> as started_by.
-exported keyword <http://www.w3.org/2006/time#intervalFinishedBy> as finished_by.
-exported keyword <http://www.w3.org/2006/time#intervalMeets> as directly_follows.
-exported keyword <http://www.w3.org/2006/time#intervalBefore> as preceeds.
-exported keyword <http://www.w3.org/2006/time#intervalAfter> as succeeds.
-exported keyword <http://www.w3.org/2006/time#intervalDuring> as during.
-exported keyword <http://www.w3.org/2006/time#intervalEquals> as concurrent_with.
-exported keyword <http://www.w3.org/2006/time#hasTemporalDuration> as has_duration.
-exported keyword <http://purl.org/dc/terms/title> as title.
-exported keyword <http://purl.org/dc/terms/description> as description.
-exported keyword <http://www.w3.org/2000/01/rdf-schema#label> as label.
-exported keyword <http://www.w3.org/2004/02/skos/core#prefLabel> as prefLabel.
-exported keyword <http://www.w3.org/2004/02/skos/core#altLabel> as altLabel.
-exported keyword <http://purl.org/ontology/bibo/status> as status.
-exported keyword <http://www.w3.org/2002/07/owl#versionInfo> as version.
-exported keyword <http://www.w3.org/2004/02/skos/core#definition> as definition.
-exported keyword <http://www.w3.org/2004/02/skos/core#example> as example.
-exported keyword <http://purl.org/dc/terms/license> as license.
-exported keyword <http://purl.org/dc/terms/creator> as creator.
-exported keyword <http://purl.org/dc/terms/publisher> as publisher.
-exported keyword <http://purl.org/dc/terms/created> as createdDate.
-exported keyword <http://purl.org/dc/terms/modified> as modifiedDate.
-exported keyword <http://www.w3.org/2004/02/skos/core#note> as note.
-exported keyword <http://www.linkedmodel.org/schema/vaem#todo> as todo.
-exported keyword <http://www.w3.org/2000/01/rdf-schema#seeAlso> as seeAlso.
-exported keyword <http://purl.org/vocab/vann/preferredNamespacePrefix> as prefix.
-exported keyword <http://purl.org/dc/terms/abstract> as abstract.
-exported keyword <http://purl.org/dc/terms/contributor> as contributor.
-exported keyword <http://www.linkedmodel.org/schema/vaem#withAttributionTo> as attribution.
-exported keyword <http://www.w3.org/2004/02/skos/core#scopeNote> as scope.
+exported import <https://jgeldart.github.io/pinafore/prelude/metadata#> from "./prelude/metadata.n4" as n4meta.
+exported import <https://jgeldart.github.io/pinafore/prelude/datatypes#> from "./prelude/datatypes.n4" as n4dtype.
+
+# exported keyword <http://purl.obolibrary.org/obo/BFO_0000030> as Object.
+# exported keyword <http://purl.obolibrary.org/obo/BFO_0000027> as Aggregate.
+# exported keyword <http://purl.obolibrary.org/obo/BFO_0000024> as Part.
+# exported keyword <> as Portion.
+# exported keyword <http://www.ontologyrepository.com/CommonCoreOntologies/Agent> as Agent.
+# exported keyword <http://www.ontologyrepository.com/CommonCoreOntologies/Person> as Person.
+# exported keyword <http://www.ontologyrepository.com/CommonCoreOntologies/Organization> as Organization.
+# exported keyword <http://purl.obolibrary.org/obo/BFO_0000006> as Region.
+# exported keyword <http://purl.obolibrary.org/obo/BFO_0000018> as Point.
+# exported keyword <http://purl.obolibrary.org/obo/BFO_0000026> as Line.
+# exported keyword <http://purl.obolibrary.org/obo/BFO_0000009> as Area.
+# exported keyword <http://purl.obolibrary.org/obo/BFO_0000028> as Volume.
+# exported keyword <http://purl.obolibrary.org/obo/BFO_0000140> as Boundary.
+# exported keyword <http://purl.obolibrary.org/obo/BFO_0000147> as BoundaryPoint.
+# exported keyword <http://purl.obolibrary.org/obo/BFO_0000142> as Border.
+# exported keyword <http://purl.obolibrary.org/obo/BFO_0000146> as Surface.
+# exported keyword <http://purl.obolibrary.org/obo/BFO_0000029> as Site.
+# exported keyword <http://purl.obolibrary.org/obo/BFO_0000019> as Quality.
+# exported keyword <http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity> as Quantity.
+# exported keyword <http://purl.obolibrary.org/obo/BFO_0000023> as Role.
+# exported keyword <http://purl.obolibrary.org/obo/BFO_0000016> as Disposition.
+# exported keyword <http://purl.obolibrary.org/obo/BFO_0000034> as Function.
+# exported keyword <http://www.ontologyrepository.com/CommonCoreOntologies/AgentCapability> as Capability.
+# exported keyword <http://www.ontologyrepository.com/CommonCoreOntologies/Affordance> as Affordance.
+# exported keyword <http://www.ontologyrepository.com/CommonCoreOntologies/DescriptiveInformationContentEntity> as Description.
+# exported keyword <http://www.ontologyrepository.com/CommonCoreOntologies/PrescriptiveInformationContentEntity> as Prescription.
+# exported keyword <http://www.ontologyrepository.com/CommonCoreOntologies/DesignativeInformationContentEntity> as Designation.
+# exported keyword <http://www.ontology-of-units-of-measure.org/resource/om-2/Unit> as Unit.
+# exported keyword <http://www.ontology-of-units-of-measure.org/resource/om-2/Dimension> as Dimension.
+# exported keyword <http://purl.obolibrary.org/obo/BFO_0000015> as Process.
+# exported keyword <http://purl.obolibrary.org/obo/BFO_0000144> as Profile.
+# exported keyword <http://www.ontologyrepository.com/CommonCoreOntologies/ProcessHistory> as History.
+# exported keyword <http://purl.obolibrary.org/obo/BFO_0000008> as Period.
+# exported keyword <http://www.ontologyrepository.com/CommonCoreOntologies/ProcessRecurrenceAggregate> as Recurrence.
+# exported keyword <http://purl.obolibrary.org/obo/BFO_0000035> as Instant.
+# exported keyword <http://purl.obolibrary.org/obo/BFO_0000011> as Interval.
+# exported keyword <http://www.ontologyrepository.com/CommonCoreOntologies/ProcessAggregate> as Procedure.
+# exported keyword <http://www.ontologyrepository.com/CommonCoreOntologies/agent_in> as do.
+# exported keyword <http://www.ontologyrepository.com/CommonCoreOntologies/has_agent> as done_by.
+# exported keyword <http://purl.obolibrary.org/obo/BFO_0000051> as has_part.
+# exported keyword <http://purl.obolibrary.org/obo/BFO_0000050> as part_of.
+# exported keyword <http://www.ontologyrepository.com/CommonCoreOntologies/described_by> as described_by.
+# exported keyword <http://www.ontologyrepository.com/CommonCoreOntologies/prescribed_by> as prescribed_by.
+# exported keyword <http://www.ontologyrepository.com/CommonCoreOntologies/designated_by> as designated_by.
+# exported keyword <http://purl.obolibrary.org/obo/RO_0000057> as has_participant.
+# exported keyword <> as uses.
+# exported keyword <http://www.ontologyrepository.com/CommonCoreOntologies/spatial_part_of> as contained_by.
+# exported keyword <http://purl.obolibrary.org/obo/RO_0001025> as located_in.
+# exported keyword <http://www.ontologyrepository.com/CommonCoreOntologies/is_site_of> as located_at.
+# exported keyword <http://www.ontologyrepository.com/CommonCoreOntologies/occurs_on> as occurs_on.
+# exported keyword <http://www.ontologyrepository.com/CommonCoreOntologies/affects> as affects.
+# exported keyword <> as hasOrigin.
+# exported keyword <> as hasDestination.
+# exported keyword <http://www.ontologyrepository.com/CommonCoreOntologies/has_accomplice> as assisted_by.
+# exported keyword <http://www.ontologyrepository.com/CommonCoreOntologies/has_accessory> as involves.
+# exported keyword <> as has_trajectory.
+# exported keyword <http://www.ontologyrepository.com/CommonCoreOntologies/has_recipient> as has_recipient.
+# exported keyword <http://www.ontologyrepository.com/CommonCoreOntologies/has_sender> as has_sender.
+# exported keyword <> as has_resource.
+# exported keyword <http://www.ontologyrepository.com/CommonCoreOntologies/has_input> as has_input.
+# exported keyword <http://www.ontologyrepository.com/CommonCoreOntologies/has_output> as has_output.
+# exported keyword <http://www.ontologyrepository.com/CommonCoreOntologies/has_object> as achieves.
+# exported keyword <http://www.ontologyrepository.com/CommonCoreOntologies/is_cause_of> as causes.
+# exported keyword <http://purl.obolibrary.org/obo/RO_0001000> as derived_from.
+# exported keyword <http://purl.obolibrary.org/obo/RO_0000086> as has_quality.
+# exported keyword <http://www.ontologyrepository.com/CommonCoreOntologies/is_made_of> as made_from.
+# exported keyword <http://www.ontologyrepository.com/CommonCoreOntologies/is_material_of> as material_of.
+# exported keyword <> as has_context.
+# exported keyword <http://purl.obolibrary.org/obo/RO_0000091> as disposed_to.
+# exported keyword <http://purl.obolibrary.org/obo/RO_0000087> as plays.
+# exported keyword <http://purl.obolibrary.org/obo/RO_0000081> as played_by.
+# exported keyword <http://www.ontologyrepository.com/CommonCoreOntologies/has_capability> as capable_of.
+# exported keyword <http://purl.obolibrary.org/obo/RO_0002351> as has_member.
+# exported keyword <http://purl.obolibrary.org/obo/BFO_0000055> as realizes.
+# exported keyword <http://www.ontologyrepository.com/CommonCoreOntologies/delimits> as delimits.
+# exported keyword <http://purl.obolibrary.org/obo/RO_0000059> as concretizes.
+# exported keyword <http://www.w3.org/2006/time#intervalOverlaps> as overlaps_with.
+# exported keyword <http://www.w3.org/2006/time#intervalStartedBy> as started_by.
+# exported keyword <http://www.w3.org/2006/time#intervalFinishedBy> as finished_by.
+# exported keyword <http://www.w3.org/2006/time#intervalMeets> as directly_follows.
+# exported keyword <http://www.w3.org/2006/time#intervalBefore> as preceeds.
+# exported keyword <http://www.w3.org/2006/time#intervalAfter> as succeeds.
+# exported keyword <http://www.w3.org/2006/time#intervalDuring> as during.
+# exported keyword <http://www.w3.org/2006/time#intervalEquals> as concurrent_with.
+# exported keyword <http://www.w3.org/2006/time#hasTemporalDuration> as has_duration.
+# exported keyword <http://purl.org/dc/terms/title> as title.
+# exported keyword <http://purl.org/dc/terms/description> as description.
+# exported keyword <http://www.w3.org/2000/01/rdf-schema#label> as label.
+# exported keyword <http://www.w3.org/2004/02/skos/core#prefLabel> as prefLabel.
+# exported keyword <http://www.w3.org/2004/02/skos/core#altLabel> as altLabel.
+# exported keyword <http://purl.org/ontology/bibo/status> as status.
+# exported keyword <http://www.w3.org/2002/07/owl#versionInfo> as version.
+# exported keyword <http://www.w3.org/2004/02/skos/core#definition> as definition.
+# exported keyword <http://www.w3.org/2004/02/skos/core#example> as example.
+# exported keyword <http://purl.org/dc/terms/license> as license.
+# exported keyword <http://purl.org/dc/terms/creator> as creator.
+# exported keyword <http://purl.org/dc/terms/publisher> as publisher.
+# exported keyword <http://purl.org/dc/terms/created> as createdDate.
+# exported keyword <http://purl.org/dc/terms/modified> as modifiedDate.
+# exported keyword <http://www.w3.org/2004/02/skos/core#note> as note.
+# exported keyword <http://www.linkedmodel.org/schema/vaem#todo> as todo.
+# exported keyword <http://www.w3.org/2000/01/rdf-schema#seeAlso> as seeAlso.
+# exported keyword <http://purl.org/vocab/vann/preferredNamespacePrefix> as prefix.
+# exported keyword <http://purl.org/dc/terms/abstract> as abstract.
+# exported keyword <http://purl.org/dc/terms/contributor> as contributor.
+# exported keyword <http://www.linkedmodel.org/schema/vaem#withAttributionTo> as attribution.
+# exported keyword <http://www.w3.org/2004/02/skos/core#scopeNote> as scope.
