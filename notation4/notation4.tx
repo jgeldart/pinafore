@@ -679,12 +679,18 @@ DatatypeModifier:
 
 DatatypeAxiom:
     DatatypeAxiomSpecializes
+  | DatatypeAxiomEquivalence
   | PatternKwargValue
   | Predicate
 ;
 
 DatatypeAxiomSpecializes:
   KW_OPERATOR_SPECIALIZES
+  expression=DataExpression
+;
+
+DatatypeAxiomEquivalence:
+  KW_OPERATOR_EQUIVALENCE
   expression=DataExpression
 ;
 
@@ -1317,11 +1323,9 @@ DataFacet:
   | DataFacetGT
   | DataFacetLTE
   | DataFacetLT
-  | DataFacetEq
-  | DataFacetMinLengthInclusive
-  | DataFacetMinLengthExclusive
-  | DataFacetMaxLengthInclusive
-  | DataFacetMaxLengthExclusive
+  | DataFacetMinLength
+  | DataFacetMaxLength
+  | DataFacetLength
   | DataFacetMatches
 ;
 
@@ -1329,11 +1333,9 @@ DataFacetGTE: KW_OPERATOR_GTE value=NumericFacetExpression;
 DataFacetGT: KW_OPERATOR_GT value=NumericFacetExpression;
 DataFacetLTE: KW_OPERATOR_LTE value=NumericFacetExpression;
 DataFacetLT: KW_OPERATOR_LT value=NumericFacetExpression;
-DataFacetEq: KW_OPERATOR_EQ value=NumericFacetExpression;
-DataFacetMinLengthInclusive: KW_OPERATOR_LENGTH KW_OPERATOR_GTE value=INT;
-DataFacetMinLengthExclusive: KW_OPERATOR_LENGTH KW_OPERATOR_GT value=INT;
-DataFacetMaxLengthInclusive: KW_OPERATOR_LENGTH KW_OPERATOR_LTE value=INT;
-DataFacetMaxLengthExclusive: KW_OPERATOR_LENGTH KW_OPERATOR_LT value=INT;
+DataFacetMinLength: KW_OPERATOR_LENGTH KW_OPERATOR_GTE value=INT;
+DataFacetMaxLength: KW_OPERATOR_LENGTH KW_OPERATOR_LTE value=INT;
+DataFacetLength: KW_OPERATOR_LENGTH KW_OPERATOR_EQ value=INT;
 DataFacetMatches: KW_OPERATOR_MATCHES value=StringFacetExpression;
 
 NumericFacetExpression:

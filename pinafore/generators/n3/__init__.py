@@ -7,6 +7,8 @@ from .attributes import MODELS as attribute_models
 from .bnodes import MODELS as bnode_models
 from .classes import MODELS as class_models
 from .class_expressions import MODELS as class_expression_models
+from .datatypes import MODELS as datatype_models
+from .datatype_expressions import MODELS as datatype_expression_models
 from .graphs import MODELS as graph_models
 from .individuals import MODELS as individual_models
 from .literals import MODELS as literal_models
@@ -20,6 +22,8 @@ MODELS = chain(attribute_models,
                bnode_models,
                class_models,
                class_expression_models,
+               datatype_models,
+               datatype_expression_models,
                graph_models,
                individual_models,
                literal_models,
