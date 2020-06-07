@@ -122,6 +122,12 @@ DEFAULT_NAMESPACES = """
 @prefix dct: <http://purl.org/dc/terms/>.
 @prefix bibo: <http://purl.org/ontology/bibo/>.
 @prefix vaem: <http://www.linkedmodel.org/schema/vaem#>.
+@prefix log: <http://www.w3.org/2000/10/swap/log#>.
+@prefix math: <http://www.w3.org/2000/10/swap/math#>.
+@prefix list: <http://www.w3.org/2000/10/swap/list#>.
+@prefix shacl: <http://www.w3.org/ns/shacl#>.
+@prefix void: <http://rdfs.org/ns/void#>.
+@prefix grddl: <http://www.w3.org/2003/g/data-view#>.
 """
 
 
