@@ -1,18 +1,47 @@
 from collections import defaultdict
 import uuid
 from mako.template import Template
-from rdflib import Graph, URIRef, Literal
+from rdflib import ConjunctiveGraph, URIRef, Literal, BNode
 from textx import get_parent_of_type
+
+
+class keydefaultdict(defaultdict):
+    def __missing__(self, key):
+        if self.default_factory is None:
+            raise KeyError( key )
+        else:
+            ret = self[key] = self.default_factory(key)
+            return ret
 
 
 class ResourceReference(object):
 
     def __init__(self, name, is_anonymous=False):
+        if name is None:
+            name = uuid.uuid4().urn
         name = name.strip()
         if is_anonymous:
             name = uuid.uuid5(uuid.NAMESPACE_URL, name).urn
         self._primary_ref = URIRef(name)
-        self._secondary_refs = defaultdict(lambda x: URIRef(uuid.uuid4().urn))
+        self._secondary_refs = keydefaultdict(lambda x: BNode(name + "#" + x).skolemize())
+
+    def __getitem__(self, name):
+        return self._secondary_refs[name].n3()
+
+    def __repr__(self):
+        return self._primary_ref.n3()
+
+    def __str__(self):
+        return self._primary_ref.n3()
+
+
+class BNodeReference(object):
+
+    def __init__(self, name=None):
+        if name is None:
+            name = "N" + uuid.uuid4().hex
+        self._primary_ref = BNode(name).skolemize()
+        self._secondary_refs = keydefaultdict(lambda x: BNode(name + "#" + x).skolemize())
 
     def __getitem__(self, name):
         return self._secondary_refs[name].n3()
@@ -48,7 +77,7 @@ class Resource(object):
         if self._primary_resource_ref is None:
             ref = self.resource_reference()
             if ref is None:
-                self._primary_resource_ref = ResourceReference(uuid.uuid4().urn)
+                self._primary_resource_ref = BNodeReference()
             elif isinstance(ref, Resource):
                 self._primary_resource_ref = ref.resource()
             elif isinstance(ref, Literal):
@@ -96,10 +125,27 @@ DEFAULT_NAMESPACES = """
 """
 
 
+WK_SKOLEM = "http://rdlib.net/.well-known/genid/rdflib/"
+
+
 class Clause(Resource):
 
     def to_graph(self):
-        return self.convert(Graph())
+        return self._deskolem(self.convert(ConjunctiveGraph()))
+
+    def _deskolem(self, graph):
+        for s, p, o, c in graph.quads((None, None, None, None)):
+            graph.remove((s, p, o, c))
+            if isinstance(s, URIRef) and str(s).startswith(WK_SKOLEM):
+                s = BNode(str(s).replace(WK_SKOLEM, ""))
+            if isinstance(p, URIRef) and str(p).startswith(WK_SKOLEM):
+                p = BNode(str(p).replace(WK_SKOLEM, ""))
+            if isinstance(o, URIRef) and str(o).startswith(WK_SKOLEM):
+                o = BNode(str(o).replace(WK_SKOLEM, ""))
+            if isinstance(c, URIRef) and str(c).startswith(WK_SKOLEM):
+                c = BNode(str(c).replace(WK_SKOLEM, ""))
+            graph.add((s, p, o, c))
+        return graph
 
     def convert(self, graph):
         template_clauses = self.clause()
@@ -109,13 +155,14 @@ class Clause(Resource):
                          + self.extra_namespaces()
                          + c for c in template_clauses]
         params = self._template_params()
-        g = Graph()
+        g = ConjunctiveGraph()
         for template_str in template_strs:
+            graph_fragment = None
             try:
                 graph_fragment = Template(template_str).render(**params)
                 g.parse(data=graph_fragment, format="n3")
-            except Exception as e:
-                pass  # print(template_str, e)
+            except Exception:
+                pass  # print(graph_fragment, params)
         merged_graph = self._merge_graphs(graph, g)
         final_graph = self._visit_children(merged_graph)
         return final_graph
@@ -181,11 +228,21 @@ class Clause(Resource):
             return None
 
     def _merge_graphs(self, graph, new_graph):
-        return graph + new_graph
+        final_graph = ConjunctiveGraph()
+        for s, p, o, c in graph.quads():
+            final_graph.add((s, p, o, c))
+        for s, p, o, c in new_graph.quads():
+            final_graph.add((s, p, o, c))
+        for prefix, ns in graph.namespaces():
+            final_graph.bind(prefix, ns)
+        for prefix, ns in new_graph.namespaces():
+            final_graph.bind(prefix, ns)
+
+        return final_graph
 
     def _visit_children(self, graph):
         if self.is_context():
-            g = Graph(identifier=self.resource())
+            g = ConjunctiveGraph(identifier=self.resource())
         else:
             g = graph
 

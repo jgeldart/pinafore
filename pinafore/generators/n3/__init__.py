@@ -3,22 +3,30 @@ from os.path import join, dirname, basename, splitext, abspath, exists
 from itertools import chain
 from textx import generator
 from notation4 import metamodel as n4_metamodel
+from .attributes import MODELS as attribute_models
 from .bnodes import MODELS as bnode_models
+from .classes import MODELS as class_models
+from .class_expressions import MODELS as class_expression_models
 from .graphs import MODELS as graph_models
 from .individuals import MODELS as individual_models
 from .literals import MODELS as literal_models
 from .ontologies import MODELS as ontology_models
 from .predicates import MODELS as predicate_models
 from .properties import MODELS as property_models
+from .property_expressions import MODELS as property_expression_models
 
 
-MODELS = chain(bnode_models,
+MODELS = chain(attribute_models,
+               bnode_models,
+               class_models,
+               class_expression_models,
                graph_models,
                individual_models,
                literal_models,
                ontology_models,
                predicate_models,
-               property_models)
+               property_models,
+               property_expression_models)
 
 
 @generator("notation4", "n3")
@@ -36,7 +44,7 @@ def n3_generator(metamodel, model, output_path, overwrite, debug, **custom_args)
 
     # Convert to a graph
     g = model.to_graph()
-    
+
     # Output
     if overwrite or not exists(output_file):
         click.echo('-> {}'.format(output_file))
