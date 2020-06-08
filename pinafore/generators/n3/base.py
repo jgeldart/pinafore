@@ -32,7 +32,7 @@ class ResourceReference(object):
         if is_anonymous:
             name = hash_iri(name)  # uuid.uuid5(uuid.NAMESPACE_URL, name).urn
         self._primary_ref = URIRef(name)
-        self._secondary_refs = keydefaultdict(lambda x: BNode().skolemize())
+        self._secondary_refs = keydefaultdict(lambda x: URIRef(uuid.uuid4().urn))
 
     def __getitem__(self, name):
         return self._secondary_refs[name].n3()
@@ -124,6 +124,7 @@ class Resource(object):
 
 DEFAULT_NAMESPACES = """
 @prefix owl: <http://www.w3.org/2002/07/owl#>.
+@prefix mel: <https://jgeldart.github.io/pinafore/mel#>.
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#>.
@@ -183,7 +184,7 @@ class Clause(Resource):
                 g.parse(data=graph_fragment, format="n3", publicID=context_id)
                 graph = self._merge_graphs(graph, g)
             except Exception:
-                pass  # print(template_str, e)
+                pass  # print(graph_fragment, params)
         final_graph = self._visit_children(graph, anonymize=anonymize, file_hash=file_hash)
         return final_graph
 

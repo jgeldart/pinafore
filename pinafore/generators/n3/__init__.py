@@ -5,6 +5,7 @@ from itertools import chain
 from textx import generator
 from notation4 import metamodel as n4_metamodel
 from .attributes import MODELS as attribute_models
+from .attribute_expressions import MODELS as attribute_expression_models
 from .bnodes import MODELS as bnode_models
 from .classes import MODELS as class_models
 from .class_expressions import MODELS as class_expression_models
@@ -20,6 +21,7 @@ from .property_expressions import MODELS as property_expression_models
 
 
 MODELS = chain(attribute_models,
+               attribute_expression_models,
                bnode_models,
                class_models,
                class_expression_models,

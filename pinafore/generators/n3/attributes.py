@@ -10,6 +10,33 @@ class AttributeDecl(Clause):
         """
 
 
+class AttributeAxiomSpecializes(Clause):
+
+    def clause(self):
+        return """
+        ${parent} rdfs:subPropertyOf ${expression}.
+        """
+
+
+class AttributeAxiomEquivalence(Clause):
+
+    def clause(self):
+        return """
+        ${parent} owl:equivalentProperty ${expression}.
+        """
+
+
+class AttributeAxiomInstanceOf(Clause):
+
+    def clause(self):
+        return """
+        ${parent} a ${expression}.
+        """
+
+
 MODELS = [
     AttributeDecl,
+    AttributeAxiomSpecializes,
+    AttributeAxiomEquivalence,
+    AttributeAxiomInstanceOf
 ]

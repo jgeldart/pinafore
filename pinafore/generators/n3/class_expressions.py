@@ -1,4 +1,4 @@
-from .base import Clause
+from .base import Clause, Resource
 
 
 class ClassExpressionDisjunction(Clause):
@@ -61,6 +61,18 @@ class ClassExpressionEnumeration(Clause):
                 % endfor
             ).
         """
+
+
+class ClassExpressionTop(Resource):
+
+    def resource_reference(self, **kwargs):
+        return "http://www.w3.org/2002/07/owl#Thing"
+
+
+class ClassExpressionBottom(Resource):
+
+    def resource_reference(self, **kwargs):
+        return "http://www.w3.org/2002/07/owl#Nothing"
 
 
 class ClassExpressionAttributeMaxCard(Clause):
@@ -239,6 +251,8 @@ MODELS = [
     ClassExpressionBase,
     ClassExpressionComplement,
     ClassExpressionEnumeration,
+    ClassExpressionTop,
+    ClassExpressionBottom,
     ClassExpressionAttributeMaxCard,
     ClassExpressionAttributeMinCard,
     ClassExpressionAttributeExactCard,

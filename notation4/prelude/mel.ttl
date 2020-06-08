@@ -1,0 +1,98 @@
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix dc: <http://purl.org/dc/elements/1.1/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix xml: <http://www.w3.org/XML/1998/namespace> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix mel: <https://jgeldart.github.io/pinafore/mel#> .
+
+mel: a owl:Ontology;
+  dc:title "Modal Expression Language 1.0";
+  rdfs:comment """
+  The Modal Expression Language is an extension to OWL 2 that provides vocabulary
+  for describing situations and contexts. It tackles the following forms of
+  modality:
+
+  * State of knowledge (MKNF) including provability of knowledge.
+  * Contingency in terms of necessity and possibility.
+  * Cooperation and agency using STIT (Sees To It That) modals.
+  * Temporal modality through LTL/PLTL.
+
+  To support these, it also defines vocabulary for expressing richer property
+  descriptions, nominal schemas, and vagueness through FuzzyDL.
+  """;
+  owl:imports owl:
+  .
+
+
+mel:cumulativeSubjectOver a rdf:Property;
+  rdfs:label "cumulativeSubjectOver";
+  rdfs:comment "The property that determines which property is cumulative over a plural collection in subject position.";
+  rdfs:isDefinedBy mel:;
+  rdfs:domain rdf:Property;
+  rdfs:range rdf:Property
+  .
+
+mel:distributiveSubjectOver a rdf:Property;
+  rdfs:label "distributiveSubjectOver";
+  rdfs:comment "The property that determines which property is distributive over a plural collection in subject position.";
+  rdfs:isDefinedBy mel:;
+  rdfs:domain rdf:Property;
+  rdfs:range rdf:Property
+  .
+
+mel:cumulativeObjectOver a rdf:Property;
+  rdfs:label "cumulativeObjectOver";
+  rdfs:comment "The property that determines which property is cumulative over a plural collection in object position.";
+  rdfs:isDefinedBy mel:;
+  rdfs:domain rdf:Property;
+  rdfs:range rdf:Property
+  .
+
+mel:distributiveObjectOver a rdf:Property;
+  rdfs:label "distributiveObjectOver";
+  rdfs:comment "The property that determines which property is distributive over a plural collection in object position.";
+  rdfs:isDefinedBy mel:;
+  rdfs:domain rdf:Property;
+  rdfs:range rdf:Property
+  .
+
+mel:propertyIntersectionOf a rdf:Property;
+  rdfs:label "propertyIntersectionOf";
+  rdfs:comment "The property that determines the collection of object or datatype properties that build an intersection.";
+  rdfs:isDefinedBy mel:;
+  rdfs:domain rdf:Property;
+  rdfs:range rdf:List
+  .
+
+mel:propertyUnionOf a rdf:Property;
+  rdfs:label "propertyUnionOf";
+  rdfs:comment "The property that determines the collection of object or datatype properties that build a union.";
+  rdfs:isDefinedBy mel:;
+  rdfs:domain rdf:Property;
+  rdfs:range rdf:List
+  .
+
+mel:propertyComplementOf a rdf:Property;
+  rdfs:label "propertyComplementOf";
+  rdfs:comment "The property that determines that a property is the complement of another property.";
+  rdfs:isDefinedBy mel:;
+  rdfs:domain rdf:Property;
+  rdfs:range rdf:Property
+  .
+
+mel:propertyChainOf a rdf:Property;
+  rdfs:label "propertyChainOf";
+  rdfs:comment "The property that determines the sequence of object or datatype properties that build a chain of steps from first step to last.";
+  rdfs:isDefinedBy mel:;
+  rdfs:domain rdf:Property;
+  rdfs:range rdf:List
+  .
+
+mel:hasIsA a owl:AnnotationProperty;
+  rdfs:label "hasIsA";
+  rdfs:comment "The property that determines the 'is a' property for a class.";
+  rdfs:isDefinedBy mel:;
+  rdfs:domain rdfs:Class;
+  rdfs:range rdf:Property
+  .
