@@ -24,6 +24,61 @@ mel: a owl:Ontology;
   owl:imports owl:
   .
 
+mel:ModalRestriction a rdfs:Class;
+  rdfs:label "ModalRestriction";
+  rdfs:comment "The class of restrictions that operate over possible worlds.";
+  rdfs:isDefinedBy mel:;
+  rdfs:subClassOf owl:Restriction
+  .
+
+mel:StructuralModal a rdfs:Class;
+  rdfs:label "StructuralModal";
+  rdfs:comment "The class of modal restrictions where the accessibility relation is the argument structure.";
+  rdfs:isDefinedBy mel:;
+  rdfs:subClassOf mel:ModalRestriction
+  .
+
+mel:AlethicModal a rdfs:Class;
+  rdfs:label "AlethicModal";
+  rdfs:comment "The class of structural modals that quantify over possible worlds.";
+  rdfs:isDefinedBy mel:;
+  rdfs:subClassOf mel:StructuralModal
+  .
+
+mel:EpistemicModal a rdfs:Class;
+  rdfs:label "EpistemicModal";
+  rdfs:comment "The class of structural modals that quantify over knowledge of possible world.";
+  rdfs:isDefinedBy mel:;
+  rdfs:subClassOf mel:StructuralModal
+  .
+
+mel:DeonticModal a rdfs:Class;
+  rdfs:label "DeonticModal";
+  rdfs:comment "The class of structural modals that quantify over the agency responsible for asserting possible worlds.";
+  rdfs:isDefinedBy mel:;
+  rdfs:subClassOf mel:StructuralModal
+  .
+
+mel:TemporalModal a rdfs:Class;
+  rdfs:label "TemporalModal";
+  rdfs:comment "The class of modal restrictions where the accessibility relation is the induced temporal order.";
+  rdfs:isDefinedBy mel:;
+  rdfs:subClassOf mel:ModalRestriction
+  .
+
+mel:MembershipProperty a rdfs:Class;
+  rdfs:label "MembershipProperty";
+  rdfs:comment "The class of properties that may be plurally quantified over.";
+  rdfs:isDefinedBy mel:;
+  rdfs:subClassOf owl:ObjectProperty
+  .
+
+mel:IsAProperty a rdfs:Class;
+  rdfs:label "IsAProperty";
+  rdfs:comment "The class of properties that relate an individual to itself.";
+  rdfs:isDefinedBy mel:;
+  rdfs:subClassOf owl:ObjectProperty
+  .
 
 mel:cumulativeSubjectOver a rdf:Property;
   rdfs:label "cumulativeSubjectOver";
@@ -94,5 +149,69 @@ mel:hasIsA a owl:AnnotationProperty;
   rdfs:comment "The property that determines the 'is a' property for a class.";
   rdfs:isDefinedBy mel:;
   rdfs:domain rdfs:Class;
-  rdfs:range rdf:Property
+  rdfs:range mel:IsAProperty
+  .
+
+mel:necessaryThat a rdf:Property;
+  rdfs:label "necessaryThat";
+  rdfs:comment "The property that determines the class that is necessarily true.";
+  rdfs:isDefinedBy mel:;
+  rdfs:domain mel:AlethicModal;
+  rdfs:range owl:Class
+  .
+
+mel:possibleThat a rdf:Property;
+  rdfs:label "possibleThat";
+  rdfs:comment "The property that determines the class that is possibly true.";
+  rdfs:isDefinedBy mel:;
+  rdfs:domain mel:AlethicModal;
+  rdfs:range owl:Class
+  .
+
+mel:assumedThat a rdf:Property;
+  rdfs:label "assumedThat";
+  rdfs:comment "The property that determines the classification that is assumed true (uses the OWA).";
+  rdfs:isDefinedBy mel:;
+  rdfs:domain mel:EpistemicModal;
+  rdfs:range owl:Class
+  .
+
+mel:assertedThat a rdf:Property;
+  rdfs:label "assertedThat";
+  rdfs:comment "The property that determines the classification that is asserted true (uses the CWA).";
+  rdfs:isDefinedBy mel:;
+  rdfs:domain mel:EpistemicModal;
+  rdfs:range owl:Class
+  .
+
+mel:provenThat a rdf:Property;
+  rdfs:label "provenThat";
+  rdfs:comment "The property that determines the classification that is asserted true (uses the CWA) with a suitable proof certificate for the assertions.";
+  rdfs:isDefinedBy mel:;
+  rdfs:domain mel:EpistemicModal;
+  rdfs:range owl:Class
+  .
+
+mel:seesToItThat a rdf:Property;
+  rdfs:label "seesToItThat";
+  rdfs:comment "The property that determines the classification that is made true by the agent's actions.";
+  rdfs:isDefinedBy mel:;
+  rdfs:domain mel:DeonticModal;
+  rdfs:range owl:Class
+  .
+
+mel:agentRestriction a rdf:Property;
+  rdfs:label "agentRestriction";
+  rdfs:comment "The property that determines the class of agents that are responsible for making the classification true.";
+  rdfs:isDefinedBy mel:;
+  rdfs:domain mel:DeonticModal;
+  rdfs:range owl:Class
+  .
+
+mel:onCondition a rdf:Property;
+  rdfs:label "onCondition";
+  rdfs:comment "The property that determines the classification that must apply for this modal to also apply.";
+  rdfs:isDefinedBy mel:;
+  rdfs:domain mel:ModalRestriction;
+  rdfs:range owl:Class
   .
