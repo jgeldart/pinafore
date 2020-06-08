@@ -48,7 +48,11 @@ setup(
             'pin4 = pinafore.commands.pin4:main'
         ],
         'textx_languages': ["notation4 = notation4:notation4"],
-        'textx_generators': ["notation4_n3 = pinafore.generators.n3:n3_generator"]
+        'textx_generators': [
+            "notation4_n3 = pinafore.generators.rdf:n3_generator",
+            "notation4_nquads = pinafore.generators.rdf:nquads_generator",
+            "notation4_rdfxml = pinafore.generators.rdf:rdfxml_generator",
+            ]
     },
     keywords="parser notation4 rdf semantic-web ontology",
     classifiers=[
