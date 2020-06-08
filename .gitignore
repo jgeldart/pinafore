@@ -1,5 +1,6 @@
 venv
 **/*.dot
+**/*.nq
 .vscode
 **/__pycache__
 *.egg-info

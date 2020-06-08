@@ -1,5 +1,6 @@
 import click
 from os.path import join, dirname, basename, splitext, abspath, exists
+from hashlib import sha512
 from itertools import chain
 from textx import generator
 from notation4 import metamodel as n4_metamodel
@@ -34,7 +35,7 @@ MODELS = chain(attribute_models,
 
 
 @generator("notation4", "n3")
-def n3_generator(metamodel, model, output_path, overwrite, debug, **custom_args):
+def n3_generator(metamodel, model, output_path, overwrite, debug, anonymize=False, **custom_args):
     metamodel = n4_metamodel(classes=MODELS)
 
     # Determine file path parts
@@ -43,11 +44,18 @@ def n3_generator(metamodel, model, output_path, overwrite, debug, **custom_args)
     base_name, _ = splitext(basename(input_file))
     output_file = abspath(join(base_dir, "{}.{}".format(base_name, 'nq')))
 
+    # Determine file hash
+    file_hash = None
+    if anonymize:
+        with open(input_file, 'r') as f:
+            file_contents = f.read()
+            file_hash = sha512(file_contents.encode()).hexdigest()
+
     # Reparse model
     model = metamodel.model_from_file(input_file)
 
     # Convert to a graph
-    g = model.to_graph()
+    g = model.to_graph(anonymize=anonymize, file_hash=file_hash)
 
     # Output
     if overwrite or not exists(output_file):

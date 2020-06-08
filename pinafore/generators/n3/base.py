@@ -1,14 +1,23 @@
 from collections import defaultdict
 import uuid
+from hashlib import sha512
 from mako.template import Template
 from rdflib import ConjunctiveGraph, URIRef, Literal, BNode
 from textx import get_parent_of_type
 
 
+def hash_iri(identifier):
+    if identifier is None:
+        return None
+    else:
+        hashed_id = sha512(identifier.encode()).hexdigest()
+        return "urn:hash::sha512:{}".format(hashed_id)
+
+
 class keydefaultdict(defaultdict):
     def __missing__(self, key):
         if self.default_factory is None:
-            raise KeyError( key )
+            raise KeyError(key)
         else:
             ret = self[key] = self.default_factory(key)
             return ret
@@ -21,7 +30,7 @@ class ResourceReference(object):
             name = uuid.uuid4().urn
         name = name.strip()
         if is_anonymous:
-            name = uuid.uuid5(uuid.NAMESPACE_URL, name).urn
+            name = hash_iri(name)  # uuid.uuid5(uuid.NAMESPACE_URL, name).urn
         self._primary_ref = URIRef(name)
         self._secondary_refs = keydefaultdict(lambda x: BNode().skolemize())
 
@@ -73,22 +82,22 @@ class Resource(object):
         for name, value in kwargs.items():
             setattr(self, name, value)
 
-    def resource(self):
+    def resource(self, is_anonymous=False, file_hash=None):
         if self._primary_resource_ref is None:
-            ref = self.resource_reference()
+            ref = self.resource_reference(is_anonymous=is_anonymous, file_hash=file_hash)
             if ref is None:
                 self._primary_resource_ref = BNodeReference()
             elif isinstance(ref, Resource):
-                self._primary_resource_ref = ref.resource()
+                self._primary_resource_ref = ref.resource(is_anonymous=is_anonymous, file_hash=file_hash)
             elif isinstance(ref, Literal):
                 self._primary_resource_ref = LiteralReference(ref)
             elif isinstance(ref, str):
-                self._primary_resource_ref = ResourceReference(ref)
+                self._primary_resource_ref = ResourceReference(ref, is_anonymous=is_anonymous)
             else:
                 self._primary_resource_ref = None
         return self._primary_resource_ref
 
-    def resource_reference(self):
+    def resource_reference(self, is_anonymous=False, file_hash=None):
         if hasattr(self, "name") and self.name is not None:
             n = self.name
             if hasattr(self, "full_iri"):
@@ -136,8 +145,8 @@ WK_SKOLEM = "http://rdlib.net/.well-known/genid/rdflib/"
 
 class Clause(Resource):
 
-    def to_graph(self):
-        return self._deskolem(self.convert(ConjunctiveGraph()))
+    def to_graph(self, anonymize=False, file_hash=None):
+        return self._deskolem(self.convert(ConjunctiveGraph(), anonymize=anonymize, file_hash=hash_iri(file_hash)))
 
     def _deskolem(self, graph):
         for s, p, o, c in graph.quads((None, None, None, None)):
@@ -153,10 +162,10 @@ class Clause(Resource):
             graph.add((s, p, o, c))
         return graph
 
-    def convert(self, graph):
+    def convert(self, graph, anonymize=False, file_hash=None):
         context = self._context_resource()
         if context is not None:
-            context_id = context.resource()._primary_ref
+            context_id = context.resource(is_anonymous=anonymize, file_hash=file_hash)._primary_ref
         else:
             context_id = BNodeReference()._primary_ref
         template_clauses = self.clause()
@@ -165,7 +174,7 @@ class Clause(Resource):
         template_strs = [DEFAULT_NAMESPACES
                          + self.extra_namespaces()
                          + c for c in template_clauses]
-        params = self._template_params()
+        params = self._template_params(anonymize=anonymize, file_hash=file_hash)
         for template_str in template_strs:
             graph_fragment = None
             try:
@@ -175,7 +184,7 @@ class Clause(Resource):
                 graph = self._merge_graphs(graph, g)
             except Exception:
                 pass  # print(template_str, e)
-        final_graph = self._visit_children(graph)
+        final_graph = self._visit_children(graph, anonymize=anonymize, file_hash=file_hash)
         return final_graph
 
     def is_triple_source(self):
@@ -214,44 +223,44 @@ class Clause(Resource):
         else:
             return None
 
-    def _template_params(self):
+    def _template_params(self, anonymize=False, file_hash=None):
         params = {}
-        params["this"] = self.resource()
+        params["this"] = self.resource(is_anonymous=anonymize, file_hash=file_hash)
         params["this_raw"] = self
         parent = self._parent_resource()
         if parent is not None:
-            params["parent"] = parent.resource()
+            params["parent"] = parent.resource(is_anonymous=anonymize, file_hash=file_hash)
             params["parent_raw"] = parent
         context = self._context_resource()
         if context is not None:
-            params["graph"] = context.resource()
+            params["graph"] = context.resource(is_anonymous=anonymize, file_hash=file_hash)
             params["graph_raw"] = context
         ontology = get_parent_of_type("OntologyDecl", self)
         if ontology is not None:
-            params["ontology"] = ontology.resource()
+            params["ontology"] = ontology.resource(is_anonymous=anonymize, file_hash=file_hash)
             params["ontology_raw"] = ontology
         for attr_name in self.__class__._tx_attrs:
             if hasattr(self, attr_name) and getattr(self, attr_name) is not None:
                 attr_val = getattr(self, attr_name)
-                res_val = self._resourcify_attribute(attr_val)
+                res_val = self._resourcify_attribute(attr_val, anonymize=anonymize, file_hash=file_hash)
                 if res_val is not None:
                     params[attr_name] = res_val
                 params["{}_raw".format(attr_name)] = attr_val
         # print(params)
         return params
 
-    def _resourcify_attribute(self, res):
+    def _resourcify_attribute(self, res, anonymize=False, file_hash=None):
         if hasattr(res, "ref") and isinstance(res.ref, Resource):
-            res = res.ref.resource()
+            res = res.ref.resource(is_anonymous=anonymize, file_hash=file_hash)
             return res
         if isinstance(res, Resource):
-            return res.resource()
+            return res.resource(is_anonymous=anonymize, file_hash=file_hash)
         elif isinstance(res, list):
-            return [self._resourcify_attribute(a) for a in res]
+            return [self._resourcify_attribute(a, anonymize=anonymize, file_hash=file_hash) for a in res]
         elif hasattr(res, "full_iri"):
-            return ResourceReference(res.full_iri)
+            return ResourceReference(res.full_iri, is_anonymous=anonymize)
         elif hasattr(res, "ref") and hasattr(res.ref, "full_iri"):
-            return ResourceReference(res.ref.full_iri)
+            return ResourceReference(res.ref.full_iri, is_anonymous=anonymize)
         else:
             return None
 
@@ -263,14 +272,14 @@ class Clause(Resource):
 
         return graph
 
-    def _visit_children(self, graph):
+    def _visit_children(self, graph, anonymize=False, file_hash=None):
         if self.is_context():
             g = graph  # ConjunctiveGraph(identifier=self.resource()._primary_ref)
         else:
             g = graph
 
         for child in self._child_clauses():
-            g = child.convert(g)
+            g = child.convert(g, anonymize=anonymize, file_hash=file_hash)
 
         return self._merge_graphs(graph, g)
 

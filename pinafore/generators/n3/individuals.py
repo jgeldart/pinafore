@@ -19,7 +19,7 @@ class IndividualDecl(Clause):
 
 class IndividualAxiomInstanceOf(Clause):
 
-    def resource_reference(self):
+    def resource_reference(self, **kwargs):
         return None
 
     def clause(self):

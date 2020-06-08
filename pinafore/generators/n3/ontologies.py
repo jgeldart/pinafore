@@ -9,6 +9,12 @@ class OntologyDecl(Clause):
             nss += " @prefix {}: {}.".format(self.prefix, self.resource())
         return nss
 
+    def resource_reference(self, is_anonymous=False, file_hash=None):
+        if is_anonymous and hasattr(self, "parent") and self.parent is None and file_hash is not None:
+            return file_hash
+        else:
+            return super().resource_reference(is_anonymous=is_anonymous, file_hash=file_hash)
+
     def clause(self):
         return ["${this} a owl:Ontology.",
                 "${this} vann:preferredNamespacePrefix \"${prefix_raw}\"."]

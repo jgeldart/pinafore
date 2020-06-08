@@ -38,7 +38,7 @@ class DataExpressionComplement(Clause):
 
 class DataFacetGTE(Clause):
 
-    def resource_reference(self):
+    def resource_reference(self, **kwargs):
         return None
 
     def clause(self):
@@ -52,7 +52,7 @@ class DataFacetGTE(Clause):
 
 class DataFacetGT(Clause):
 
-    def resource_reference(self):
+    def resource_reference(self, **kwargs):
         return None
 
     def clause(self):
@@ -66,7 +66,7 @@ class DataFacetGT(Clause):
 
 class DataFacetLTE(Clause):
 
-    def resource_reference(self):
+    def resource_reference(self, **kwargs):
         return None
 
     def clause(self):
@@ -80,7 +80,7 @@ class DataFacetLTE(Clause):
 
 class DataFacetLT(Clause):
 
-    def resource_reference(self):
+    def resource_reference(self, **kwargs):
         return None
 
     def clause(self):
@@ -94,7 +94,7 @@ class DataFacetLT(Clause):
 
 class DataFacetMinLength(Clause):
 
-    def resource_reference(self):
+    def resource_reference(self, **kwargs):
         return None
 
     def clause(self):
@@ -108,7 +108,7 @@ class DataFacetMinLength(Clause):
 
 class DataFacetMaxLength(Clause):
 
-    def resource_reference(self):
+    def resource_reference(self, **kwargs):
         return None
 
     def clause(self):
@@ -122,7 +122,7 @@ class DataFacetMaxLength(Clause):
 
 class DataFacetLength(Clause):
 
-    def resource_reference(self):
+    def resource_reference(self, **kwargs):
         return None
 
     def clause(self):
@@ -136,7 +136,7 @@ class DataFacetLength(Clause):
 
 class DataFacetMatches(Clause):
 
-    def resource_reference(self):
+    def resource_reference(self, **kwargs):
         return None
 
     def clause(self):
