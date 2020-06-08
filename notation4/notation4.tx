@@ -1255,7 +1255,6 @@ AttributeExpressionAtom:
     AttributeExpressionTop 
   | AttributeExpressionBottom
   | AttributeExpressionProduct
-  | AttributeExpressionInverse
   | ('(' AttributeExpressionDisjoint ')')
   | AttributeRef
 ;
@@ -1270,10 +1269,6 @@ AttributeExpressionBottom:
 
 AttributeExpressionProduct:
   ((KW_GENERIC_FROM domain=ClassExpressionAtom)? (KW_GENERIC_TO range=DataExpressionAtom)?)#
-;
-
-AttributeExpressionInverse:
-  KW_EXPRESSION_INVERSE KW_GENERIC_OF expression=AttributeExpressionAtom
 ;
 
 
