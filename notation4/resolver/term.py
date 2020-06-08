@@ -2,6 +2,7 @@ from os.path import join, dirname
 from textx import get_model, get_metamodel, get_children, metamodel_from_file, get_parent_of_type
 from .util import prefixes, resolve_prefix, defrag, cache_ontology
 from .ontology import OntologyResolver
+from ..util import iri_rewriter
 
 
 PRELUDE = None
@@ -55,12 +56,6 @@ class TermResolver:
         return PRELUDE
 
     def _metamodel(self):
-        def iri_rewriter(element):
-            ontology = get_parent_of_type("OntologyDecl", element)
-            if hasattr(element, "name") and element.name.startswith("<") and element.name.endswith(">"):
-                setattr(element, "full_iri", element.name[1:-1])
-            elif hasattr(element, "name"):
-                setattr(element, "full_iri", ontology.name[1:-1] + element.name)
         mm = metamodel_from_file(join(dirname(__file__),
                                  "../notation4.tx"),
                                  autokwd=True,

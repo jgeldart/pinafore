@@ -23,7 +23,7 @@ class ResourceReference(object):
         if is_anonymous:
             name = uuid.uuid5(uuid.NAMESPACE_URL, name).urn
         self._primary_ref = URIRef(name)
-        self._secondary_refs = keydefaultdict(lambda x: BNode(name + "#" + x).skolemize())
+        self._secondary_refs = keydefaultdict(lambda x: BNode().skolemize())
 
     def __getitem__(self, name):
         return self._secondary_refs[name].n3()
@@ -41,7 +41,7 @@ class BNodeReference(object):
         if name is None:
             name = "N" + uuid.uuid4().hex
         self._primary_ref = BNode(name).skolemize()
-        self._secondary_refs = keydefaultdict(lambda x: BNode(name + "#" + x).skolemize())
+        self._secondary_refs = keydefaultdict(lambda x: BNode().skolemize())
 
     def __getitem__(self, name):
         return self._secondary_refs[name].n3()
@@ -154,6 +154,11 @@ class Clause(Resource):
         return graph
 
     def convert(self, graph):
+        context = self._context_resource()
+        if context is not None:
+            context_id = context.resource()._primary_ref
+        else:
+            context_id = BNodeReference()._primary_ref
         template_clauses = self.clause()
         if not isinstance(template_clauses, list):
             template_clauses = [template_clauses]
@@ -161,23 +166,23 @@ class Clause(Resource):
                          + self.extra_namespaces()
                          + c for c in template_clauses]
         params = self._template_params()
-        g = ConjunctiveGraph()
         for template_str in template_strs:
             graph_fragment = None
             try:
                 graph_fragment = Template(template_str).render(**params)
-                g.parse(data=graph_fragment, format="n3")
+                g = ConjunctiveGraph()
+                g.parse(data=graph_fragment, format="n3", publicID=context_id)
+                graph = self._merge_graphs(graph, g)
             except Exception:
-                pass  # print(graph_fragment, params)
-        merged_graph = self._merge_graphs(graph, g)
-        final_graph = self._visit_children(merged_graph)
+                pass  # print(template_str, e)
+        final_graph = self._visit_children(graph)
         return final_graph
 
     def is_triple_source(self):
         return True
 
     def clause(self):
-        raise NotImplementedError("Clause definition not provided")
+        return ""
 
     def extra_namespaces(self):
         return ""
@@ -196,14 +201,31 @@ class Clause(Resource):
         else:
             return None
 
+    def _context_resource(self, element=None):
+        if element is None:
+            element = self
+        if element.__class__.__name__ == "OntologyDecl":
+            return element.is_context() and element
+        if hasattr(element, "parent"):
+            if isinstance(element, Resource) and element.is_context():
+                return element
+            else:
+                return self._context_resource(element=element.parent)
+        else:
+            return None
+
     def _template_params(self):
         params = {}
         params["this"] = self.resource()
         params["this_raw"] = self
         parent = self._parent_resource()
         if parent is not None:
-            params["parent"] = self.parent.resource()
-            params["parent_raw"] = self.parent
+            params["parent"] = parent.resource()
+            params["parent_raw"] = parent
+        context = self._context_resource()
+        if context is not None:
+            params["graph"] = context.resource()
+            params["graph_raw"] = context
         ontology = get_parent_of_type("OntologyDecl", self)
         if ontology is not None:
             params["ontology"] = ontology.resource()
@@ -234,21 +256,16 @@ class Clause(Resource):
             return None
 
     def _merge_graphs(self, graph, new_graph):
-        final_graph = ConjunctiveGraph()
-        for s, p, o, c in graph.quads():
-            final_graph.add((s, p, o, c))
         for s, p, o, c in new_graph.quads():
-            final_graph.add((s, p, o, c))
-        for prefix, ns in graph.namespaces():
-            final_graph.bind(prefix, ns)
+            graph.add((s, p, o, c.identifier))
         for prefix, ns in new_graph.namespaces():
-            final_graph.bind(prefix, ns)
+            graph.bind(prefix, ns)
 
-        return final_graph
+        return graph
 
     def _visit_children(self, graph):
         if self.is_context():
-            g = ConjunctiveGraph(identifier=self.resource())
+            g = graph  # ConjunctiveGraph(identifier=self.resource()._primary_ref)
         else:
             g = graph
 

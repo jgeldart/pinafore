@@ -13,6 +13,9 @@ class OntologyDecl(Clause):
         return ["${this} a owl:Ontology.",
                 "${this} vann:preferredNamespacePrefix \"${prefix_raw}\"."]
 
+    def is_context(self):
+        return True
+
 
 class ImportPragma(Clause):
 

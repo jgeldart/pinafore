@@ -41,7 +41,7 @@ def n3_generator(metamodel, model, output_path, overwrite, debug, **custom_args)
     input_file = model._tx_filename
     base_dir = output_path if output_path else dirname(input_file)
     base_name, _ = splitext(basename(input_file))
-    output_file = abspath(join(base_dir, "{}.{}".format(base_name, 'n3')))
+    output_file = abspath(join(base_dir, "{}.{}".format(base_name, 'nq')))
 
     # Reparse model
     model = metamodel.model_from_file(input_file)
@@ -52,6 +52,6 @@ def n3_generator(metamodel, model, output_path, overwrite, debug, **custom_args)
     # Output
     if overwrite or not exists(output_file):
         click.echo('-> {}'.format(output_file))
-        g.serialize(output_file, format="n3")
+        g.serialize(output_file, format="nquads")
     else:
         click.echo('-- Skipping: {}'.format(output_file))
