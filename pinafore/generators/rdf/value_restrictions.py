@@ -12,14 +12,20 @@ class NominalPropertyRestriction(Clause):
             ${class_decl} rdfs:subClassOf [
                 a owl:Restriction;
                 owl:onProperty ${expression};
-                owl:someValuesFrom ${this}
+                owl:someValuesFrom ${this['binding']}
             ].
+
+            ${this['binding']} a owl:ObjectVariable;
+                owl:variableId "${this}".
 
             ${this} a owl:ObjectVariable;
                 owl:variableId "${this}".
             """
         else:
             return """
+            ${this['binding']} a owl:ObjectVariable;
+                owl:variableId "${this}".
+
             ${this} a owl:ObjectVariable;
                 owl:variableId "${this}".
             """

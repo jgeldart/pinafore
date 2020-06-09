@@ -241,7 +241,7 @@ class ClassExpressionPropertyValue(Clause):
                         [
                             a owl:Restriction;
                             owl:onProperty ${restriction_raw.expression.resource()};
-                            owl:someValuesFrom ${restriction}
+                            owl:someValuesFrom ${restriction['binding']}
                         ]
                     ).
                 """
