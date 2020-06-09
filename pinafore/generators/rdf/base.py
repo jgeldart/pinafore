@@ -188,7 +188,7 @@ class Clause(Resource):
                 g.parse(data=graph_fragment, format="n3", publicID=context_id)
                 graph = self._merge_graphs(graph, g)
             except Exception:
-                pass  # print(graph_fragment, params)
+                pass  # print(template_str, e, params)
         self._visited = True
         final_graph = self._visit_children(graph, anonymize=anonymize, file_hash=file_hash)
         return final_graph

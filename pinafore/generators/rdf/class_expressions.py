@@ -279,6 +279,82 @@ class ClassExpressionSelf(Clause):
         """
 
 
+class ClassExpressionModalNecessity(Clause):
+
+    def resource_reference(self, **kwargs):
+        return None
+
+    def clause(self):
+        return [
+            """
+            ${this} a mel:AlethicModal;
+                mel:necessaryThat ${expression}.
+            """,
+            """
+            ${this} mel:onCondition ${condition}.
+            """,
+        ]
+
+
+class ClassExpressionModalPossibility(Clause):
+
+    def resource_reference(self, **kwargs):
+        return None
+
+    def clause(self):
+        return [
+            """
+            ${this} a mel:AlethicModal;
+                mel:possibleThat ${expression}.
+            """,
+            """
+            ${this} mel:onCondition ${condition}.
+            """,
+        ]
+
+
+class ClassExpressionModalAssumed(Clause):
+
+    def resource_reference(self, **kwargs):
+        return None
+
+    def clause(self):
+        return [
+            """
+            ${this} a mel:EpistemicModal;
+                mel:assumedThat ${expression}.
+            """,
+        ]
+
+
+class ClassExpressionModalProven(Clause):
+
+    def resource_reference(self, **kwargs):
+        return None
+
+    def clause(self):
+        return [
+            """
+            ${this} a mel:EpistemicModal;
+                mel:provenThat ${expression}.
+            """,
+        ]
+
+
+class ClassExpressionModalClaimed(Clause):
+
+    def resource_reference(self, **kwargs):
+        return None
+
+    def clause(self):
+        return [
+            """
+            ${this} a mel:EpistemicModal;
+                mel:assertedThat ${expression}.
+            """,
+        ]
+
+
 MODELS = [
     ClassExpressionDisjunction,
     ClassExpressionConjunction,
@@ -302,4 +378,9 @@ MODELS = [
     ClassExpressionPropertySome,
     ClassExpressionPropertyValue,
     ClassExpressionSelf,
+    ClassExpressionModalNecessity,
+    ClassExpressionModalPossibility,
+    ClassExpressionModalAssumed,
+    ClassExpressionModalProven,
+    ClassExpressionModalClaimed,
 ]
