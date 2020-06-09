@@ -32,14 +32,24 @@ class ClassExpressionConjunction(Clause):
 class ClassExpressionBase(Clause):
 
     def clause(self):
-        return """
-        ${this} a owl:Class;
-            owl:intersectionOf (
-                ${base_class}
-                ${restriction}
+        if self.base_class is not None:
+            return """
+            ${this} a owl:Class;
+                owl:intersectionOf (
+                    ${base_class}
+                    ${restriction}
+                    )
+            .
+            """
+        else:
+            return """
+            ${this} a owl:Class;
+                owl:intersectionOf (
+                    owl:Thing
+                    ${restriction}
                 )
-        .
-        """
+            .
+            """
 
 
 class ClassExpressionComplement(Clause):
