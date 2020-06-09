@@ -146,6 +146,10 @@ WK_SKOLEM = "http://rdlib.net/.well-known/genid/rdflib/"
 
 class Clause(Resource):
 
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self._visited = False
+
     def to_graph(self, anonymize=False, file_hash=None):
         return self._deskolem(self.convert(ConjunctiveGraph(), anonymize=anonymize, file_hash=hash_iri(file_hash)))
 
@@ -185,6 +189,7 @@ class Clause(Resource):
                 graph = self._merge_graphs(graph, g)
             except Exception:
                 pass  # print(graph_fragment, params)
+        self._visited = True
         final_graph = self._visit_children(graph, anonymize=anonymize, file_hash=file_hash)
         return final_graph
 
@@ -295,14 +300,14 @@ class Clause(Resource):
                 if attr_name not in self.do_not_traverse():
                     attr = getattr(element, attr_name)
                     if (not isinstance(attr, list)) and (attr not in visited) and hasattr(attr.__class__, "_tx_attrs"):
-                        if isinstance(attr, Clause):
+                        if isinstance(attr, Clause) and not attr._visited:
                             yield attr
                         else:
                             for child in self._child_clauses(element=attr, visited=visited):
                                 yield child
                     elif isinstance(attr, list):
                         for i in attr:
-                            if isinstance(i, Clause):
+                            if isinstance(i, Clause) and not i._visited:
                                 yield i
                             else:
                                 for child in self._child_clauses(element=i, visited=visited):

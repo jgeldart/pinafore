@@ -9,7 +9,7 @@ class ClassDecl(Clause):
                     rdfs:isDefinedBy ${ontology}.
                 """,
                 """
-                ${this['isa']} a owl:ObjectProperty;
+                ${this['isa']} a mel:IsAProperty, owl:ObjectProperty;
                     rdfs:domain ${this};
                     rdfs:range ${this}.
                 """,
@@ -49,9 +49,35 @@ class ClassAxiomInstanceOf(Clause):
         """
 
 
+class ClassAxiomPartitions(Clause):
+
+    def clause(self):
+        return """
+        ${parent} owl:disjointUnionOf (
+            % for c in classes:
+            ${c}
+            % endfor
+            ).
+        """
+
+
+class ClassAxiomHasKey(Clause):
+
+    def clause(self):
+        return """
+        ${parent} owl:hasKey (
+            % for k in keys:
+            ${k}
+            % endfor
+            ).
+        """
+
+
 MODELS = [
     ClassDecl,
     ClassAxiomSpecializes,
     ClassAxiomEquivalence,
     ClassAxiomInstanceOf,
+    ClassAxiomPartitions,
+    ClassAxiomHasKey,
 ]

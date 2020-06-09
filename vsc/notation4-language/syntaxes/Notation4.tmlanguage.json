@@ -148,6 +148,12 @@
                     "match": "<\\|",
                     "name": "keyword.operator.axiom"
                 },                {
+                    "match": "partitions",
+                    "name": "keyword.operator.axiom"
+                },                {
+                    "match": "key",
+                    "name": "keyword.operator.axiom"
+                },                {
                     "match": "\\=",
                     "name": "keyword.operator.predicate"
                 },                {

@@ -547,6 +547,8 @@ ClassAxiom:
     ClassAxiomSpecializes
   | ClassAxiomEquivalence
   | ClassAxiomInstanceOf
+  | ClassAxiomPartitions
+  | ClassAxiomHasKey
   | PatternKwargValue
   | Predicate
 ;
@@ -566,7 +568,20 @@ ClassAxiomInstanceOf:
   expression=ClassExpression
 ;
 
+ClassAxiomPartitions:
+  KW_OPERATOR_PARTITIONS
+  classes+=ClassExpression[',']
+;
 
+ClassAxiomHasKey:
+  KW_OPERATOR_KEY
+  keys+=KeyPredicate[',']
+;
+
+KeyPredicate:
+    (PropertyExpressionDisjoint)
+  | (KW_EXPRESSION_VALUE KW_GENERIC_OF AttributeExpressionDisjoint)
+;
 
 
 ////// Properties
@@ -1749,6 +1764,8 @@ KW_OPERATOR:
   | KW_OPERATOR_EQUIVALENCE
   | KW_OPERATOR_FORWARDCHAIN
   | KW_OPERATOR_INSTANCEOF
+  | KW_OPERATOR_KEY
+  | KW_OPERATOR_PARTITIONS
   | KW_OPERATOR_SPECIALIZES
   | KW_OPERATOR_LTE
   | KW_OPERATOR_LT
@@ -1764,6 +1781,8 @@ KW_OPERATOR_BACKWARDCHAIN: '<--';
 KW_OPERATOR_EQUIVALENCE: '~=';
 KW_OPERATOR_FORWARDCHAIN: '<==';
 KW_OPERATOR_INSTANCEOF: 'a';
+KW_OPERATOR_KEY: 'key';
+KW_OPERATOR_PARTITIONS: 'partitions';
 KW_OPERATOR_SPECIALIZES: '<|';
 KW_OPERATOR_LTE: '<=';
 KW_OPERATOR_LT: '<';
