@@ -245,6 +245,10 @@ class Clause(Resource):
         if ontology is not None:
             params["ontology"] = ontology.resource(is_anonymous=anonymize, file_hash=file_hash)
             params["ontology_raw"] = ontology
+        class_decl = get_parent_of_type("ClassDecl", self)
+        if class_decl is not None:
+            params["class_decl"] = class_decl.resource(is_anonymous=anonymize, file_hash=file_hash)
+            params["class_decl_raw"] = class_decl
         for attr_name in self.__class__._tx_attrs:
             if hasattr(self, attr_name) and getattr(self, attr_name) is not None:
                 attr_val = getattr(self, attr_name)

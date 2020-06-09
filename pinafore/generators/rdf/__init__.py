@@ -18,6 +18,7 @@ from .ontologies import MODELS as ontology_models
 from .predicates import MODELS as predicate_models
 from .properties import MODELS as property_models
 from .property_expressions import MODELS as property_expression_models
+from .value_restrictions import MODELS as value_restriction_models
 
 
 MODELS = chain(attribute_models,
@@ -33,7 +34,8 @@ MODELS = chain(attribute_models,
                ontology_models,
                predicate_models,
                property_models,
-               property_expression_models)
+               property_expression_models,
+               value_restriction_models)
 
 
 def file_components(model, output_path, output_ext):

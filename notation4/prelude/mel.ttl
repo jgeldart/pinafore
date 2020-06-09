@@ -215,3 +215,18 @@ mel:onCondition a rdf:Property;
   rdfs:domain mel:ModalRestriction;
   rdfs:range owl:Class
   .
+
+owl:ObjectVariable a rdfs:Class;
+  rdfs:label "ObjectVariable";
+  rdfs:comment "The class of object (nominal) variables.";
+  rdfs:isDefinedBy mel:;
+  rdfs:subClassOf owl:Class
+  .
+
+owl:variableId a owl:DatatypeProperty;
+  rdfs:label "variableId";
+  rdfs:comment "The property that determines the variable identifier for an object variable";
+  rdfs:isDefinedBy mel:;
+  rdfs:domain owl:ObjectVariable;
+  rdfs:range xsd:string
+  .
