@@ -1214,7 +1214,7 @@ PropertyExpressionInverse:
 ;
 
 QualifiedPropertyRef:
-  expression=PropertyRef KW_GENERIC_WHICH qualification=ClassRef
+  expression=PropertyRef qualification=ClassRef
 ;
 
 
