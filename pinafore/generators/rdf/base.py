@@ -188,7 +188,7 @@ class Clause(Resource):
                 g.parse(data=graph_fragment, format="n3", publicID=context_id)
                 graph = self._merge_graphs(graph, g)
             except Exception:
-                pass  # print(template_str, e, params)
+                pass  # print(template_str, params)
         self._visited = True
         final_graph = self._visit_children(graph, anonymize=anonymize, file_hash=file_hash)
         return final_graph
@@ -271,6 +271,8 @@ class Clause(Resource):
             return ResourceReference(res.full_iri, is_anonymous=anonymize)
         elif hasattr(res, "ref") and hasattr(res.ref, "full_iri"):
             return ResourceReference(res.ref.full_iri, is_anonymous=anonymize)
+        elif hasattr(res, "literal"):
+            return res.literal.resource(is_anonymous=anonymize, file_hash=file_hash)
         else:
             return None
 
