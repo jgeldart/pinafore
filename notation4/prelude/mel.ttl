@@ -80,6 +80,13 @@ mel:IsAProperty a rdfs:Class;
   rdfs:subClassOf owl:ObjectProperty
   .
 
+mel:LiteralRange a rdfs:Class;
+  rdfs:label "LiteralRange";
+  rdfs:comment "The class of all ranged literals.";
+  rdfs:isDefinedBy mel:;
+  rdfs:subClassOf rdfs:Literal
+  .
+
 mel:cumulativeSubjectOver a rdf:Property;
   rdfs:label "cumulativeSubjectOver";
   rdfs:comment "The property that determines which property is cumulative over a plural collection in subject position.";
@@ -214,6 +221,30 @@ mel:onCondition a rdf:Property;
   rdfs:isDefinedBy mel:;
   rdfs:domain mel:ModalRestriction;
   rdfs:range owl:Class
+  .
+
+mel:minInclusiveValue a rdf:Property;
+  rdfs:label "minInclusiveProperty";
+  rdfs:comment "The property that determines the lower (closed) bound of a range.";
+  rdfs:isDefinedBy mel:
+  .
+
+mel:minExclusiveValue a rdf:Property;
+  rdfs:label "minInclusiveProperty";
+  rdfs:comment "The property that determines the lower (open) bound of a range.";
+  rdfs:isDefinedBy mel:
+  .
+
+mel:maxInclusiveValue a rdf:Property;
+  rdfs:label "minInclusiveProperty";
+  rdfs:comment "The property that determines the upper (closed) bound of a range.";
+  rdfs:isDefinedBy mel:
+  .
+
+mel:maxExclusiveValue a rdf:Property;
+  rdfs:label "minInclusiveProperty";
+  rdfs:comment "The property that determines the upper (open) bound of a range.";
+  rdfs:isDefinedBy mel:
   .
 
 owl:ObjectVariable a rdfs:Class;
