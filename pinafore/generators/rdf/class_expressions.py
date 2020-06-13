@@ -238,35 +238,11 @@ class ClassExpressionAttributeValue(Clause):
 class ClassExpressionPropertyValue(Clause):
 
     def clause(self):
-        if self.restriction.__class__.__name__ == "NominalPropertyRestriction":
-            if self.restriction.is_local:
-                return """
-                ${this} a owl:Class;
-                    owl:intersectionOf (
-                        [
-                            a owl:Restriction;
-                            owl:someValuesFrom ${restriction};
-                            owl:onProperty ${role}
-                        ]
-                        [
-                            a owl:Restriction;
-                            owl:onProperty ${restriction_raw.expression.resource()};
-                            owl:someValuesFrom ${restriction['binding']}
-                        ]
-                    ).
-                """
-            else:
-                return """
-                ${this} a owl:Restriction;
-                    owl:someValuesFrom ${restriction};
-                    owl:onProperty ${role}.
-                """
-        else:
-            return """
-            ${this} a owl:Restriction;
-                owl:hasValue ${restriction};
-                owl:onProperty ${role}.
-            """
+        return """
+        ${this} a owl:Restriction;
+            owl:hasValue ${restriction};
+            owl:onProperty ${role}.
+        """
 
 
 class ClassExpressionSelf(Clause):

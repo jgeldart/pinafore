@@ -208,7 +208,7 @@ class Clause(Resource):
     def _parent_resource(self, element=None):
         if element is None:
             element = self
-        if hasattr(element, "parent"):
+        if hasattr(element, "parent") and element.parent is not None:
             if isinstance(element.parent, Resource):
                 return element.parent
             else:
@@ -221,11 +221,10 @@ class Clause(Resource):
             element = self
         if element.__class__.__name__ == "OntologyDecl":
             return element.is_context() and element
-        if hasattr(element, "parent"):
-            if isinstance(element, Resource) and element.is_context():
-                return element
-            else:
-                return self._context_resource(element=element.parent)
+        if isinstance(element, Resource) and element.is_context():
+            return element
+        elif hasattr(element, "parent") and element.parent is not None:
+            return self._context_resource(element=element.parent)
         else:
             return None
 
@@ -261,18 +260,32 @@ class Clause(Resource):
 
     def _resourcify_attribute(self, res, anonymize=False, file_hash=None):
         if hasattr(res, "ref") and isinstance(res.ref, Resource):
-            res = res.ref.resource(is_anonymous=anonymize, file_hash=file_hash)
+            res = res.ref.resource(is_anonymous=anonymize,
+                                   file_hash=file_hash)
             return res
+
         if isinstance(res, Resource):
-            return res.resource(is_anonymous=anonymize, file_hash=file_hash)
+            return res.resource(is_anonymous=anonymize,
+                                file_hash=file_hash)
+
         elif isinstance(res, list):
-            return [self._resourcify_attribute(a, anonymize=anonymize, file_hash=file_hash) for a in res]
+            return [self._resourcify_attribute(a,
+                                               anonymize=anonymize,
+                                               file_hash=file_hash)
+                    for a in res]
+
         elif hasattr(res, "full_iri"):
-            return ResourceReference(res.full_iri, is_anonymous=anonymize)
+            return ResourceReference(res.full_iri,
+                                     is_anonymous=anonymize)
+
         elif hasattr(res, "ref") and hasattr(res.ref, "full_iri"):
-            return ResourceReference(res.ref.full_iri, is_anonymous=anonymize)
+            return ResourceReference(res.ref.full_iri,
+                                     is_anonymous=anonymize)
+
         elif hasattr(res, "literal"):
-            return res.literal.resource(is_anonymous=anonymize, file_hash=file_hash)
+            return res.literal.resource(is_anonymous=anonymize,
+                                        file_hash=file_hash)
+
         else:
             return None
 
@@ -285,32 +298,33 @@ class Clause(Resource):
         return graph
 
     def _visit_children(self, graph, anonymize=False, file_hash=None):
-        if self.is_context():
-            g = graph  # ConjunctiveGraph(identifier=self.resource()._primary_ref)
-        else:
-            g = graph
-
         for child in self._child_clauses():
-            g = child.convert(g, anonymize=anonymize, file_hash=file_hash)
+            graph = child.convert(graph,
+                                  anonymize=anonymize,
+                                  file_hash=file_hash)
 
-        return self._merge_graphs(graph, g)
+        return graph
 
     def _child_clauses(self, element=None, visited=set()):
         if element is None:
             element = self
         if not isinstance(element, list):
             visited.add(self)
+
         klass = element.__class__
+
         if hasattr(klass, "_tx_attrs"):
             for attr_name in klass._tx_attrs:
                 if attr_name not in self.do_not_traverse():
                     attr = getattr(element, attr_name)
+
                     if (not isinstance(attr, list)) and (attr not in visited) and hasattr(attr.__class__, "_tx_attrs"):
                         if isinstance(attr, Clause) and not attr._visited:
                             yield attr
                         else:
                             for child in self._child_clauses(element=attr, visited=visited):
                                 yield child
+
                     elif isinstance(attr, list):
                         for i in attr:
                             if isinstance(i, Clause) and not i._visited:

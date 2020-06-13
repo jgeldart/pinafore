@@ -3,6 +3,7 @@ from textx import language, metamodel_from_file
 from .resolver import OntologyResolver, TermResolver
 from .checks import temporal_recursion_checker, variable_scope_check
 from .util import iri_rewriter
+from .transforms.nominal_schemas import LocalNominalPropertyValueTransform, GlobalNominalPropertyValueTransform
 
 
 def metamodel(classes=None):
@@ -37,6 +38,8 @@ def metamodel(classes=None):
     })
     mm.register_model_processor(variable_scope_check)
     mm.register_model_processor(temporal_recursion_checker)
+    mm.register_model_processor(GlobalNominalPropertyValueTransform())
+    mm.register_model_processor(LocalNominalPropertyValueTransform())
     mm.register_obj_processors({
         'ClassDecl': iri_rewriter,
         'PropertyDecl': iri_rewriter,
